@@ -1,4 +1,18 @@
 # EventManager
 Am boutta readme 
 
-## Requirements
+# Endpoints
+## User
+
+## Event
+/create
+/update
+/delete
+/show
+
+## Ticket
+/create_ticket
+
+## Payment
+
+
