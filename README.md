@@ -19,15 +19,15 @@ Am boutta readme
 Needs Data from Userservice
 
 ## Ticket
-/create_ticket 
-/delete or /update
+/create_ticket   
+/delete or /update  
 /read
 
 Needs Data from Event- and Userservice
 
 ## Payment
 /check_balance  
-/pay
+/pay  
 /add_money
 
 Needs Data from Ticket- and Userservice
@@ -46,8 +46,8 @@ Needs Data from Ticket-, Event- and Paymentservice
 
 Needs Data from Ticket-, Event- and Userservice.
 ## User
-/create
-/update
-/read
-(/delete)
+/create  
+/update  
+/read  
+(/delete)  
 
