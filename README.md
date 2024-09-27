@@ -1,18 +1,24 @@
 # EventManager
 Am boutta readme 
 
-# Endpoints
+# API Endpoints
 ## User
 
 ## Event
 /create  
+/read  
 /update  
-/delete  
-/show  
+/edit  
+/check_available_tickets
 
 ## Ticket
 /create_ticket  
-
+/read  
 ## Payment
+/check_balance  
+/pay
 
+## Notification
+/create  
+/get_user_notifications  
 
