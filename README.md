@@ -5,13 +5,13 @@ Am boutta readme
 ## User
 
 ## Event
-/create
-/update
-/delete
-/show
+/create  
+/update  
+/delete  
+/show  
 
 ## Ticket
-/create_ticket
+/create_ticket  
 
 ## Payment
 
