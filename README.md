@@ -22,3 +22,8 @@ Am boutta readme
 /create  
 /get_user_notifications  
 
+## Feedback
+/create  
+/read  
+/update  
+/delete  
