@@ -8,15 +8,16 @@ Am boutta readme
 /create  
 /read  
 /update  
-/edit  
 /check_available_tickets
 
 ## Ticket
 /create_ticket  
 /read  
+
 ## Payment
 /check_balance  
 /pay
+/add_money
 
 ## Notification
 /create  
@@ -27,3 +28,10 @@ Am boutta readme
 /read  
 /update  
 /delete  
+
+## User
+/create
+/update
+/read
+(/delete)
+
