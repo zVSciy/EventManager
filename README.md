@@ -16,7 +16,16 @@ Am boutta readme
 /update  
 /check_available_tickets
 
-Needs Data from Userservice
+### Standard Data
+ID  INT
+Name  VARCHARR
+Location VARCHARR
+
+StartDate  DateTime
+Available_tickets  INT
+Available_vip_tickets  INT
+
+Needs to know if the user is admin or not.
 
 ## Ticket
 /create_ticket   
