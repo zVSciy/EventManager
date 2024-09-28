@@ -18,12 +18,12 @@ Am boutta readme
 
 ### Standard Data
 ID  INT
-Name  VARCHARR
-Location VARCHARR
-
-StartDate  DateTime
-Available_tickets  INT
-Available_vip_tickets  INT
+Name  VARCHAR  
+Location VARCHAR  
+Organisator VARCHAR  
+StartDate  DateTime  
+Available_tickets  INT  
+Available_vip_tickets  INT  
 
 Needs to know if the user is admin or not.
 
