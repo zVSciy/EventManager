@@ -16,7 +16,7 @@ Am boutta readme
 /update  
 /check_available_tickets
 
-### Standard Data
+### Database Data
 ID  INT
 Name  VARCHAR  
 Location VARCHAR  
@@ -32,7 +32,7 @@ Needs to know if the user is admin or not.
 /delete or /update  
 /read
 
-### Standard Data
+### Database Data
 ID  INT  
 Row  VARCHAR  
 Price  INT  
@@ -54,10 +54,11 @@ Needs Data from Ticket- and Userservice
 /create  
 /get_user_notifications  
 
-### Standard Data
+### Database Data
 ID INT  
 User  INT  
 Description  Text  
+Date  Datetime  
 
 Needs Data from Ticket-, Event- and Paymentservice
 
@@ -67,7 +68,7 @@ Needs Data from Ticket-, Event- and Paymentservice
 /update  
 /delete  
 
-### Standard Data
+### Database Data
 ID INT    
 User  INT  
 Comment  Text  
@@ -83,7 +84,7 @@ Needs Data from Ticket-, Event- and Userservice.
 /read  
 (/delete)  
 
-### Standard Data
+### Database Data
 ID  INT  
 Firstname  VARCHAR  
 Lastname  VARCHAR  
