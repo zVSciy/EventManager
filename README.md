@@ -48,6 +48,12 @@ Needs Data from Event- and Userservice
 /pay  
 /add_money
 
+### Database Data
+ID INT  
+User INT  
+Bank VARCHAR
+Balance INT  
+
 Needs Data from Ticket- and Userservice
 
 ## Notification
