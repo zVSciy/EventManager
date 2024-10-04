@@ -24,7 +24,7 @@ Am boutta readme
         "name": "Markforster Konzert",
         "location": "Ruine Landskron",
         "organisator": "Gemeinde Finkenstein",
-        "startdate": 2024-09-29 20:00:00,
+        "startdate": "2024-09-29T20:00:00Z",
         "available_normal_tickets": 100,
         "available_vip_tickets": 20,
         "canceled": false
@@ -34,7 +34,7 @@ Am boutta readme
         "name": "Ramstein Konzert",
         "location": "Klagenfurter Stadion",
         "organisator": "Klagenfurter Konzertverein",
-        "startdate": 2024-08-29 22:10:00,
+        "startdate": "2024-08-29T22:10:00Z",
         "available_normal_tickets": 2000,
         "available_vip_tickets": 200,
         "canceled": false
@@ -63,7 +63,7 @@ Am boutta readme
   "name": "Markforster Konzert",
   "location": "Ruine Landskron",
   "organisator": "Gemeinde Finkenstein",
-  "startdate": 2024-09-29 20:00:00,
+  "startdate": "2024-09-29T20:00:00Z",
   "available_normal_tickets": 100,
   "available_vip_tickets": 20,
 }
