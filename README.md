@@ -11,19 +11,144 @@ Am boutta readme
 
 # API Endpoints
 ## Event
-/create  
-/read  
-/update  
-/check_available_tickets  
+**GET** /event/  
+**GET** /event/\<event-id>
+
+**Response**
+```json
+{
+  "code": 200,
+  "reponse": [
+      {
+        "ID": 1,
+        "name": "Markforster Konzert",
+        "location": "Ruine Landskron",
+        "organisator": "Gemeinde Finkenstein",
+        "startdate": 2024-09-29 20:00:00,
+        "available_normal_tickets": 100,
+        "available_vip_tickets": 20,
+        "canceled": false
+      },
+      {
+        "ID": 2,
+        "name": "Ramstein Konzert",
+        "location": "Klagenfurter Stadion",
+        "organisator": "Klagenfurter Konzertverein",
+        "startdate": 2024-08-29 22:10:00,
+        "available_normal_tickets": 2000,
+        "available_vip_tickets": 200,
+        "canceled": false
+      }
+    ],
+}
+```
+**GET** /event/available_tickets/\<event-id>
+```json
+{
+  "code": 200,
+  "reponse": [
+      {
+        "ID": 1,
+        "available_normal_tickets": 100,
+        "available_vip_tickets": 20,
+      }
+
+    ],
+}
+```
+**POST** /event/  
+**Payload**
+```json
+{
+  "name": "Markforster Konzert",
+  "location": "Ruine Landskron",
+  "organisator": "Gemeinde Finkenstein",
+  "startdate": 2024-09-29 20:00:00,
+  "available_normal_tickets": 100,
+  "available_vip_tickets": 20,
+}
+```
+
+**Response** 
+```json
+{
+  "code": 200,
+  "reponse": "Event was created successfully"
+  "eventID": 1
+}
+```
+
+**PUT** /event/\<event-id>/  
+**Payload**
+```json
+{
+  "name": "Bla Konzert",
+  "location": "Ruine Finkenstein",
+  "organisator": "Gemeinde Finkenstein",
+  "startdate": 2024-09-29 23:00:00,
+  "available_normal_tickets": 10,
+  "available_vip_tickets": 50,
+
+}
+```
+
+**Response**
+```json
+{
+  "code": 200,
+  "reponse": "Event was updated successfully"
+  "eventID": 1
+}
+```
+
+**PUT** /event/cancel/\<event-id>
+**Payload**
+```json
+{
+  "canceled": true
+
+}
+```
+
+**Response**
+```json
+{
+  "code": 200,
+  "reponse": "Event was canceled successfully"
+  "eventID": 1
+}
+```
+
+**PUT** /event/updateTicket/<event-id>
+**Payload**
+```json
+{
+  "available_normal_tickets": 20
+  "abailable_vip_tickets": 5
+
+}
+```
+
+**Response**
+```json
+{
+  "code": 200,
+  "reponse": "Available tickets were updated successfully"
+  "eventID": 1
+}
+```
+
+
 
 ### Database Data
-ID  INT  PRIMARY KEY  
+ID  INT  AUTO_INCREMENT  PRIMARY KEY  
 Name  VARCHAR  
 Location VARCHAR  
 Organisator VARCHAR  
 StartDate  DateTime  
-Available_tickets  INT  
+Available_normal_tickets  INT  
 Available_vip_tickets  INT  
+Canceled  BOOLEAN  Default False  
 
 > Needs to know if the user is admin or not.
 
@@ -106,7 +231,7 @@ Available_vip_tickets  INT
 
 ### Database Data
 ID  INT  PRIMARY KEY  
-Row  VARCHAR  NULL 
+Row  VARCHAR  NULL  
 Price  INT  
 SeatNumber  INT  NULL  
 State  VARCHAR  
