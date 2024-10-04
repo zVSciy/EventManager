@@ -141,6 +141,7 @@ Balance INT
       {
         "id": 68,
         "description": "Very very very very very very long string, it may be called text by now.",
+        "status": "active",
         "date": 1728035912,
         "eventId": 123,
         "paymentId": 123,
@@ -149,6 +150,7 @@ Balance INT
       {
         "id": 70,
         "description": "Less long string.",
+        "status": "active",
         "date": 1728035912,
         "eventId": 123,
         "paymentId": 123,
@@ -168,6 +170,7 @@ Balance INT
       {
         "id": 68,
         "description": "Very very very very very very long string, it may be called text by now.",
+        "status": "active",
         "date": 1728035912,
         "eventId": 123,
         "paymentId": 123,
@@ -184,6 +187,7 @@ Balance INT
 {
   "userId": 1,
   "description": "Very very very very very very long string",
+  "status": "active",
   "date": 1728035912
 }
 ```
@@ -193,13 +197,38 @@ Balance INT
 {
   "code": 201,
   "response": "OK",
+  "createdId": 123,
+}
+```
+
+### PUT /notification  
+**Request:**
+```json
+{
+  "id": 68,
+  "description": "different text",
+  "status": "hidden",
+  "date": something,
+  "eventId": 123,
+  "paymentId": 123,
+  "ticketId": 1234
+}
+```
+> Note the timestamp is in seconds, the example timestamp is somewhere around 12:00 04.10.2024  
+**Response:**
+```json
+{
+  "code": 200,
+  "response": "OK",
   "affectedId": 123,
 }
 ```
 
 
+
 ### Database Data
 ID INT  PRIMARY KEY  AUTO INCREMENT  
+Status   VARCHAR  
 Description  Text  
 Date  Datetime  
 UserId  INT  (References to User.Id)  
