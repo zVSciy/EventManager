@@ -85,7 +85,7 @@ Am boutta readme
   "name": "Bla Konzert",
   "location": "Ruine Finkenstein",
   "organisator": "Gemeinde Finkenstein",
-  "startdate": 2024-09-29 23:00:00,
+  "startdate": "2024-09-29T20:00:00Z",
   "available_normal_tickets": 10,
   "available_vip_tickets": 50,
 
