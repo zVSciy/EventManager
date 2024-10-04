@@ -199,15 +199,15 @@ Balance INT
 
 
 ### Database Data
-ID INT  PRIMARY KEY  AUTO INCREMENT
+ID INT  PRIMARY KEY  AUTO INCREMENT  
 Description  Text  
 Date  Datetime  
-UserId  INT  (References to User.Id)
-EventId INT (References to Event.Id)
-PaymentId INT (References to Payment.Id)
-TicketId INT (References to Ticket.Id)
+UserId  INT  (References to User.Id)  
+EventId INT (References to Event.Id)  
+PaymentId INT (References to Payment.Id)  
+TicketId INT (References to Ticket.Id)  
 
-> Needs Data from Ticket-, Event- and Paymentservice
+> Needs Data from Ticket-, Event- and Paymentservice  
 
 ## Feedback
 /create  
