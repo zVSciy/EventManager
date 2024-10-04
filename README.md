@@ -130,14 +130,82 @@ Balance INT
 > Needs Data from Ticket- and Userservice
 
 ## Notification
-/create  
-/get_user_notifications  
+
+### GET /notification
+**Response:**
+```json
+{
+  "code": 200,
+  "response":
+    [
+      {
+        "id": 68,
+        "description": "Very very very very very very long string, it may be called text by now.",
+        "date": 1728035912,
+        "eventId": 123,
+        "paymentId": 123,
+        "ticketId": 1234
+      },
+      {
+        "id": 70,
+        "description": "Less long string.",
+        "date": 1728035912,
+        "eventId": 123,
+        "paymentId": 123,
+        "ticketId": 1234
+      },
+    ],
+}
+```
+
+### GET /notification/\<id\>
+**Response:**
+```json
+{
+  "code": 200,
+  "response":
+    [
+      {
+        "id": 68,
+        "description": "Very very very very very very long string, it may be called text by now.",
+        "date": 1728035912,
+        "eventId": 123,
+        "paymentId": 123,
+        "ticketId": 1234
+      }
+    ],
+}
+```
+
+
+### POST /notification  
+**Request:**
+```json
+{
+  "userId": 1,
+  "description": "Very very very very very very long string",
+  "date": 1728035912
+}
+```
+> Note the timestamp is in seconds, the example timestamp is somewhere around 12:00 04.10.2024  
+**Response:**
+```json
+{
+  "code": 201,
+  "response": "OK",
+  "affectedId": 123,
+}
+```
+
 
 ### Database Data
-ID INT  PRIMARY KEY  
-User  INT  
+ID INT  PRIMARY KEY  AUTO INCREMENT
 Description  Text  
 Date  Datetime  
+UserId  INT  (References to User.Id)
+EventId INT (References to Event.Id)
+PaymentId INT (References to Payment.Id)
+TicketId INT (References to Ticket.Id)
 
 > Needs Data from Ticket-, Event- and Paymentservice
 
