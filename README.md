@@ -14,10 +14,10 @@ Am boutta readme
 /create  
 /read  
 /update  
-/check_available_tickets
+/check_available_tickets  
 
 ### Database Data
-ID  INT
+ID  INT  PRIMARY KEY  
 Name  VARCHAR  
 Location VARCHAR  
 Organisator VARCHAR  
@@ -25,23 +25,96 @@ StartDate  DateTime
 Available_tickets  INT  
 Available_vip_tickets  INT  
 
-Needs to know if the user is admin or not.
+> Needs to know if the user is admin or not.
 
 ## Ticket
-/create_ticket   
-/delete or /update  
-/read
+**GET** /ticket/  
+**GET** /ticket/\<ticket-id\>
+
+**Reponse:**
+```json
+{
+  "code": 200,
+  "reponse": [
+      {
+        "row": "A",
+        "price": 12.99,
+        "seatNumber": 3,
+        "state": "paid",
+        "vip": true,
+        "user": 1,
+        "event": 1 
+      },
+      {
+        "row": "A",
+        "price": 12.99,
+        "seatNumber": 4,
+        "state": "paid",
+        "vip": true,
+        "user": 1,
+        "event": 1 
+      }
+    ],
+}
+```
+
+**POST** /ticket
+
+**Payload:**
+```json
+{
+  "row": "A",
+  "price": 12.99,
+  "seatNumber": 3,
+  "state": "awaiting payment",
+  "vip": true,
+  "user": 1,
+  "event": 1 
+}
+```
+**Reponse:**
+```json
+{
+  "code": 201,
+  "reponse": "Successfully created object!",
+  "createdId": 1
+}
+```
+
+**PUT** /ticket/\<ticket-id\>  
+
+**Payload:**
+```json
+{
+  "row": "A",
+  "price": 12.99,
+  "seatNumber": 3,
+  "state": "paid",
+  "vip": true,
+  "user": 1,
+  "event": 1 
+}
+```
+**Reponse:**
+```json
+{
+  "code": 200,
+  "reponse": "Successfully updated object!",
+  "affectedId": 1
+}
+```
 
 ### Database Data
-ID  INT  
-Row  VARCHAR  
+ID  INT  PRIMARY KEY  
+Row  VARCHAR  NULL 
 Price  INT  
-SeatNumber  INT  
+SeatNumber  INT  NULL  
+State  VARCHAR  
 VIP  BOOLEAN  
-User  INT  
-Event INT  
+User  INT  (References to User.id)  
+Event INT  (References to Event.id)  
 
-Needs Data from Event- and Userservice
+> Needs Data from Event- and Userservice
 
 ## Payment
 /check_balance  
@@ -49,24 +122,24 @@ Needs Data from Event- and Userservice
 /add_money
 
 ### Database Data
-ID INT  
+ID INT  PRIMARY KEY  
 User INT  
-Bank VARCHAR
+Bank VARCHAR  
 Balance INT  
 
-Needs Data from Ticket- and Userservice
+> Needs Data from Ticket- and Userservice
 
 ## Notification
 /create  
 /get_user_notifications  
 
 ### Database Data
-ID INT  
+ID INT  PRIMARY KEY  
 User  INT  
 Description  Text  
 Date  Datetime  
 
-Needs Data from Ticket-, Event- and Paymentservice
+> Needs Data from Ticket-, Event- and Paymentservice
 
 ## Feedback
 /create  
@@ -75,14 +148,13 @@ Needs Data from Ticket-, Event- and Paymentservice
 /delete  
 
 ### Database Data
-ID INT    
+ID INT  PRIMARY KEY  
 User  INT  
 Comment  Text  
 Event INT  
 Date  Datetime  
 
-
-Needs Data from Ticket-, Event- and Userservice.
+> Needs Data from Ticket-, Event- and Userservice.
 
 ## User
 /create  
@@ -91,9 +163,8 @@ Needs Data from Ticket-, Event- and Userservice.
 (/delete)  
 
 ### Database Data
-ID  INT  
+ID  INT  PRIMARY KEY  
 Firstname  VARCHAR  
 Lastname  VARCHAR  
 Email  VARCHAR 
-
 
