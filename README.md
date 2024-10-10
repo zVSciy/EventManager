@@ -242,15 +242,110 @@ Event INT  (References to Event.id)
 > Needs Data from Event- and Userservice
 
 ## Payment
-/check_balance  
-/pay  
-/add_money
+
+#### Endpoints Exclusive to Own Interface:
+
+### POST /login
+```http
+POST /login
+Content-Type: application/json
+
+{
+  "username": "user123",
+  "password": "password123"
+}
+```
+**Response:**
+```json
+{
+  "token": "session-token-123"
+}
+```
+
+### POST /logout
+```http
+POST /logout
+Content-Type: application/json
+Authorization: Bearer session-token-123
+```
+**Response:**
+```json
+{
+  "message": "Logged out successfully"
+}
+```
+
+#### Additional Endpoints:
+
+### GET /accounts/{userId}
+```http
+GET /accounts/user123
+```
+**Response:**
+```json
+{
+  "userId": "user123",
+  "accountStatus": "exists"
+}
+```
+
+### POST /accounts
+```http
+POST /accounts
+Content-Type: application/json
+
+{
+  "userId": "user123"
+}
+```
+**Response:**
+```json
+{
+  "userId": "user123",
+  "accountStatus": "created"
+}
+```
+
+### POST /payments
+```http
+POST /payments
+Content-Type: application/json
+
+{
+  "userId": "user123",
+  "amount": 100,
+  "currency": "EUR"
+}
+```
+**Response:**
+```json
+{
+  "paymentId": "payment123",
+  "status": "initiated"
+}
+```
+
+### POST /payments/{paymentId}/process
+```http
+POST /payments/payment123/process
+Content-Type: application/json
+```
+**Response:**
+```json
+{
+  "paymentId": "payment123",
+  "status": "processed"
+}
+```
 
 ### Database Data
-ID INT  PRIMARY KEY  
-User INT  
-Bank VARCHAR  
-Balance INT  
+#### Collections
+- Accounts
+  - ``id``, ``userId``, ``accountStatus``, ``balance``, ``createdAt``
+
+- Payments
+  - ``id``, ``userId``, ``amount``, ``currency``, ``status``, ``createdAt``, ``processedAt``
+
 
 > Needs Data from Ticket- and Userservice
 
