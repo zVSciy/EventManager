@@ -101,7 +101,7 @@ Am boutta readme
 }
 ```
 
-**PUT** /event/cancel/\<event-id>
+**PUT** /event/cancel/\<event-id>  
 **Payload**
 ```json
 {
@@ -119,7 +119,7 @@ Am boutta readme
 }
 ```
 
-**PUT** /event/updateTicket/<event-id>
+**PUT** /event/updateTicket/<event-id>  
 **Payload**
 ```json
 {
