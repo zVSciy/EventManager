@@ -56,7 +56,7 @@
 {:else}
     <div>
         <h1>Event List</h1>
-        <table class="styled-table">
+        <button on:click={() => window.location.href='/add-event'} style="margin-bottom: 20px; padding: 10px; background-color: #009879; color: white; border: none; border-radius: 4px; cursor: pointer;">Add New Event</button>        <table class="styled-table">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -79,12 +79,41 @@
                         <td>{event.available_normal_tickets}</td>
                         <td>{event.available_vip_tickets}</td>
                         <td>{event.canceled ? 'Yes' : 'No'}</td>
-                       
+                        <td>
+                            <button on:click={() => toggleCancel(event)}>
+                                {event.canceled ? 'Entcancel Event' : 'Cancel Event'}
+                            </button>
+                            <button on:click={() => startEditing(event)}>Edit</button>
+                        </td>
                     </tr>
                 {/each}
             </tbody>
         </table>
 
+        <!-- Formular zum Bearbeiten eines Events -->
+        {#if editingEvent}
+            <div class="edit-form">
+                <form on:submit|preventDefault={saveEvent}>
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" bind:value={editingEvent.name} />
+
+                    <label for="location">Location:</label>
+                    <input type="text" id="location" bind:value={editingEvent.location} />
+
+                    <label for="startdate">Start Date:</label>
+                    <input type="datetime-local" id="startdate" bind:value={editingEvent.startdate} />
+
+                    <label for="available_normal_tickets">Available Normal Tickets:</label>
+                    <input type="number" id="available_normal_tickets" bind:value={editingEvent.available_normal_tickets} />
+
+                    <label for="available_vip_tickets">Available VIP Tickets:</label>
+                    <input type="number" id="available_vip_tickets" bind:value={editingEvent.available_vip_tickets} />
+
+                    <button type="submit">Save</button>
+                    <button type="button" on:click={cancelEditing}>Cancel</button>
+                </form>
+            </div>
+        {/if}
     </div>
 {/if}
 
