@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException, Depends
-from models import Event
-from database import SessionLocal
+from model.models import Event
+from model.database import SessionLocal
 from schemas import EventCancel, EventCreate, EventUpdate, TicketsUpdate
 from sqlalchemy.orm import  Session
 from fastapi.middleware.cors import CORSMiddleware
