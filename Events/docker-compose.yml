@@ -1,0 +1,66 @@
+version: "3.8"
+
+volumes:
+  my-mysql-data:
+  my-fast-data:
+
+networks:
+  my-network:
+
+services:
+
+  db:
+    image: mysql:latest
+    
+    volumes:
+      - my-mysql-data:/var/lib/mysql
+    
+    env_file: .env
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE_PORT: ${MYSQL_DATABASE_PORT}
+
+    networks:
+      - my-network
+
+    healthcheck:
+       test: 'echo "select now(); " | mysql -u${MYSQL_USER} -p${MYSQL_PASSWORD}'
+       interval: 1s
+       retries: 10
+       start_period: 10s
+       timeout: 1s
+
+    ports:
+    - "3306:3306"
+
+  web:
+    build:
+      context: .
+      dockerfile: ./docker/FastAPI/DockerFile
+    
+    volumes:
+    - my-fast-data:/media
+
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+    env_file: .env
+    environment:
+      ALLOWED_HOSTS: '*'
+
+    working_dir: "/app"
+    
+    ports:
+    - "8000:8000"
+
+    command: >
+      sh -c "uvicorn main:app --host 0.0.0.0 "
+
+    networks:
+    - my-network
+
