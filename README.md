@@ -362,7 +362,7 @@ Content-Type: application/json
         "id": 68,
         "description": "Very very very very very very long string, it may be called text by now.",
         "status": "active",
-        "date": 1728035912,
+        "timestamp": 1728035912,
         "eventId": 123,
         "paymentId": 123,
         "ticketId": 1234
@@ -371,7 +371,7 @@ Content-Type: application/json
         "id": 70,
         "description": "Less long string.",
         "status": "active",
-        "date": 1728035912,
+        "timestamp": 1728035912,
         "eventId": 123,
         "paymentId": 123,
         "ticketId": 1234
@@ -391,7 +391,7 @@ Content-Type: application/json
         "id": 68,
         "description": "Very very very very very very long string, it may be called text by now.",
         "status": "active",
-        "date": 1728035912,
+        "timestamp": 1728035912,
         "eventId": 123,
         "paymentId": 123,
         "ticketId": 1234
@@ -408,7 +408,7 @@ Content-Type: application/json
   "userId": 1,
   "description": "Very very very very very very long string",
   "status": "active",
-  "date": 1728035912
+  "timestamp": 1728035912
 }
 ```
 > Note the timestamp is in seconds, the example timestamp is somewhere around 12:00 04.10.2024  
@@ -428,7 +428,7 @@ Content-Type: application/json
   "id": 68,
   "description": "different text",
   "status": "hidden",
-  "date": something,
+  "timestamp": 1728035912,
   "eventId": 123,
   "paymentId": 123,
   "ticketId": 1234
@@ -450,7 +450,7 @@ Content-Type: application/json
 ID INT  PRIMARY KEY  AUTO INCREMENT  
 Status   VARCHAR  
 Description  Text  
-Date  Datetime  
+Timestamp  INT  
 UserId  INT  (References to User.Id)  
 EventId INT (References to Event.Id)  
 PaymentId INT (References to Payment.Id)  
