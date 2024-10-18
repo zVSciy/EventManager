@@ -354,49 +354,39 @@ Content-Type: application/json
 ### GET /notification
 **Response:**
 ```json
-{
-  "code": 200,
-  "response":
-    [
-      {
-        "id": 68,
-        "description": "Very very very very very very long string, it may be called text by now.",
-        "status": "active",
-        "timestamp": 1728035912,
-        "eventId": 123,
-        "paymentId": 123,
-        "ticketId": 1234
-      },
-      {
-        "id": 70,
-        "description": "Less long string.",
-        "status": "active",
-        "timestamp": 1728035912,
-        "eventId": 123,
-        "paymentId": 123,
-        "ticketId": 1234
-      },
-    ],
-}
+[
+  {
+      "id": 3,
+      "timestamp": 1729235305,
+      "paymentId": 2,
+      "eventId": 1,
+      "description": "testdesc",
+      "status": "active",
+      "ticketId": 4
+  },
+  {
+      "id": 3,
+      "timestamp": 1729235305,
+      "paymentId": 2,
+      "eventId": 1,
+      "description": "testdesc",
+      "status": "active",
+      "ticketId": 4
+  }
+],
 ```
 
 ### GET /notification/\<id\>
 **Response:**
 ```json
 {
-  "code": 200,
-  "response":
-    [
-      {
-        "id": 68,
-        "description": "Very very very very very very long string, it may be called text by now.",
-        "status": "active",
-        "timestamp": 1728035912,
-        "eventId": 123,
-        "paymentId": 123,
-        "ticketId": 1234
-      }
-    ],
+    "id": 3,
+    "timestamp": 1729235305,
+    "paymentId": 2,
+    "eventId": 1,
+    "description": "testdesc",
+    "status": "active",
+    "ticketId": 4
 }
 ```
 
@@ -415,9 +405,13 @@ Content-Type: application/json
 **Response:**
 ```json
 {
-  "code": 201,
-  "response": "OK",
-  "createdId": 123,
+    "id": 3,
+    "timestamp": 1729235305,
+    "paymentId": 2,
+    "eventId": 1,
+    "description": "testdesc",
+    "status": "active",
+    "ticketId": 4
 }
 ```
 
@@ -438,9 +432,13 @@ Content-Type: application/json
 **Response:**
 ```json
 {
-  "code": 200,
-  "response": "OK",
-  "affectedId": 123,
+    "id": 3,
+    "timestamp": 1729235305,
+    "paymentId": 2,
+    "eventId": 1,
+    "description": "different text",
+    "status": "active",
+    "ticketId": 4
 }
 ```
 
