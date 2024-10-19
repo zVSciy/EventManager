@@ -1,0 +1,87 @@
+volumes:
+  mysql-data:
+
+networks:
+  event-network:
+
+services:
+  #Service "db"
+  db:
+    image: mysql:latest
+    restart: unless-stopped
+
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE_PORT: ${MYSQL_DATABASE_PORT}
+
+    networks:
+      - event-network
+
+    healthcheck:
+       test: 'echo "select now();" | mysql -h db -u${MYSQL_USER} -p${MYSQL_PASSWORD}'
+       interval: 1s
+       retries: 10
+       start_period: 10s
+       timeout: 1s
+
+  #Service "api"
+  api:
+    build:
+      context: .
+      dockerfile: ./docker/fastapi/Dockerfile
+
+    env_file: .env
+
+    restart: always
+
+    expose:
+      - 8000
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+    working_dir: "/app"
+
+    command: >
+      sh -c "uvicorn main:app --host 0.0.0.0 --port 8000"
+
+    networks:
+      - event-network
+
+  #Service "sveltekit"
+  sveltekit:
+    build:
+      context: .
+      dockerfile: ./docker/sveltekit/Dockerfile
+
+    expose:
+      - 5173
+
+    networks:
+      - event-network
+      
+  #Service "nginx"
+  nginx:
+    image: nginx:latest
+
+    restart: always
+    
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/ssl
+    
+    ports:
+      - "8080:443"
+    
+    depends_on:
+      - sveltekit
+
+    networks:
+      - event-network

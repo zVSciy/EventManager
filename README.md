@@ -3,11 +3,9 @@ Am boutta readme
 
 # Concepts
 ## Process
-![image](https://github.com/user-attachments/assets/8a319b5d-f45f-47e2-beca-79070e116fe3)
+![image](Process_Detailed.drawio.svg)
 
 
-## Microservices Idea
-![image](https://github.com/user-attachments/assets/7d39198e-47e7-498f-9850-06615f22271d)
 
 # API Endpoints
 ## Event
@@ -352,51 +350,63 @@ Content-Type: application/json
 ## Notification
 
 ### GET /notification
-**Response:**
+**Request:**
 ```json
 {
-  "code": 200,
-  "response":
-    [
-      {
-        "id": 68,
-        "description": "Very very very very very very long string, it may be called text by now.",
-        "status": "active",
-        "date": 1728035912,
-        "eventId": 123,
-        "paymentId": 123,
-        "ticketId": 1234
-      },
-      {
-        "id": 70,
-        "description": "Less long string.",
-        "status": "active",
-        "date": 1728035912,
-        "eventId": 123,
-        "paymentId": 123,
-        "ticketId": 1234
-      },
-    ],
+  "skip":0,
+  "limit":10,
 }
+```
+> skip and limit is optional, default is listed above
+
+**Response:**
+```json
+[
+    {
+        "id": 1,
+        "timestamp": 1729235305,
+        "paymentId": 2,
+        "eventId": 1,
+        "description": "testdesc",
+        "userId":2,
+        "status": "active",
+        "ticketId": 4
+    },
+    {
+        "id": 2,
+        "timestamp": 1729235305,
+        "paymentId": 2,
+        "eventId": 1,
+        "description": "testdesc",
+        "userId":2,
+        "status": "active",
+        "ticketId": 4
+    },
+    {
+        "id": 3,
+        "timestamp": 1729235305,
+        "paymentId": 2,
+        "eventId": 1,
+        "description": "testdesc",
+        "userId":2,
+        "status": "active",
+        "ticketId": 4
+    }
+]
 ```
 
 ### GET /notification/\<id\>
 **Response:**
 ```json
 {
-  "code": 200,
-  "response":
-    [
-      {
-        "id": 68,
-        "description": "Very very very very very very long string, it may be called text by now.",
-        "status": "active",
-        "date": 1728035912,
-        "eventId": 123,
-        "paymentId": 123,
-        "ticketId": 1234
-      }
-    ],
+    "id": 2,
+    "timestamp": 1729235305,
+    "paymentId": 2,
+    "eventId": 1,
+    "description": "testdesc",
+    "userId":2,
+    "status": "active",
+    "ticketId": 4
 }
 ```
 
@@ -405,19 +415,27 @@ Content-Type: application/json
 **Request:**
 ```json
 {
-  "userId": 1,
-  "description": "Very very very very very very long string",
-  "status": "active",
-  "date": 1728035912
+    "description": "testdesc",
+    "status": "active",
+    "timestamp": "2024-02-17T00:15:05",
+    "eventId": "1",
+    "paymentId": "2",
+    "ticketId": "4",
+    "userId":2,
 }
 ```
 > Note the timestamp is in seconds, the example timestamp is somewhere around 12:00 04.10.2024  
 **Response:**
 ```json
 {
-  "code": 201,
-  "response": "OK",
-  "createdId": 123,
+    "id": 3,
+    "timestamp": 1729235305,
+    "paymentId": 2,
+    "eventId": 1,
+    "description": "testdesc",
+    "userId":2,
+    "status": "active",
+    "ticketId": 4
 }
 ```
 
@@ -425,36 +443,41 @@ Content-Type: application/json
 **Request:**
 ```json
 {
-  "id": 68,
-  "description": "different text",
-  "status": "hidden",
-  "date": something,
-  "eventId": 123,
-  "paymentId": 123,
-  "ticketId": 1234
+    "timestamp": 123213,
+    "paymentId": 2,
+    "userId": 2,
+    "eventId": 5,
+    "description": "edited",
+    "status": "disabled",
+    "ticketId": 45
 }
 ```
 > Note the timestamp is in seconds, the example timestamp is somewhere around 12:00 04.10.2024  
 **Response:**
 ```json
 {
-  "code": 200,
-  "response": "OK",
-  "affectedId": 123,
+    "id": 2,
+    "timestamp": 123213,
+    "paymentId": 2,
+    "userId": 2,
+    "eventId": 5,
+    "description": "edited",
+    "status": "disabled",
+    "ticketId": 45
 }
 ```
 
 
 
 ### Database Data
-ID INT  PRIMARY KEY  AUTO INCREMENT  
-Status   VARCHAR  
-Description  Text  
-Date  Datetime  
-UserId  INT  (References to User.Id)  
-EventId INT (References to Event.Id)  
-PaymentId INT (References to Payment.Id)  
-TicketId INT (References to Ticket.Id)  
+id INT  PRIMARY KEY  AUTO INCREMENT  
+status   VARCHAR  
+description  Text  
+timestamp  int  
+userId  INT  (References to User.Id)  
+eventId INT (References to Event.Id)  
+paymentId INT (References to Payment.Id)  
+ticketId INT (References to Ticket.Id)  
 
 > Needs Data from Ticket-, Event- and Paymentservice  
 
