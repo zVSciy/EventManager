@@ -34,12 +34,12 @@ services:
        timeout: 1s
 
     ports:
-    - "3306:3306"
+    - "3305:3306"
 
   web:
     build:
       context: .
-      dockerfile: ./docker/FastAPI/DockerFile
+      dockerfile: DockerFile
     
     volumes:
     - my-fast-data:/media
@@ -56,7 +56,7 @@ services:
     working_dir: "/app"
     
     ports:
-    - "8000:8000"
+    - "8001:8000"
 
     command: >
       sh -c "uvicorn main:app --host 0.0.0.0 "
