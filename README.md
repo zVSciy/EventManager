@@ -3,11 +3,9 @@ Am boutta readme
 
 # Concepts
 ## Process
-![image](https://github.com/user-attachments/assets/8a319b5d-f45f-47e2-beca-79070e116fe3)
+![image](Process_Detailed.drawio.svg)
 
 
-## Microservices Idea
-![image](https://github.com/user-attachments/assets/7d39198e-47e7-498f-9850-06615f22271d)
 
 # API Endpoints
 ## Event
