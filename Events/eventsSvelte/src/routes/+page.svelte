@@ -1,54 +1,28 @@
 <script>
     import { onMount } from 'svelte';
-    import { fetchEvents, updateEvent, updateCancelStatus } from '$lib/api'; // Import der API-Funktion
+    import { fetchEvents } from '$lib/api';
+    import { goto } from '$app/navigation';
 
     let events = [];
     let error = null;
-    let editingEvent = null; // Speichert das Event, das bearbeitet wird
 
-    // Funktion, um die Events zu laden
     async function loadEvents() {
         try {
             events = await fetchEvents();
+            console.log(events); // Debug: Events-Daten ausgeben
         } catch (err) {
             error = err.message;
         }
     }
 
-    // Daten werden beim Laden der Seite geholt
     onMount(loadEvents);
 
-    // Funktion zum Canceln oder Entcanceln eines Events und Reload der Daten
-    async function toggleCancel(event) {
-        const newCanceledStatus = !event.canceled; // Umkehren des aktuellen Status
-        try {
-            await updateCancelStatus(event.ID, newCanceledStatus); // API-Call zum Ändern des Status
-            await loadEvents(); // Events nach dem Update neu laden
-        } catch (err) {
-            error = 'Failed to update event status';
-        }
+    function viewDetails(event) {
+    if (event && event.ID) {
+        goto(`/details/${event.ID}`); // Navigiere zur Details-Seite basierend auf der Event-ID
     }
+}
 
-    // Funktion zum Starten der Bearbeitung eines Events
-    function startEditing(event) {
-        editingEvent = { ...event }; // Event-Daten kopieren
-    }
-
-    // Funktion zum Speichern des bearbeiteten Events
-    async function saveEvent() {
-        try {
-            await updateEvent(editingEvent.ID, editingEvent); // API-Call zum Updaten des Events
-            editingEvent = null; // Bearbeitung beenden
-            await loadEvents(); // Events neu laden
-        } catch (err) {
-            error = 'Failed to update event';
-        }
-    }
-
-    // Funktion zum Abbrechen der Bearbeitung
-    function cancelEditing() {
-        editingEvent = null;
-    }
 </script>
 
 {#if error}
@@ -63,8 +37,6 @@
                     <th>Name</th>
                     <th>Location</th>
                     <th>Start Date</th>
-                    <th>Available Normal Tickets</th>
-                    <th>Available VIP Tickets</th>
                     <th>Canceled</th>
                     <th>Actions</th>
                 </tr>
@@ -72,19 +44,18 @@
             <tbody>
                 {#each events as event}
                     <tr>
-                        <td><a href={`/event/${event.ID}`}>{event.ID}</a></td>
+                        <td>{event.ID}</td> <!-- Sicherstellen, dass ID existiert -->
                         <td>{event.name}</td>
                         <td>{event.location}</td>
                         <td>{new Date(event.startdate).toLocaleString()}</td>
-                        <td>{event.available_normal_tickets}</td>
-                        <td>{event.available_vip_tickets}</td>
                         <td>{event.canceled ? 'Yes' : 'No'}</td>
-                       
+                        <td>
+                            <button on:click={() => viewDetails(event)}>Details</button>
+                        </td>
                     </tr>
                 {/each}
             </tbody>
         </table>
-
     </div>
 {/if}
 
