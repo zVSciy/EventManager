@@ -1,18 +1,14 @@
 <script>
     import { onMount } from 'svelte';
-    import { fetchEvents } from '$lib/api';
     import { goto } from '$app/navigation';
 
     let events = [];
     let error = null;
 
     async function loadEvents() {
-        try {
-            events = await fetchEvents();
-            console.log(events); // Debug: Events-Daten ausgeben
-        } catch (err) {
-            error = err.message;
-        }
+        const response = await fetch('/api/event');
+        events = await response.json();
+
     }
 
     onMount(loadEvents);

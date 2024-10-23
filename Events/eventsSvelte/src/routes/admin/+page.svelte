@@ -1,62 +1,86 @@
 <script>
     import { onMount } from 'svelte';
-    import { fetchEvents, updateEvent, updateCancelStatus } from '$lib/api'; // Import der API-Funktion
 
     let events = [];
     let error = null;
-    let editingEvent = null; // Speichert das Event, das bearbeitet wird
+    let editingEvent = null;
 
-    // Funktion, um die Events zu laden
     async function loadEvents() {
-        try {
-            events = await fetchEvents();
-        } catch (err) {
-            error = err.message;
-        }
+        const response = await fetch('/api/event');
+        events = await response.json();
     }
 
-    // Daten werden beim Laden der Seite geholt
     onMount(loadEvents);
 
-    // Funktion zum Canceln oder Entcanceln eines Events und Reload der Daten
     async function toggleCancel(event) {
-        const newCanceledStatus = !event.canceled; // Umkehren des aktuellen Status
+        const newCanceledStatus = !event.canceled; // Toggle current canceled status
         try {
-            await updateCancelStatus(event.ID, newCanceledStatus); // API-Call zum Ändern des Status
-            await loadEvents(); // Events nach dem Update neu laden
+            // Make the API call to update the event cancel status
+            const response = await fetch(`/api/event/cancel?id=${event.ID}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    canceledStatus: newCanceledStatus // Send the new canceled status
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update event cancel status');
+            }
+
+            await loadEvents(); // Reload events after status update
         } catch (err) {
             error = 'Failed to update event status';
         }
     }
 
-    // Funktion zum Starten der Bearbeitung eines Events
     function startEditing(event) {
-        editingEvent = { ...event }; // Event-Daten kopieren
+        editingEvent = { ...event }; // Copy the event data for editing
     }
 
-    // Funktion zum Speichern des bearbeiteten Events
+    async function updateEvent(id) {
+        try {
+            const response = await fetch(`/api/event?id=${id}`, { // Pass ID in the query parameter
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(editingEvent), // Use editingEvent directly
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update event');
+            }
+
+            return await response.json();
+        } catch (err) {
+            console.error('Error updating event:', err);
+            throw err;
+        }
+    }
+
     async function saveEvent() {
         try {
-            await updateEvent(editingEvent.ID, editingEvent); // API-Call zum Updaten des Events
-            editingEvent = null; // Bearbeitung beenden
-            await loadEvents(); // Events neu laden
+            await updateEvent(editingEvent.ID); // Pass the ID of the event being edited
+            editingEvent = null; // End the editing
+            await loadEvents();
         } catch (err) {
             error = 'Failed to update event';
         }
     }
 
-    // Funktion zum Abbrechen der Bearbeitung
     function cancelEditing() {
         editingEvent = null;
     }
 </script>
-
 {#if error}
     <p>{error}</p>
 {:else}
     <div>
         <h1>Event List</h1>
-        <button on:click={() => window.location.href='/add-event'} style="margin-bottom: 20px; padding: 10px; background-color: #009879; color: white; border: none; border-radius: 4px; cursor: pointer;">Add New Event</button>        <table class="styled-table">
+        <button on:click={() => window.location.href='/admin/add-event'} style="margin-bottom: 20px; padding: 10px; background-color: #009879; color: white; border: none; border-radius: 4px; cursor: pointer;">Add New Event</button>        <table class="styled-table">
             <thead>
                 <tr>
                     <th>ID</th>
