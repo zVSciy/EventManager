@@ -36,7 +36,7 @@ services:
     ports:
     - "3305:3306"
 
-  web:
+  api:
     build:
       context: .
       dockerfile: DockerFile
@@ -56,11 +56,21 @@ services:
     working_dir: "/app"
     
     ports:
-    - "8001:8000"
+    - "8000:8000"
 
     command: >
-      sh -c "uvicorn main:app --host 0.0.0.0 "
+      sh -c "uvicorn main:app --host 0.0.0.0 --reload"
 
     networks:
     - my-network
+
+  events:
+    build: ./eventsSvelte
+    ports:
+     - "5173:5173"
+    volumes:
+      - ./eventsSvelte:/app
+      - /app/node_modules
+    networks:
+      - my-network
 
