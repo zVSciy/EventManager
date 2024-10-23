@@ -5,6 +5,7 @@
   dir = "."
   include_ext = ["go"]
   exclude_dir = ["vendor", "tmp"]
+  exclude_regex = ["_test.go"]
   run_after_build = "chmod +x main"
 
 [log]

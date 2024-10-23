@@ -10,6 +10,14 @@ services:
     volumes:
       - ./src/api:/app
   
+  db-payment:
+    image: mongo:latest
+    container_name: db-payment
+    expose:
+      - "27017"
+    volumes:
+      - db-payment-data:/data/db
+  
   nginx-payment:
     image: nginx:latest
     container_name: nginx-payment
