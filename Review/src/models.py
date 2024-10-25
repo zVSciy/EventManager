@@ -9,4 +9,4 @@ class Review(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, nullable=False)
     content = Column(String, nullable=False)
-    rating = Column(Integer, nullable=False)
+    rating = Column(Integer, nullable=False, check_constraint="rating >= 1 AND rating <= 5")
