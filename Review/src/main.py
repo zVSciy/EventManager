@@ -8,14 +8,12 @@ app = FastAPI()
 
 Base.metadata.create_all(bind=engine)
 
-class UserCreate(BaseModel):
-    name: str
-    email: str
 
 class ReviewCreate(BaseModel):
     user_id: int
     content: str
     rating: int
+    event_id: int
 
 def get_db():
     db = SessionLocal()
@@ -24,7 +22,6 @@ def get_db():
     finally:
         db.close()
 
-# Initialisiere die Datenbank synchron beim Start der Anwendung
 init_db()
 
 @app.get("/reviews/{review_id}")
@@ -35,8 +32,8 @@ def get_review(review_id: int, db: Session = Depends(get_db)):
     return review
 
 @app.post("/reviews/")
-def create_review(reviewId:int, user_id:int, content:str, rating:int , db: Session = Depends(get_db)):
-    review = Review(id=reviewId, user_id=user_id, content=content, rating=rating)
+def create_review(reviewId:int, user_id:int, content:str, rating:int, event_id:int , db: Session = Depends(get_db)):
+    review = Review(id=reviewId, user_id=user_id, content=content, rating=rating, event_id=event_id)
     db.add(review)
     db.commit()
     db.refresh(review)
