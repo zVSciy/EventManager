@@ -3,3 +3,6 @@
 *.p12
 main
 tmp/
+test.*
+.github/
+payment_service_test.go

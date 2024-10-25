@@ -5,6 +5,8 @@ services:
       dockerfile: docker/api/Dockerfile
     container_name: api-payment
     restart: unless-stopped
+    environment:
+      - MONGO_URI=mongodb://root:oiejrfhuanaps@db-payment:27017
     expose:
       - "3000"
     volumes:
@@ -13,11 +15,18 @@ services:
   db-payment:
     image: mongo:latest
     container_name: db-payment
-    expose:
-      - "27017"
+    restart: unless-stopped
+    # environment username&pass only for testing
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=oiejrfhuanaps
+    ports:
+      - "27017:27017"
+    # expose:
+    #   - "27017"
     volumes:
       - db-payment-data:/data/db
-  
+
   nginx-payment:
     image: nginx:latest
     container_name: nginx-payment
@@ -30,3 +39,6 @@ services:
       - "443:443"
     depends_on:
       - api-payment
+
+volumes:
+  db-payment-data:

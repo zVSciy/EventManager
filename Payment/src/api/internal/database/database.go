@@ -1,4 +1,4 @@
-package db
+package database
 
 import (
 	"context"
@@ -11,25 +11,22 @@ import (
 
 var Client *mongo.Client
 
-func ConnectMongoDB(uri string) {
+func Init(uri string) {
 	var err error
-	Client, err = mongo.NewClient(options.Client().ApplyURI(uri))
-	if err != nil {
-		log.Fatal(err)
-	}
+	clientOptions := options.Client().ApplyURI(uri)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	err = Client.Connect(ctx)
+	Client, err = mongo.Connect(ctx, clientOptions)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Failed to connect to MongoDB: %v", err)
 	}
 
 	err = Client.Ping(ctx, nil)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Failed to ping MongoDB: %v", err)
 	}
 
-	log.Println("Connected to Mongo.")
+	log.Println("Connected to MongoDB.")
 }
