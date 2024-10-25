@@ -1,6 +1,17 @@
 # EventManager
 Am boutta readme 
 
+## Table of Contents
+- [Concepts](#concepts)
+  - [Process](#process)
+- [API Endpoints](#api-endpoints)
+  - [Event](#event)
+  - [Ticket](#ticket)
+  - [Payment](#payment)
+  - [Notification](#notification)
+  - [Feedback](#feedback)
+  - [User](#user)
+
 # Concepts
 ## Process
 ![image](Process_Detailed.drawio.svg)
