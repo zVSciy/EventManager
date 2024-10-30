@@ -1,8 +1,8 @@
 *.pem
 *.csr
 *.p12
-main
+bin/
 tmp/
 test.*
 .github/
-payment_service_test.go
+*test.go

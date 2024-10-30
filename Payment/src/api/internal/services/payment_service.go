@@ -45,7 +45,3 @@ func CreatePayment(payment models.Payment) models.Payment {
 
 	return payment
 }
-
-// func ProcessPayment(paymentID string) (models.Payment, bool) {
-
-// }
