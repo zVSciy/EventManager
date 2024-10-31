@@ -4,28 +4,31 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 
 	db "github.com/zVSciy/EventManager/Payment/internal/database"
 	"github.com/zVSciy/EventManager/Payment/internal/handlers"
 	"github.com/zVSciy/EventManager/Payment/internal/services"
+	"github.com/zVSciy/EventManager/Payment/internal/util"
 )
 
 func main() {
-	MONGO_URI := getenv("MONGO_URI", "mongodb://db-payment:27017")
-	PORT := fmt.Sprintf(":%s", getenv("PORT", "3000"))
+	MONGO_URI := util.Getenv("MONGO_URI", "mongodb://db-payment:27017")
+	PORT := fmt.Sprintf(":%s", util.Getenv("PORT", "3000"))
+	TZ := util.Getenv("TZ", "Europe/Vienna")
+
+	log.Println("Initializing Timezone...")
+	util.InitTimezone(TZ)
 
 	log.Println("Initializing MongoDB client...")
 	db.Init(MONGO_URI)
-	log.Println("MongoDB client initialized successfully")
 
 	log.Println("Initializing Payment service...")
 	services.InitPaymentService()
-	log.Println("Payment service initialized successfully")
 
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /health", handlers.HealthCheck)
+	mux.HandleFunc("GET /payments/{id}", handlers.GetPayment)
 	mux.HandleFunc("POST /payments", handlers.CreatePayment)
 
 	mux.HandleFunc("/", handlers.NotFound)
@@ -35,16 +38,8 @@ func main() {
 		Handler: mux,
 	}
 
-	log.Printf("Starting server on port %s", PORT)
+	log.Printf("Starting server on %s", PORT)
 	if err := server.ListenAndServe(); err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}
-}
-
-func getenv(key, fallback string) string {
-	value := os.Getenv(key)
-	if value == "" {
-		return fallback
-	}
-	return value
 }
