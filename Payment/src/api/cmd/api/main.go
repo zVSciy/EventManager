@@ -7,6 +7,7 @@ import (
 
 	db "github.com/zVSciy/EventManager/Payment/internal/database"
 	"github.com/zVSciy/EventManager/Payment/internal/handlers"
+	"github.com/zVSciy/EventManager/Payment/internal/middleware"
 	"github.com/zVSciy/EventManager/Payment/internal/services"
 	"github.com/zVSciy/EventManager/Payment/internal/util"
 )
@@ -35,7 +36,7 @@ func main() {
 
 	server := http.Server{
 		Addr:    PORT,
-		Handler: mux,
+		Handler: middleware.Logging(mux),
 	}
 
 	log.Printf("Starting server on %s", PORT)
