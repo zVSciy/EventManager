@@ -33,7 +33,7 @@ func InitPaymentService() {
 func GetPayment(id string) (models.Payment, error) {
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		return models.Payment{}, errors.New("invalid payment ID")
+		return models.Payment{}, errors.New("invalid_payment_id")
 	}
 
 	var payment models.Payment
@@ -47,7 +47,7 @@ func GetPayment(id string) (models.Payment, error) {
 		return payment, nil
 	}
 	if err == mongo.ErrNoDocuments {
-		return models.Payment{}, errors.New("payment not found")
+		return models.Payment{}, errors.New("payment_not_found")
 	}
 	return models.Payment{}, err
 }
