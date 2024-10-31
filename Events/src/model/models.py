@@ -10,7 +10,7 @@ class Event(Base):
     name = Column(String(255), nullable=False)
     location = Column(String(255), nullable=True)
     organisator = Column(String(255), nullable=True)
-    startdate = Column(DateTime, nullable=True)
+    startdate = Column(String(255), nullable=True)
     available_normal_tickets = Column(Integer, nullable=True)
     available_vip_tickets = Column(Integer, nullable=True)
     canceled = Column(Boolean, default=False)

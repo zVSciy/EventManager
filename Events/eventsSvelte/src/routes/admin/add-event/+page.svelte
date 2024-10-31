@@ -1,6 +1,7 @@
 <script>
     import { onMount } from 'svelte';
     import { fetchEvents } from '$lib/api';
+	import { goto } from '$app/navigation';
 
     let name = '';
     let location = '';
@@ -10,47 +11,37 @@
     let availableVIPTickets = '';
     let error = null;
     let successMessage = '';
-
+    
     async function addEvent() {
-        try {
-            const response = await fetch('http://localhost:8000/event/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    name,
-                    location,
-                    organisator: organiser,
-                    startdate: startDate,
-                    available_normal_tickets: parseInt(availableNormalTickets),
-                    available_vip_tickets: parseInt(availableVIPTickets),
-                }),
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to create event');
-            }
-
-            const result = await response.json();
-            successMessage = `Event was created successfully with ID: ${result.eventID}`;
-            
-            // Redirect to the main page after creation
-            setTimeout(() => {
-                window.location.href = '/'; // Navigiere zurück zur Hauptseite
-            }, 2000); // Optional: Zeit geben, um die Erfolgsmeldung anzuzeigen
-
-            // Optionally, reset the form fields
-            name = '';
-            location = '';
-            organiser = '';
-            startDate = '';
-            availableNormalTickets = '';
-            availableVIPTickets = '';
-        } catch (err) {
-            error = err.message;
+      try {
+        const response = await fetch("/api/event", {
+          method: "POST",
+          body: JSON.stringify({
+            name: name,
+            location: location,
+            organisator: organiser,
+            startdate: startDate,
+            available_normal_tickets: availableNormalTickets,
+            available_vip_tickets: availableVIPTickets
+          }),
+          headers: {
+            "Content-Type": "application/json; charset=UTF-8",
+          }
+        });
+  
+        console.log(response);
+  
+        if (response.status === 200) {
+          alert('Event wurde erfolgreich erstellt!');
+          goto('/admin')
+        } else {
+          alert('Fehler beim Erstellen des Event!');
         }
-    }
+      } catch (error) {
+        console.error("Fehler beim Fetchen:", error);
+      } 
+    } 
+
 </script>
 
 
