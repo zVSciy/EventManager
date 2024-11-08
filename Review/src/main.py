@@ -11,6 +11,8 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
+init_db()
+
 Base.metadata.create_all(bind=engine)
 
 class ReviewCreate(BaseModel):
@@ -26,12 +28,11 @@ def get_db():
     finally:
         db.close()
 
-init_db()
 
 @app.get("/reviews/{review_id}")
 def get_review(review_id: int, db: Session = Depends(get_db)):
     logger.info(f"Fetching review with ID: {review_id}")
-    review = db.query(Review).filter(Review.review_id == review_id).first()
+    review = db.query(Review).filter(Review.id == review_id).first()
     if review is None:
         logger.error(f"Review with ID {review_id} not found")
         raise HTTPException(status_code=404, detail="Review not found")

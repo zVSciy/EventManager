@@ -5,7 +5,7 @@ Base = declarative_base()
 
 class Review(Base):
     __tablename__ = 'reviews'
-    review_id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, nullable=False)
     content = Column(String, nullable=False)
     rating = Column(Integer, nullable=False)
