@@ -65,7 +65,10 @@ func CreatePayment(w http.ResponseWriter, r *http.Request) {
 
 	createdPayment, err := services.CreatePayment(payment, idempotencyKey)
 	if err == nil {
-		util.JSONResponse(w, http.StatusOK, createdPayment)
+		util.JSONResponse(w, http.StatusOK, models.CreatePaymentResponse{
+			ID:     createdPayment.ID,
+			Status: createdPayment.Status,
+		})
 		return
 	}
 
