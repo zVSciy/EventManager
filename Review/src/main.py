@@ -11,9 +11,8 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
+# Initialize the database
 init_db()
-
-Base.metadata.create_all(bind=engine)
 
 class ReviewCreate(BaseModel):
     user_id: int
@@ -28,7 +27,6 @@ def get_db():
     finally:
         db.close()
 
-
 @app.get("/reviews/{review_id}")
 def get_review(review_id: int, db: Session = Depends(get_db)):
     logger.info(f"Fetching review with ID: {review_id}")
@@ -39,14 +37,14 @@ def get_review(review_id: int, db: Session = Depends(get_db)):
     return review
 
 @app.post("/reviews/")
-def create_review(reviewId:int, user_id:int, content:str, rating:int, event_id:int , db: Session = Depends(get_db)):
-    logger.info(f"Creating review with ID: {reviewId}")
-    review = Review(id=reviewId, user_id=user_id, content=content, rating=rating, event_id=event_id)
-    db.add(review)
+def create_review(review: ReviewCreate, db: Session = Depends(get_db)):
+    logger.info(f"Creating review for user ID: {review.user_id}")
+    db_review = Review(user_id=review.user_id, content=review.content, rating=review.rating, event_id=review.event_id)
+    db.add(db_review)
     db.commit()
-    db.refresh(review)
-    logger.info(f"Review with ID {reviewId} created successfully")
-    return review
+    db.refresh(db_review)
+    logger.info(f"Review created successfully with ID: {db_review.id}")
+    return db_review
 
 @app.get("/reviews/{event_id}")
 def get_reviews(event_id:int, db: Session = Depends(get_db)):
