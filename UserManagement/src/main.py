@@ -12,6 +12,7 @@ from security.authentication import create_access_token, verify_token
 app = FastAPI()
 
 
+# Endpoints
 @app.post("/register")
 async def register_user(user_data: UserInput, db: Session = Depends(get_db)):
     hashed_password = pwd_context.hash(user_data.password)
@@ -22,7 +23,7 @@ async def register_user(user_data: UserInput, db: Session = Depends(get_db)):
     return {"message": "User registered successfully", "user": user.email}
 
 
-@app.post("/login")
+@app.post("/token")
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), 
                                  db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.email == form_data.username).first()
@@ -36,3 +37,22 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         detail="Invalid credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
+
+
+@app.post("/login")
+async def login_user(user_data: UserInput, db: Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.email == user_data.email).first()
+    if user and pwd_context.verify(user_data.password, user.hashed_password):
+        token = create_access_token(data={"sub": user.email})
+        return {"access_token": token, "token_type": "bearer"}
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+
+@app.get("/protected")
+def protected_sample_route(current_user: models.User = Depends(verify_token)):
+    return {"message": "You are in a protected route", "user": current_user.email}
