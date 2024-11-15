@@ -8,6 +8,7 @@ class Ticket(Base):
     __tablename__ = "tickets"
     id: Mapped[int] = mapped_column(Integer(), primary_key=True)
     price: Mapped[int] = mapped_column(Integer(), nullable=False)
+    paid: Mapped[bool] = mapped_column(Boolean(), default=False)
     row: Mapped[str] = mapped_column(String(1))
     seatNumber: Mapped[int] = mapped_column(Integer())
     vip: Mapped[bool] = mapped_column(Boolean(), nullable=False)
