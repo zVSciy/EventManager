@@ -15,6 +15,7 @@ import (
 )
 
 var paymentCollection *mongo.Collection
+var userCollection *mongo.Collection
 var idempotencyKeyCollection *mongo.Collection
 
 func InitPaymentService() {
@@ -22,6 +23,7 @@ func InitPaymentService() {
 		panic("MongoDB client not initialized")
 	}
 	paymentCollection = db.Client.Database("paymentdb").Collection("payments")
+	userCollection = db.Client.Database("paymentdb").Collection("users")
 	idempotencyKeyCollection = db.Client.Database("paymentdb").Collection("idempotency_keys")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -50,6 +52,33 @@ func GetPayment(id string) (models.Payment, error) {
 		return models.Payment{}, errors.New("payment_not_found")
 	}
 	return models.Payment{}, err
+}
+
+func GetPayments(userId string) ([]models.Payment, error) {
+	var user models.User
+	var payments []models.Payment
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	err := userCollection.FindOne(ctx, bson.M{"user_id": userId}).Decode(&user)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return []models.Payment{}, errors.New("user_not_found")
+		}
+		return []models.Payment{}, err
+	}
+
+	cur, err := paymentCollection.Find(ctx, bson.M{"user_id": userId})
+	if err != nil {
+		return []models.Payment{}, err
+	}
+
+	if err = cur.All(ctx, &payments); err != nil {
+		return []models.Payment{}, err
+	}
+
+	return payments, nil
 }
 
 func CreatePayment(payment models.Payment, idempotencyKeyStr string) (models.Payment, error) {

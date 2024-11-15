@@ -29,6 +29,7 @@ func main() {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /health", handlers.HealthCheck)
+	mux.HandleFunc("GET /users/{username}/payments", handlers.GetPayments)
 	mux.HandleFunc("GET /payments/{id}", handlers.GetPayment)
 	mux.HandleFunc("POST /payments", handlers.CreatePayment)
 

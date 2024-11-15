@@ -44,7 +44,18 @@ func GetPayment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	util.JSONResponse(w, http.StatusInternalServerError, models.ErrorResponse{
+		Error: "Internal Server Error",
+	})
+}
+
+func GetPayments(w http.ResponseWriter, r *http.Request) {
+	username := r.PathValue("username")
+
+	payments, err := services.GetPayments(username)
+	if err == nil {
+		util.JSONResponse(w, http.StatusOK, payments)
+	}
 }
 
 func CreatePayment(w http.ResponseWriter, r *http.Request) {
@@ -52,7 +63,9 @@ func CreatePayment(w http.ResponseWriter, r *http.Request) {
 
 	idempotencyKey := r.Header.Get("Idempotency-Key")
 	if idempotencyKey == "" {
-		http.Error(w, "Idempotency-Key is required", http.StatusBadRequest)
+		util.JSONResponse(w, http.StatusBadRequest, models.ErrorResponse{
+			Error: "MISSING_IDEMPOTENCY_KEY",
+		})
 		return
 	}
 
@@ -80,10 +93,13 @@ func CreatePayment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	util.JSONResponse(w, http.StatusInternalServerError, models.ErrorResponse{
+		Error: "Internal Server Error",
+	})
 }
 
 func NotFound(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotFound)
-	http.Error(w, "404 Not Found", http.StatusNotFound)
+	util.JSONResponse(w, http.StatusNotFound, models.ErrorResponse{
+		Error: "Not Found",
+	})
 }

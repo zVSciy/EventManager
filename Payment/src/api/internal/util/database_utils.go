@@ -13,7 +13,7 @@ func CreateTTLIndex(ctx context.Context, collection *mongo.Collection) error {
 		Keys: bson.D{
 			{Key: "created_at", Value: 1},
 		},
-		Options: options.Index().SetExpireAfterSeconds(2592000), //expire 30 days
+		Options: options.Index().SetExpireAfterSeconds(2592000), // 30 days
 	})
 	return err
 }
