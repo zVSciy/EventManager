@@ -10,12 +10,26 @@ import (
 	"github.com/zVSciy/EventManager/Payment/internal/util"
 )
 
+// HealthCheck godoc
+// @Summary Health Check
+// @Tags health
+// @Success 200 {object} models.HealthCheckResponse "Service is healthy"
+// @Router /health [get]
 func HealthCheck(w http.ResponseWriter, r *http.Request) {
 	util.JSONResponse(w, http.StatusOK, models.HealthCheckResponse{
 		Message: "healthy",
 	})
 }
 
+// GetPayment godoc
+// @Summary Get Payment
+// @Tags payments
+// @Param id path string true "Payment ID"
+// @Success 200 {object} models.Payment "Payment details"
+// @Failure 400 {object} models.ErrorResponse "Invalid payment ID"
+// @Failure 404 {object} models.ErrorResponse "Payment not found"
+// @Failure 500 {object} models.ErrorResponse "Internal Server Error"
+// @Router /payments/{id} [get]
 func GetPayment(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 
@@ -49,15 +63,37 @@ func GetPayment(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// GetPayments godoc
+// @Summary Get User Payments
+// @Tags payments
+// @Param username path string true "Username"
+// @Success 200 {array} models.Payment "List of payments"
+// @Failure 404 {object} models.ErrorResponse "User not found"
+// @Failure 500 {object} models.ErrorResponse "Internal Server Error"
+// @Router /users/{userId}/payments [get]
 func GetPayments(w http.ResponseWriter, r *http.Request) {
 	username := r.PathValue("username")
 
 	payments, err := services.GetPayments(username)
 	if err == nil {
 		util.JSONResponse(w, http.StatusOK, payments)
+		return
 	}
+
+	util.JSONResponse(w, http.StatusInternalServerError, models.ErrorResponse{
+		Error: "Internal Server Error",
+	})
 }
 
+// CreatePayment godoc
+// @Summary Create Payment
+// @Tags payments
+// @Param Idempotency-Key header string true "Unique key to prevent duplicate payments"
+// @Param payment body models.PaymentRequest true "Payment details"
+// @Success 200 {object} models.CreatePaymentResponse "Payment created successfully"
+// @Failure 400 {object} models.ErrorResponse "Invalid request or missing idempotency key"
+// @Failure 409 {object} models.ErrorResponse "Duplicate idempotency key"
+// @Router /payments [post]
 func CreatePayment(w http.ResponseWriter, r *http.Request) {
 	var payment models.Payment
 
