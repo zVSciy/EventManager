@@ -9,4 +9,15 @@ def test_read_all_notifications():
     assert type(response.json()) == list
     if(len(response.json()) > 0):
         assert type(response.json()[0]) == dict
+        def test_read_all_notifications():
+            response = client.get("/notifications/")
+            assert response.status_code == 200
+            assert type(response.json()) == list
+            if len(response.json()) > 0:
+                assert type(response.json()[0]) == dict
 
+def test_read_notification():
+    response = client.get("/notifications/1")
+    print(response)
+    assert response.status_code == 200
+    assert type(response.json()) == dict
