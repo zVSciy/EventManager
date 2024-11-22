@@ -64,19 +64,27 @@ func GetPayment(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetPayments godoc
-// @Summary Get User Payments
+// @Summary Get Payments by Account
 // @Tags payments
-// @Param username path string true "Username"
+// @Param user_id path string true "UserID"
 // @Success 200 {array} models.Payment "List of payments"
 // @Failure 404 {object} models.ErrorResponse "User not found"
 // @Failure 500 {object} models.ErrorResponse "Internal Server Error"
-// @Router /users/{userId}/payments [get]
+// @Router /accounts/{user_id}/payments [get]
 func GetPayments(w http.ResponseWriter, r *http.Request) {
-	username := r.PathValue("username")
+	userId := r.PathValue("user_id")
 
-	payments, err := services.GetPayments(username)
+	payments, err := services.GetPayments(userId)
 	if err == nil {
 		util.JSONResponse(w, http.StatusOK, payments)
+		return
+	}
+
+	errStr := err.Error()
+	if errStr == "user_not_found" {
+		util.JSONResponse(w, http.StatusNotFound, models.ErrorResponse{
+			Error: strings.ToUpper(errStr),
+		})
 		return
 	}
 
@@ -112,6 +120,21 @@ func CreatePayment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// ONLY EUR TEMPORARY
+	if payment.Currency != "EUR" {
+		util.JSONResponse(w, http.StatusBadRequest, models.ErrorResponse{
+			Error: "BAD_CURRENCY_USE_EUR",
+		})
+		return
+	}
+
+	if payment.Amount <= 0 {
+		util.JSONResponse(w, http.StatusBadRequest, models.ErrorResponse{
+			Error: "INVALID_AMOUNT",
+		})
+		return
+	}
+
 	createdPayment, err := services.CreatePayment(payment, idempotencyKey)
 	if err == nil {
 		util.JSONResponse(w, http.StatusOK, models.CreatePaymentResponse{
@@ -121,13 +144,22 @@ func CreatePayment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	errorResponses := map[string]int{
+		"idempotency_key_error": http.StatusConflict,
+		"recipient_not_found":   http.StatusNotFound,
+		"incompatible_currency": http.StatusBadRequest,
+		"insufficient_funds":    http.StatusBadRequest,
+	}
+
 	errStr := err.Error()
-	if errStr == "idempotency_key_error" {
-		util.JSONResponse(w, http.StatusConflict, models.ErrorResponse{
+	if statusCode, exists := errorResponses[errStr]; exists {
+		util.JSONResponse(w, statusCode, models.ErrorResponse{
 			Error: strings.ToUpper(errStr),
 		})
 		return
 	}
+
+	services.SetPaymentCancelled(payment)
 
 	util.JSONResponse(w, http.StatusInternalServerError, models.ErrorResponse{
 		Error: "Internal Server Error",

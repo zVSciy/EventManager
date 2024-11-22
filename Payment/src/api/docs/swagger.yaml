@@ -68,6 +68,32 @@ info:
   title: Payment Service API
   version: "1.0"
 paths:
+  /accounts/{user_id}/payments:
+    get:
+      parameters:
+      - description: UserID
+        in: path
+        name: user_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: List of payments
+          schema:
+            items:
+              $ref: '#/definitions/models.Payment'
+            type: array
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get Payments by Account
+      tags:
+      - payments
   /health:
     get:
       responses:
@@ -134,32 +160,6 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorResponse'
       summary: Get Payment
-      tags:
-      - payments
-  /users/{userId}/payments:
-    get:
-      parameters:
-      - description: Username
-        in: path
-        name: username
-        required: true
-        type: string
-      responses:
-        "200":
-          description: List of payments
-          schema:
-            items:
-              $ref: '#/definitions/models.Payment'
-            type: array
-        "404":
-          description: User not found
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-      summary: Get User Payments
       tags:
       - payments
 swagger: "2.0"
