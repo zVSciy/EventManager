@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 app = FastAPI()
 
 @app.get("/tickets")
-def read_tickets(event_id: None, db: Session = Depends(get_db)):
+def read_tickets(event_id: int = None, db: Session = Depends(get_db)):
     if event_id:
         tickets = db.query(models.Ticket).filter(models.Ticket.event_id == event_id).all()
     else:
@@ -16,45 +16,21 @@ def read_tickets(event_id: None, db: Session = Depends(get_db)):
     return tickets
 
 @app.post("/tickets")
-def add_ticket(ticket:TicketInput, db: Session = Depends(get_db)):
+def add_ticket(ticket: TicketInput, db: Session = Depends(get_db)):
     try:
-        if len(ticket.price) == 0:
-            raise HTTPException(status_code=400, detail={
-                "status": "Error 400 - Bad Request",
-                "msg": "Price is empty, but it must be provided."
-            })
-        
-        if len(ticket.vip) == 0:
-            raise HTTPException(status_code=400, detail={
-                "status": "Error 400 - Bad Request",
-                "msg": "VIP tag is empty, but it must be provided."
-            })
-
-        if len(ticket.userid) == 0:
-            raise HTTPException(status_code=400, detail={
-                "status": "Error 400 - Bad Request",
-                "msg": "UserID is empty, but it must be provided."
-            })
-
-        if len(ticket.eventid) == 0:
-            raise HTTPException(status_code=400, detail={
-                "status": "Error 400 - Bad Request",
-                "msg": "EventID is empty, but it must be provided."
-            })
-
         new_ticket = models.Ticket(
             price=ticket.price,
             row=ticket.row,
-            seatNumber=ticket.seatNumber,
+            seat_number=ticket.seat_number,
             vip=ticket.vip,
-            userid=ticket.userid,
-            eventid=ticket.eventid,
+            user_id=ticket.user_id,
+            event_id=ticket.event_id,
         )
         db.add(new_ticket)
         db.commit()
         db.refresh(new_ticket)
 
-    except:
+    except Exception as ex:
         raise HTTPException(status_code=500, detail={
             "status": "Error 500 - Server Error",
             "msg": "Unexpected error occured during ticket creation - are all inputs correct?"
@@ -64,20 +40,38 @@ def add_ticket(ticket:TicketInput, db: Session = Depends(get_db)):
         db.close()
     return new_ticket
 
-@app.put("/tickets/payment/{ticket-id}")
-def payment_ticket(ticket_id: int, db: Session = Depends(get_db)):
-    ticket = db.query(models.Ticket).filter(models.Ticket.id == ticket_id).first()
-    if not ticket:
-        raise HTTPException(status_code=404, detail={
-            "status": "Error 404 - Not Found",
-            "msg": f"Ticket with `id`: `{ticket_id}` doesn't exist."
+@app.put("/tickets/{ticket-id}")
+def edit_ticket(ticket_id: int, updated_ticket: TicketInput, db: Session = Depends(get_db)):
+    try:
+        ticket = db.query(models.Ticket).filter(models.Ticket.id == ticket_id).first()
+        if not ticket:
+            raise HTTPException(status_code=404, detail={
+                "status": "Error 404 - Not Found",
+                "msg": f"Ticket with `id`: `{ticket_id}` doesn't exist."
+            })
+
+        ticket.price = updated_ticket.price
+        ticket.row = updated_ticket.row
+        ticket.seat_number = updated_ticket.seat_number
+        ticket.vip = updated_ticket.vip
+        ticket.user_id = updated_ticket.user_id
+        ticket.event_id = updated_ticket.event_id
+
+        db.commit()
+        db.refresh(ticket)
+
+    except Exception as ex:
+        raise HTTPException(status_code=500, detail={
+            "status": "Error 500 - Server Error",
+            "msg": "Unexpected error occured during ticket editing - are all inputs correct?"
         })
-    ticket.paid = True
-    db.commit()
-    db.refresh(note)
+
+    finally:
+        db.close()
+
     return ticket
 
-@app.delete("/tickets/cancel/{ticket-id}")
+@app.delete("/tickets/{ticket-id}")
 def delete_ticket(ticket_id: int, db: Session = Depends(get_db)):
     try:
         ticket = db.query(models.Ticket).filter(models.Ticket.id == ticket_id).first()

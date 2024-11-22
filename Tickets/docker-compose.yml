@@ -23,12 +23,12 @@ services:
     networks:
       - event-network
 
-    # healthcheck:
-    #   test: 'echo "select now(); " | mysql -u${MYSQL_USER} -p${MYSQL_PASSWORD}'
-    #   interval: 1s
-    #   retries: 10
-    #   start_period: 10s
-    #   timeout: 1s
+    healthcheck:
+      test: 'echo "select now();" | mysql -h ${MYSQL_DATABASE_HOST} -u${MYSQL_USER} -p${MYSQL_PASSWORD}'
+      interval: 1s
+      retries: 10
+      start_period: 10s
+      timeout: 1s
 
   #Service "api"
   api:
@@ -45,12 +45,12 @@ services:
     ports:
       - 8000:8000
 
-    # depends_on:
-    #   db:
-    #     condition: service_healthy
+    depends_on:
+      db:
+        condition: service_healthy
 
     command: >
-      sh -c "sleep 20 && uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
+      sh -c "uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
 
     networks:
       - event-network
@@ -63,6 +63,9 @@ services:
 
     expose:
       - 5173
+
+    depends_on:
+      - api
 
     networks:
       - event-network

@@ -3,7 +3,7 @@ from pydantic import BaseModel
 class TicketInput(BaseModel):
     price: int = ''
     row: str = ''
-    seatNumber: int = ''
+    seat_number: int = ''
     vip: bool = False
-    userid: int = ''
-    eventid: int = ''
+    user_id: int = ''
+    event_id: int = ''
