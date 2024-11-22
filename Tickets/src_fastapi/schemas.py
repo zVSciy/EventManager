@@ -1,9 +1,10 @@
 from pydantic import BaseModel
+from typing import Optional
 
 class TicketInput(BaseModel):
     price: int = ''
-    row: str = ''
-    seatNumber: int = ''
+    row: Optional[str] = None
+    seat_number: Optional[int] = None
     vip: bool = False
-    userid: int = ''
-    eventid: int = ''
+    user_id: int = ''
+    event_id: int = ''

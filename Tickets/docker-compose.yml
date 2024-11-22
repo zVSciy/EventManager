@@ -8,11 +8,11 @@ services:
   #Service "db"
   db:
     image: mysql:latest
-    restart: unless-stopped
 
     volumes:
       - mysql-data:/var/lib/mysql
 
+    env_file: .env
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
@@ -24,11 +24,11 @@ services:
       - event-network
 
     healthcheck:
-       test: 'echo "select now();" | mysql -h db -u${MYSQL_USER} -p${MYSQL_PASSWORD}'
-       interval: 1s
-       retries: 10
-       start_period: 10s
-       timeout: 1s
+      test: 'echo "select now();" | mysql -h ${MYSQL_DATABASE_HOST} -u${MYSQL_USER} -p${MYSQL_PASSWORD}'
+      interval: 1s
+      retries: 10
+      start_period: 10s
+      timeout: 1s
 
   #Service "api"
   api:
@@ -40,17 +40,17 @@ services:
 
     restart: always
 
-    expose:
-      - 8000
+    # expose:
+    #   - 8000
+    ports:
+      - 8000:8000
 
     depends_on:
       db:
         condition: service_healthy
 
-    working_dir: "/app"
-
     command: >
-      sh -c "uvicorn main:app --host 0.0.0.0 --port 8000"
+      sh -c "uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
 
     networks:
       - event-network
@@ -63,6 +63,9 @@ services:
 
     expose:
       - 5173
+
+    depends_on:
+      - api
 
     networks:
       - event-network
