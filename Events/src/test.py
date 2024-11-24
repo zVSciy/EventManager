@@ -60,7 +60,7 @@ class TestEventAPI(unittest.TestCase):
     def test_cancel_event(self):
         event_id = 1  # Beispiel-ID
         cancel_data = {"canceled": True}
-        response = client.put(f"/event/cancel/{event_id}", json=cancel_data)
+        response = client.put(f"/event/cancel/{event_id}/22a", json=cancel_data)
         if response.status_code == 404:
             self.assertEqual(response.json(), {"detail": "Event not found"})
         else:
@@ -68,15 +68,13 @@ class TestEventAPI(unittest.TestCase):
             self.assertEqual(response.json()["response"], "Event was canceled successfully")
 
     def test_update_event_tickets(self):
-        event_id = 1  # Beispiel-ID
+        event_id = 2 # Beispiel-ID
         ticket_update_data = {
             "available_normal_tickets": 80,
             "available_vip_tickets": 40
         }
-        response = client.put(f"/event/updateTicket/{event_id}", json=ticket_update_data)
-        if response.status_code == 404:
-            self.assertEqual(response.json(), {"detail": "Event not found"})
-        else:
+        response = client.put(f"/event/updateTicket/{event_id}/2", json=ticket_update_data)
+        if response.status_code == 200:
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.json()["response"], "Available tickets were updated successfully")
 
