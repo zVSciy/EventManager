@@ -59,7 +59,7 @@ services:
     - "8000:8000"
 
     command: >
-      sh -c "python test.py && uvicorn main:app --host 0.0.0.0 --reload"
+      sh -c "python test.py && exec uvicorn main:app --host 0.0.0.0 --reload"
 
     networks:
     - my-network
