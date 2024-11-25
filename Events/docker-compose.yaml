@@ -43,6 +43,7 @@ services:
     
     volumes:
     - my-fast-data:/media
+    - ./src:/app
 
 
     depends_on:
