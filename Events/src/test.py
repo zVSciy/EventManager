@@ -5,7 +5,28 @@ from main import app  # Importiere deine FastAPI-App
 client = TestClient(app)
 
 class TestEventAPI(unittest.TestCase):
+    def test_000_create_event(self):
+        response = client.get("/event/")
+        self.assertEqual(response.status_code, 200)
+        existing_events = response.json()
 
+        for event in existing_events:
+            if event["name"] == "Updated Concert Name" and event["location"] == "New Stadium" and event["ID"] == 1:
+                print("Test-Event existiert bereits, Erstellung wird übersprungen.")
+                return  
+        event_data = {
+            "name": "Concert",
+            "location": "Stadium",
+            "organisator": "Music Inc",
+            "startdate": "2024-12-31T20:00:00",
+            "available_normal_tickets": 100,
+            "available_vip_tickets": 50
+        }
+        response = client.post("/event/", json=event_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["code"], 200)
+        self.assertEqual(response.json()["response"], "Event was created successfully")
+        
     def test_get_all_events(self):
         response = client.get("/event/")
         self.assertEqual(response.status_code, 200)
@@ -24,19 +45,6 @@ class TestEventAPI(unittest.TestCase):
         self.assertIn("available_normal_tickets", response.json())
         self.assertIn("available_vip_tickets", response.json())
 
-    def test_create_event(self):
-        event_data = {
-            "name": "Concert",
-            "location": "Stadium",
-            "organisator": "Music Inc",
-            "startdate": "2024-12-31T20:00:00",
-            "available_normal_tickets": 100,
-            "available_vip_tickets": 50
-        }
-        response = client.post("/event/", json=event_data)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()["code"], 200)
-        self.assertEqual(response.json()["response"], "Event was created successfully")
 
     def test_update_event(self):
         event_id = 1
@@ -49,7 +57,7 @@ class TestEventAPI(unittest.TestCase):
         self.assertEqual(response.json()["response"], "Event was updated successfully")
 
     def test_cancel_event(self):
-        event_id = 1 
+        event_id = 1
         cancel_data = {"canceled": True}
         response = client.put(f"/event/cancel/{event_id}", json=cancel_data)
         self.assertEqual(response.status_code, 200)
