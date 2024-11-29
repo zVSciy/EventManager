@@ -37,6 +37,9 @@ func GetPayment(id string) (models.Payment, error) {
 	if err != nil {
 		return models.Payment{}, errors.New("invalid_payment_id")
 	}
+	if err := util.CheckCollectionInit(paymentCollection); err != nil {
+		return models.Payment{}, errors.New("database_not_initialized")
+	}
 
 	var payment models.Payment
 

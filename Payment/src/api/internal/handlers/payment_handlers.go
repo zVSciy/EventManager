@@ -46,8 +46,9 @@ func GetPayment(w http.ResponseWriter, r *http.Request) {
 	}
 
 	errorResponses := map[string]int{
-		"payment_not_found":  http.StatusNotFound,
-		"invalid_payment_id": http.StatusBadRequest,
+		"payment_not_found":        http.StatusNotFound,
+		"invalid_payment_id":       http.StatusBadRequest,
+		"database_not_initialized": http.StatusInternalServerError,
 	}
 
 	errStr := err.Error()
