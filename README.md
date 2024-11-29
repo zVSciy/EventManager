@@ -255,6 +255,7 @@ Event INT  (References to Event.id)
 ### GET /payments/{id}
 ```http
 GET /payments/{id}
+Authorization: Bearer token
 ```
 **Response:**
 ```json
@@ -274,6 +275,7 @@ GET /payments/{id}
 ```http
 POST /payments
 Content-Type: application/json
+Authorization: Bearer token
 Idempotency-Key: some-unique-key
 
 {
