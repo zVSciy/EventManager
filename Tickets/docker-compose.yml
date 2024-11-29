@@ -61,8 +61,10 @@ services:
       context: .
       dockerfile: ./docker/sveltekit/Dockerfile
 
-    expose:
-      - 5173
+    # expose:
+    #   - 5173
+    ports:
+      - 8001:5173
 
     depends_on:
       - api
