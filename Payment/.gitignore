@@ -4,5 +4,3 @@
 bin/
 tmp/
 test.*
-.github/
-*test.go

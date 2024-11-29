@@ -55,6 +55,10 @@ func GetPayment(id string) (models.Payment, error) {
 }
 
 func GetPayments(userId string) ([]models.Payment, error) {
+	if err := util.CheckCollectionInit(paymentCollection); err != nil {
+		return []models.Payment{}, errors.New("database_not_initialized")
+	}
+
 	var account models.Account
 	var payments []models.Payment
 

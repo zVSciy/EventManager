@@ -2,6 +2,7 @@ package util
 
 import (
 	"context"
+	"errors"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -16,4 +17,11 @@ func CreateTTLIndex(ctx context.Context, collection *mongo.Collection) error {
 		Options: options.Index().SetExpireAfterSeconds(2592000), // 30 days
 	})
 	return err
+}
+
+func CheckCollectionInit(collection *mongo.Collection) error {
+	if collection == nil {
+		return errors.New("database not initialized")
+	}
+	return nil
 }

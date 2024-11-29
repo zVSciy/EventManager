@@ -15,6 +15,39 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/accounts/{user_id}": {
+            "post": {
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Create Account",
+                "parameters": [
+                    {
+                        "description": "Account ID",
+                        "name": "account",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.AccountRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Account created successfully",
+                        "schema": {
+                            "$ref": "#/definitions/models.CreatePaymentResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request or missing idempotency key",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/accounts/{user_id}/payments": {
             "get": {
                 "tags": [
@@ -162,6 +195,17 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "models.AccountRequest": {
+            "type": "object",
+            "required": [
+                "userId"
+            ],
+            "properties": {
+                "userId": {
+                    "type": "string"
+                }
+            }
+        },
         "models.CreatePaymentResponse": {
             "type": "object",
             "properties": {

@@ -80,9 +80,14 @@ func GetPayments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	errorResponses := map[string]int{
+		"user_not_found":           http.StatusNotFound,
+		"database_not_initialized": http.StatusInternalServerError,
+	}
+
 	errStr := err.Error()
-	if errStr == "user_not_found" {
-		util.JSONResponse(w, http.StatusNotFound, models.ErrorResponse{
+	if statusCode, exists := errorResponses[errStr]; exists {
+		util.JSONResponse(w, statusCode, models.ErrorResponse{
 			Error: strings.ToUpper(errStr),
 		})
 		return

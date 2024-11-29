@@ -1,5 +1,12 @@
 basePath: /
 definitions:
+  models.AccountRequest:
+    properties:
+      userId:
+        type: string
+    required:
+    - userId
+    type: object
   models.CreatePaymentResponse:
     properties:
       id:
@@ -68,6 +75,27 @@ info:
   title: Payment Service API
   version: "1.0"
 paths:
+  /accounts/{user_id}:
+    post:
+      parameters:
+      - description: Account ID
+        in: body
+        name: account
+        required: true
+        schema:
+          $ref: '#/definitions/models.AccountRequest'
+      responses:
+        "200":
+          description: Account created successfully
+          schema:
+            $ref: '#/definitions/models.CreatePaymentResponse'
+        "400":
+          description: Invalid request or missing idempotency key
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Create Account
+      tags:
+      - accounts
   /accounts/{user_id}/payments:
     get:
       parameters:
