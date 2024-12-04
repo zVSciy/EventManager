@@ -74,7 +74,19 @@
     function cancelEditing() {
         editingEvent = null;
     }
+    export let data;
 </script>
+
+
+<nav class="navbar navbar-expand-lg bg-warning">
+    <div class="container-fluid">
+      <span class="navbar-brand">Hi {data.username}!</span>
+    
+    </div>
+  </nav>
+
+
+
 {#if error}
     <p>{error}</p>
 {:else}

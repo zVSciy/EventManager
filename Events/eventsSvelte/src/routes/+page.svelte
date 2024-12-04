@@ -18,8 +18,17 @@
         goto(`/details/${event.ID}`); // Navigiere zur Details-Seite basierend auf der Event-ID
     }
 }
-
+export let data;
 </script>
+
+
+<nav class="navbar navbar-expand-lg bg-warning">
+    <div class="container-fluid">
+      <span class="navbar-brand">Hi {data.username}!</span>
+    
+    </div>
+  </nav>
+
 
 {#if error}
     <p>{error}</p>
