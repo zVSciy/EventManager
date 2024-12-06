@@ -4,7 +4,6 @@
     import { onMount } from 'svelte';
     import { goto } from '$app/navigation';
     import { writable } from 'svelte/store';
-    import { eventStore } from '$lib/index';
     let name = '';
     let location = '';
     let organisator = '';
@@ -40,9 +39,9 @@
         goto('#', { replaceState: true });    }
         
 
-    function goToTickets() {
-        eventStore.set(event.ID);
-        goto('/tickets');
+        function goToTickets() {
+        sessionStorage.setItem('eventId', event.ID); // ID in Session Storage speichern
+        goto('/tickets'); // Navigation zur Tickets-Seite
     }
     onMount(() => {
         event.ID = window.location.href.split('/').pop();

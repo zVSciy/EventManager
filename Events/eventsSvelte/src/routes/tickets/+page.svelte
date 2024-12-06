@@ -1,13 +1,12 @@
 <script>
- import { eventStore } from '$lib/index';
+    import { onMount } from 'svelte';
+    let eventId;
 
-let eventId;
-
-// Abonniere den Store
-eventStore.subscribe(id => {
-    eventId = id;
-    console.log(`Received Event ID: ${eventId}`);
-});
+    // ID aus dem Session Storage abrufen
+    onMount(() => {
+        eventId = sessionStorage.getItem('eventId');
+        console.log(`Received Event ID: ${eventId}`);
+    });
 </script>
 
 <h2>Buy Tickets for Event {eventId}</h2>
