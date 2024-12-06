@@ -17,6 +17,8 @@ Am boutta readme
 ![image](Process_Detailed.drawio.svg)
 
 
+# Events
+Kann mit docker compose up --build im Event Folder gebaut werden.
 
 # API Endpoints
 ## Event
