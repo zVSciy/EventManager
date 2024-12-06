@@ -22,12 +22,19 @@ export let data;
 </script>
 
 
-<nav class="navbar navbar-expand-lg bg-warning">
+<nav class="navbar navbar-expand-lg navbar-light bg-warning">
     <div class="container-fluid">
-      <span class="navbar-brand">Hi {data.username}!</span>
-    
+        <button on:click={() => window.location.href='/'} style="margin-bottom: 20px; padding: 10px; background-color: #009879; color: white; border: none; border-radius: 4px; cursor: pointer;">Event Manager</button>    
+
+        <div class="d-flex align-items-center ms-auto">
+            <span class="me-3">Hi, {data.username}!</span>
+
+            {#if data.admin}
+            <button on:click={() => window.location.href='/admin'} style="margin-bottom: 20px; padding: 10px; background-color: #009879; color: white; border: none; border-radius: 4px; cursor: pointer;">Admin</button>    
+            {/if}
+        </div>
     </div>
-  </nav>
+</nav>
 
 
 {#if error}
@@ -128,42 +135,44 @@ export let data;
         background-color: #007f68;
     }
 
-    .edit-form {
-        margin-top: 20px;
-        align-items: center;
-        justify-content: center;
-        display: flex;
+    .navbar {
+        padding: 1rem;
+        border-bottom: 2px solid #ffc107;
     }
 
-    .edit-form form {
-        display: flex;
-        flex-direction: column;
-        width: 300px;
+    .navbar-brand {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #333;
     }
 
-    .edit-form label {
-        margin: 10px 0 5px 0;
+    .navbar-brand:hover {
+        text-decoration: none;
+        color: #000;
     }
 
-    .edit-form input {
-        padding: 8px;
-        margin-bottom: 10px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
+    .ms-auto {
+        margin-left: auto; /* Rechts ausgerichtet */
     }
 
-    .edit-form button {
-        margin-top: 10px;
-        padding: 8px;
-        background-color: #009879;
+    .me-3 {
+        margin-right: 1rem; /* Abstand zwischen Benutzername und Admin-Link */
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
         color: white;
         border: none;
+        padding: 0.5rem 1rem;
         border-radius: 5px;
+        font-size: 1rem;
+        text-decoration: none;
         cursor: pointer;
     }
 
-    .edit-form button:hover {
-        background-color: #007f68;
+    .btn-secondary:hover {
+        background-color: #5a6268;
+        text-decoration: none;
     }
     h1 {
         display: flex;

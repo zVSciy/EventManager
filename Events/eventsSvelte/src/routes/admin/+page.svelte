@@ -78,12 +78,16 @@
 </script>
 
 
-<nav class="navbar navbar-expand-lg bg-warning">
+<nav class="navbar navbar-expand-lg navbar-light bg-warning">
     <div class="container-fluid">
-      <span class="navbar-brand">Hi {data.username}!</span>
-    
+        <button on:click={() => window.location.href='/'} style="margin-bottom: 20px; padding: 10px; background-color: #009879; color: white; border: none; border-radius: 4px; cursor: pointer;">Event Manager</button>    
+
+        <div class="d-flex align-items-center ms-auto">
+            <span class="me-3">Hi, {data.username}!</span>
+
+        </div>
     </div>
-  </nav>
+</nav>
 
 
 
@@ -92,7 +96,10 @@
 {:else}
     <div>
         <h1>Event List</h1>
-        <button on:click={() => window.location.href='/admin/add-event'} style="margin-bottom: 20px; padding: 10px; background-color: #009879; color: white; border: none; border-radius: 4px; cursor: pointer;">Add New Event</button>        <table class="styled-table">
+        {#if data.admin}
+        <button on:click={() => window.location.href='/admin/add-event'} style="margin-bottom: 20px; padding: 10px; background-color: #009879; color: white; border: none; border-radius: 4px; cursor: pointer;">Add New Event</button>    
+        {/if}    
+        <table class="styled-table">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -116,10 +123,12 @@
                         <td>{event.available_vip_tickets}</td>
                         <td>{event.canceled ? 'Yes' : 'No'}</td>
                         <td>
+                            {#if data.admin}
                             <button on:click={() => toggleCancel(event)}>
                                 {event.canceled ? 'Entcancel Event' : 'Cancel Event'}
                             </button>
                             <button on:click={() => startEditing(event)}>Edit</button>
+                            {/if}
                         </td>
                     </tr>
                 {/each}
@@ -259,5 +268,44 @@
         align-items: center;
         justify-content: center;
         display: flex;
+    }
+    .navbar {
+        padding: 1rem;
+        border-bottom: 2px solid #ffc107;
+    }
+
+    .navbar-brand {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .navbar-brand:hover {
+        text-decoration: none;
+        color: #000;
+    }
+
+    .ms-auto {
+        margin-left: auto; /* Rechts ausgerichtet */
+    }
+
+    .me-3 {
+        margin-right: 1rem; /* Abstand zwischen Benutzername und Admin-Link */
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        font-size: 1rem;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .btn-secondary:hover {
+        background-color: #5a6268;
+        text-decoration: none;
     }
 </style>

@@ -4,6 +4,7 @@ const API_BASE_URL = 'http://api:8000';
 
 export async function GET() {
     try {
+     
         const response = await fetch(`${API_BASE_URL}/event/`);
         if (!response.ok) {
             throw new Error('Failed to fetch events');
