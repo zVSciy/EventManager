@@ -4,6 +4,7 @@
     import { onMount } from 'svelte';
     import { goto } from '$app/navigation';
     import { writable } from 'svelte/store';
+    import { eventStore } from '$lib/index';
     let name = '';
     let location = '';
     let organisator = '';
@@ -37,10 +38,12 @@
     }
     function goToFeedBack() {
         goto('#', { replaceState: true });    }
+        
 
     function goToTickets() {
-        goto('#', { replaceState: true });    }
-  
+        eventStore.set(event.ID);
+        goto('/tickets');
+    }
     onMount(() => {
         event.ID = window.location.href.split('/').pop();
         fetchEvent();
