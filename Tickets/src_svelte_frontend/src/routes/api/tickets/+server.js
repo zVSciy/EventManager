@@ -31,3 +31,28 @@ export async function GET({ url }) {
     return jsonResponse({status: 500, error: 'Internal server error'});
   }
 }
+
+export async function POST({ url }) {
+  const price = url.searchParams.get('price');
+  const row = url.searchParams.get('row');
+  const seat_number = url.searchParams.get('seat_number');
+  const vip = url.searchParams.get('vip');
+  const user_id = url.searchParams.get('user_id');
+  const event_id = url.searchParams.get('event_id');
+
+  const apiURL = `http://api:8000/tickets?price=${price}&row=${row}&seat_number=${seat_number}&vip=${vip}&user_id=${user_id}&event_id=${event_id}`;
+  
+  try {
+    const response = await fetch(apiURL);
+    if (response.ok) {
+      const data = await response.json();
+      return jsonResponse(data);
+    
+    } else {
+      return jsonResponse({status: response.status, error: 'Failed to fetch data!'});
+    }
+
+  } catch (error) {
+    return jsonResponse({status: 500, error: 'Internal server error'});
+  }
+}
