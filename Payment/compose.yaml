@@ -3,6 +3,7 @@ services:
     build:
       context: .
       dockerfile: docker/api/Dockerfile
+      target: development
     container_name: api-payment
     restart: unless-stopped
     environment:
