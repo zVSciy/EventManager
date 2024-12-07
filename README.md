@@ -18,7 +18,7 @@ Am boutta readme
 
 
 # Events
-Kann mit docker compose up --build im Event Folder gebaut werden.
+Can be built with Docker compose up --build in the event folder. Was programmed by Pinter
 
 # API Endpoints
 ## Event
