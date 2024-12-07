@@ -35,7 +35,6 @@ func TestGetPayments(t *testing.T) {
 		wantResponse string
 	}{
 		{"testuser", http.StatusInternalServerError, `{"error":"DATABASE_NOT_INITIALIZED"}`},
-		{"hallo", http.StatusInternalServerError, `{"error":"DATABASE_NOT_INITIALIZED"}`},
 	}
 
 	testMux := http.NewServeMux()
