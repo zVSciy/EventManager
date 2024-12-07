@@ -26,7 +26,33 @@ func InitAccountService() {
 	util.CreateUniqueAccountIndex(ctx, accountCollection)
 }
 
+func GetAccount(userID string) (models.Account, error) {
+	if err := util.CheckCollectionInit(accountCollection); err != nil {
+		return models.Account{}, errors.New("database_not_initialized")
+	}
+
+	var account models.Account
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	err := accountCollection.FindOne(ctx, bson.M{"user_id": userID}).Decode(&account)
+	if err == nil {
+		return account, nil
+	}
+
+	if err == mongo.ErrNoDocuments {
+		return models.Account{}, errors.New("account_not_found")
+	}
+
+	return models.Account{}, err
+}
+
 func CreateAccount(account models.Account) (models.Account, error) {
+	if err := util.CheckCollectionInit(accountCollection); err != nil {
+		return models.Account{}, errors.New("database_not_initialized")
+	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 

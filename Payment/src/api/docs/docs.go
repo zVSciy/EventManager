@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/accounts/{user_id}": {
+        "/accounts": {
             "post": {
                 "tags": [
                     "accounts"
@@ -41,6 +41,43 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Invalid request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/accounts/{user_id}": {
+            "get": {
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Get Account Details",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Account details",
+                        "schema": {
+                            "$ref": "#/definitions/models.Account"
+                        }
+                    },
+                    "404": {
+                        "description": "Account not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
@@ -195,11 +232,28 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "models.AccountRequest": {
+        "models.Account": {
             "type": "object",
             "required": [
                 "userId"
             ],
+            "properties": {
+                "balance": {
+                    "type": "number"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "userId": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.AccountRequest": {
+            "type": "object",
             "properties": {
                 "userId": {
                     "type": "string"
@@ -209,10 +263,10 @@ const docTemplate = `{
         "models.CreateAccountResponse": {
             "type": "object",
             "properties": {
-                "id": {
+                "message": {
                     "type": "string"
                 },
-                "message": {
+                "user_id": {
                     "type": "string"
                 }
             }

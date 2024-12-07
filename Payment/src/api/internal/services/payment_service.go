@@ -45,13 +45,14 @@ func GetPayment(id string) (models.Payment, error) {
 	defer cancel()
 
 	err = paymentCollection.FindOne(ctx, bson.M{"_id": objectID}).Decode(&payment)
-
 	if err == nil {
 		return payment, nil
 	}
+
 	if err == mongo.ErrNoDocuments {
 		return models.Payment{}, errors.New("payment_not_found")
 	}
+
 	return models.Payment{}, err
 }
 
@@ -87,6 +88,10 @@ func GetPayments(userId string) ([]models.Payment, error) {
 }
 
 func CreatePayment(payment models.Payment, idempotencyKeyStr string) (models.Payment, error) {
+	if err := util.CheckCollectionInit(paymentCollection); err != nil {
+		return models.Payment{}, errors.New("database_not_initialized")
+	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 

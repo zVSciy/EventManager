@@ -48,6 +48,7 @@ func main() {
 	mux.Handle("/api/v1/", http.StripPrefix("/api/v1", api))
 
 	api.HandleFunc("GET /health", handlers.HealthCheck)
+	api.HandleFunc("GET /accounts/{user_id}", handlers.GetAccount)
 	api.HandleFunc("GET /accounts/{user_id}/payments", handlers.GetPayments)
 	api.HandleFunc("GET /payments/{id}", handlers.GetPayment)
 	api.HandleFunc("POST /accounts", handlers.CreateAccount)

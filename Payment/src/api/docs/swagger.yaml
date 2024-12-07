@@ -1,17 +1,28 @@
 basePath: /api/v1
 definitions:
-  models.AccountRequest:
+  models.Account:
     properties:
+      balance:
+        type: number
+      createdAt:
+        type: string
+      currency:
+        type: string
       userId:
         type: string
     required:
     - userId
     type: object
+  models.AccountRequest:
+    properties:
+      userId:
+        type: string
+    type: object
   models.CreateAccountResponse:
     properties:
-      id:
-        type: string
       message:
+        type: string
+      user_id:
         type: string
     type: object
   models.CreatePaymentResponse:
@@ -82,7 +93,7 @@ info:
   title: Payment Service API
   version: "1.0"
 paths:
-  /accounts/{user_id}:
+  /accounts:
     post:
       parameters:
       - description: Account ID
@@ -101,6 +112,30 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorResponse'
       summary: Create Account
+      tags:
+      - accounts
+  /accounts/{user_id}:
+    get:
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Account details
+          schema:
+            $ref: '#/definitions/models.Account'
+        "404":
+          description: Account not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get Account Details
       tags:
       - accounts
   /accounts/{user_id}/payments:
