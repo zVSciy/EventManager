@@ -34,6 +34,9 @@ func main() {
 	log.Println("Initializing Payment service...")
 	services.InitPaymentService()
 
+	log.Println("Initializing Account service...")
+	services.InitAccountService()
+
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /docs", handlers.GetDocs)
@@ -47,6 +50,7 @@ func main() {
 	api.HandleFunc("GET /health", handlers.HealthCheck)
 	api.HandleFunc("GET /accounts/{user_id}/payments", handlers.GetPayments)
 	api.HandleFunc("GET /payments/{id}", handlers.GetPayment)
+	api.HandleFunc("POST /accounts", handlers.CreateAccount)
 	api.HandleFunc("POST /payments", handlers.CreatePayment)
 
 	mux.HandleFunc("/", handlers.NotFound)

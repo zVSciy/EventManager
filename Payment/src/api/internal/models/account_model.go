@@ -10,5 +10,5 @@ type Account struct {
 }
 
 type AccountRequest struct {
-	ID string `json:"userId" bson:"user_id" binding:"required"`
+	ID string `json:"userId" bson:"user_id"`
 }

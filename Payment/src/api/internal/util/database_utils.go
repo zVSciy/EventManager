@@ -19,6 +19,14 @@ func CreateTTLIndex(ctx context.Context, collection *mongo.Collection) error {
 	return err
 }
 
+func CreateUniqueAccountIndex(ctx context.Context, collection *mongo.Collection) error {
+	_, err := collection.Indexes().CreateOne(ctx, mongo.IndexModel{
+		Keys:    bson.M{"user_id": 1},
+		Options: options.Index().SetUnique(true),
+	})
+	return err
+}
+
 func CheckCollectionInit(collection *mongo.Collection) error {
 	if collection == nil {
 		return errors.New("database not initialized")

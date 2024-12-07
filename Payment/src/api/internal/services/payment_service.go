@@ -15,7 +15,6 @@ import (
 )
 
 var paymentCollection *mongo.Collection
-var accountCollection *mongo.Collection
 var idempotencyKeyCollection *mongo.Collection
 
 func InitPaymentService() {
@@ -23,7 +22,6 @@ func InitPaymentService() {
 		panic("MongoDB client not initialized")
 	}
 	paymentCollection = db.Client.Database("paymentdb").Collection("payments")
-	accountCollection = db.Client.Database("paymentdb").Collection("accounts")
 	idempotencyKeyCollection = db.Client.Database("paymentdb").Collection("idempotency_keys")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -63,7 +61,7 @@ func GetPayments(userId string) ([]models.Payment, error) {
 	}
 
 	var account models.Account
-	var payments []models.Payment
+	payments := []models.Payment{}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
