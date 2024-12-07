@@ -19,7 +19,7 @@ import (
 // @version 1.0
 // @description API for managing payments
 // @host reiner.gg
-// @BasePath /
+// @BasePath /api/v1
 func main() {
 	MONGO_URI := util.Getenv("MONGO_URI", "mongodb://db-payment:27017")
 	PORT := fmt.Sprintf(":%s", util.Getenv("PORT", "3000"))
@@ -41,10 +41,13 @@ func main() {
 		httpSwagger.URL("/docs"),
 	))
 
-	mux.HandleFunc("GET /health", handlers.HealthCheck)
-	mux.HandleFunc("GET /accounts/{user_id}/payments", handlers.GetPayments)
-	mux.HandleFunc("GET /payments/{id}", handlers.GetPayment)
-	mux.HandleFunc("POST /payments", handlers.CreatePayment)
+	api := http.NewServeMux()
+	mux.Handle("/api/v1/", http.StripPrefix("/api/v1", api))
+
+	api.HandleFunc("GET /health", handlers.HealthCheck)
+	api.HandleFunc("GET /accounts/{user_id}/payments", handlers.GetPayments)
+	api.HandleFunc("GET /payments/{id}", handlers.GetPayment)
+	api.HandleFunc("POST /payments", handlers.CreatePayment)
 
 	mux.HandleFunc("/", handlers.NotFound)
 

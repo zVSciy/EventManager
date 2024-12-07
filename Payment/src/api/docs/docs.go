@@ -36,11 +36,11 @@ const docTemplate = `{
                     "200": {
                         "description": "Account created successfully",
                         "schema": {
-                            "$ref": "#/definitions/models.CreatePaymentResponse"
+                            "$ref": "#/definitions/models.CreateAccountResponse"
                         }
                     },
                     "400": {
-                        "description": "Invalid request or missing idempotency key",
+                        "description": "Invalid request",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
@@ -206,6 +206,17 @@ const docTemplate = `{
                 }
             }
         },
+        "models.CreateAccountResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
         "models.CreatePaymentResponse": {
             "type": "object",
             "properties": {
@@ -304,7 +315,7 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "reiner.gg",
-	BasePath:         "/",
+	BasePath:         "/api/v1",
 	Schemes:          []string{},
 	Title:            "Payment Service API",
 	Description:      "API for managing payments",

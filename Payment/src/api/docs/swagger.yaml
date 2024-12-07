@@ -1,4 +1,4 @@
-basePath: /
+basePath: /api/v1
 definitions:
   models.AccountRequest:
     properties:
@@ -6,6 +6,13 @@ definitions:
         type: string
     required:
     - userId
+    type: object
+  models.CreateAccountResponse:
+    properties:
+      id:
+        type: string
+      message:
+        type: string
     type: object
   models.CreatePaymentResponse:
     properties:
@@ -88,9 +95,9 @@ paths:
         "200":
           description: Account created successfully
           schema:
-            $ref: '#/definitions/models.CreatePaymentResponse'
+            $ref: '#/definitions/models.CreateAccountResponse'
         "400":
-          description: Invalid request or missing idempotency key
+          description: Invalid request
           schema:
             $ref: '#/definitions/models.ErrorResponse'
       summary: Create Account

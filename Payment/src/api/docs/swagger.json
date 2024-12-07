@@ -7,7 +7,7 @@
         "version": "1.0"
     },
     "host": "reiner.gg",
-    "basePath": "/",
+    "basePath": "/api/v1",
     "paths": {
         "/accounts/{user_id}": {
             "post": {
@@ -30,11 +30,11 @@
                     "200": {
                         "description": "Account created successfully",
                         "schema": {
-                            "$ref": "#/definitions/models.CreatePaymentResponse"
+                            "$ref": "#/definitions/models.CreateAccountResponse"
                         }
                     },
                     "400": {
-                        "description": "Invalid request or missing idempotency key",
+                        "description": "Invalid request",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
@@ -196,6 +196,17 @@
             ],
             "properties": {
                 "userId": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.CreateAccountResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "message": {
                     "type": "string"
                 }
             }
