@@ -77,7 +77,9 @@ func GetPayments(w http.ResponseWriter, r *http.Request) {
 
 	payments, err := services.GetPayments(userId)
 	if err == nil {
-		util.JSONResponse(w, http.StatusOK, payments)
+		util.JSONResponse(w, http.StatusOK, models.GetPaymentsResponse{
+			Payments: payments,
+		})
 		return
 	}
 
@@ -143,7 +145,7 @@ func CreatePayment(w http.ResponseWriter, r *http.Request) {
 
 	createdPayment, err := services.CreatePayment(payment, idempotencyKey)
 	if err == nil {
-		util.JSONResponse(w, http.StatusOK, models.CreatePaymentResponse{
+		util.JSONResponse(w, http.StatusCreated, models.CreatePaymentResponse{
 			ID:     createdPayment.ID,
 			Status: createdPayment.Status,
 		})

@@ -14,6 +14,10 @@ type CreatePaymentResponse struct {
 }
 
 type CreateAccountResponse struct {
-	ID      string `json:"id"`
+	ID      string `json:"user_id"`
 	Message string `json:"message"`
+}
+
+type GetPaymentsResponse struct {
+	Payments []Payment `json:"payments"`
 }
