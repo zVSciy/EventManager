@@ -10,7 +10,7 @@ port = os.environ.get("MYSQL_DATABASE_PORT")
 password = os.environ.get("MYSQL_ROOT_PASSWORD")
 
 # Database configuration
-DATABASE_URL = f"mysql+pymysql://root:root@localhost:{port}/EventManagement"
+DATABASE_URL = f"mysql+pymysql://root:{password}@{hostname}:{port}/EventManagement"
 print(DATABASE_URL)
 
 # Initialize database connection
