@@ -2,11 +2,6 @@ version: "3.8"
 
 volumes:
   my-mysql-data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ./src
   my-fast-data:
 
 networks:
@@ -32,7 +27,7 @@ services:
       - my-network
 
     healthcheck:
-       test: 'echo "select now(); " | mysql -u${MYSQL_USER} -p${MYSQL_PASSWORD}'
+       test: 'echo "select now(); " | mysql -h ${MYSQL_DATABASE_HOST} -u${MYSQL_USER} -p${MYSQL_PASSWORD}'
        interval: 1s
        retries: 10
        start_period: 10s
@@ -74,7 +69,12 @@ services:
       context: .
       dockerfile: ./docker/Svelte/Dockerfile
     ports:
-      - "3000:80"
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - my-network
 
   # nginx:
   #   image: nginx:latest
