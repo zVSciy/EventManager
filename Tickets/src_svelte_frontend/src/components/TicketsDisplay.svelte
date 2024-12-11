@@ -1,26 +1,22 @@
 <script>
-    import { tick } from "svelte";
-
     export let ticketsData;
 </script>
 
 <div class="ticketsBox text-center">
     {#if ticketsData.length == 0}
     <p class="specialParagraph">No tickets could be found.</p>
-    {:else if ticketsData.msg}
-    <p class="specialParagraph">{ticketsData.msg}</p>
     {:else if ticketsData}
-            <div class="row row-cols-lg-5 row-cols-sm-2 justify-content-center">
+            <div class="row row-cols-lg-5 row-cols-sm-2 justify-content-center p-2">
             {#each ticketsData as data}
-                <div class="col">
+                <div class="col border p-2">
                     <h2>Ticket {data.id}</h2>
                     <p>Price: {data.price}<br>
                     Paid: {data.paid}<br>
                     Row: {data.row}<br>
                     Seat: {data.seat_number}<br>
-                    vip: {data.vip}<br>
-                    userID: {data.user_id}<br>
-                    eventID: {data.event_id}<br>
+                    VIP: {data.vip}<br>
+                    User: {data.user_id}<br>
+                    Event: {data.event_id}<br>
                 </div>
             {/each}
             </div>

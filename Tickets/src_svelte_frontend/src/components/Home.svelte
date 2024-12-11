@@ -10,7 +10,7 @@
     let ticketPrice = '';
     let ticketRow = '';
     let ticketSeatNumber = '';
-    let ticketVIP = '';
+    let ticketVIP = false;
     let ticketUID = '';
     let ticketEID = '';
 
@@ -109,17 +109,17 @@
         </form>
       </div>
 
-      <div class="col-12 mt-3">
+      <div class="col-12 mt-4">
         <h2 class="text-center">Add Ticket</h2>
         <form on:submit|preventDefault={addTickets} class="input-group">
           <div class="input-group-prepend">
             <label class="input-group-text">Price, Row, Seat, UID, EID, VIP</label>
           </div>
-          <input type="text" class="form-control" bind:value={ticketPrice} placeholder="Price"/>
+          <input type="number" class="form-control" bind:value={ticketPrice} placeholder="Price"/>
           <input type="text" class="form-control" bind:value={ticketRow} placeholder="Row"/>
-          <input type="text" class="form-control" bind:value={ticketSeatNumber} placeholder="Seat"/>
-          <input type="text" class="form-control" bind:value={ticketUID} placeholder="UID"/>
-          <input type="text" class="form-control" bind:value={ticketEID} placeholder="EID"/>
+          <input type="number" class="form-control" bind:value={ticketSeatNumber} placeholder="Seat"/>
+          <input type="number" class="form-control" bind:value={ticketUID} placeholder="UID"/>
+          <input type="number" class="form-control" bind:value={ticketEID} placeholder="EID"/>
           <select class="form-control" bind:value={ticketVIP}>
               <option value="false">False</option>
               <option value="true">True</option>
@@ -128,20 +128,22 @@
         </form>  
       </div>
 
+    <div class="col-12 mt-4">
       <h2 class="text-center">Results</h2>
     {#if ticketsData && ticketsData.error}
-        <div class="message text-danger col-12">
+        <div class="message text-danger">
           <h2>{ticketsData.status}</h2>
           <p>{ticketsData.error}</p>
         </div>
     {:else if errorMessage}
-        <div class="message text-warning col-12">
+        <div class="message text-warning">
           <h2>Global Error</h2>
           <p>{errorMessage}</p>
         </div>
     {:else}
         <TicketsDisplay {ticketsData}/>
     {/if}
+    </div>
     </div>
 </div>
 

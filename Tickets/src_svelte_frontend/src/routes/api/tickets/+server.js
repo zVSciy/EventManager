@@ -43,11 +43,28 @@ export async function POST({ url }) {
   const apiURL = `http://api:8000/tickets?price=${price}&row=${row}&seat_number=${seat_number}&vip=${vip}&user_id=${user_id}&event_id=${event_id}`;
   
   try {
-    const response = await fetch(apiURL);
+    const response = await fetch(apiURL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        price: price,
+        row: row,
+        seat_number: seat_number,
+        vip: vip,
+        user_id: user_id,
+        event_id: event_id
+      })
+    });
+
+    const data = await response.json();
     if (response.ok) {
-      const data = await response.json();
-      return jsonResponse(data);
-    
+      return jsonResponse([data]);
+
+    } else if (response.status == 400){
+      return jsonResponse({status: response.status, error: data.detail.msg});
+
     } else {
       return jsonResponse({status: response.status, error: 'Failed to fetch data!'});
     }
