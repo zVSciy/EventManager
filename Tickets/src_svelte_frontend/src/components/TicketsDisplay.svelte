@@ -5,6 +5,8 @@
 <div class="ticketsBox text-center">
     {#if ticketsData.length == 0}
     <p class="specialParagraph">No tickets could be found.</p>
+    {:else if ticketsData.msg}
+    <p class="specialParagraph">{ticketsData.msg}</p>
     {:else if ticketsData}
             <div class="row row-cols-lg-5 row-cols-sm-2 justify-content-center p-2">
             {#each ticketsData as data}

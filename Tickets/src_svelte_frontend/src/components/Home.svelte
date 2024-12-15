@@ -21,7 +21,7 @@
     let changedTicketUID = '';
     let changedTicketEID = '';
 
-    let ticketToDelete = 1;
+    let ticketToDelete;
 
     async function getTickets() {
         const response = await fetch(`/api/tickets?event_id=${encodeURIComponent(eventID)}`,
@@ -123,7 +123,7 @@
               <option value="false" selected>False</option>
               <option value="true">True</option>
           </select>
-          <button disabled={!ticketPrice && !ticketUID && !ticketEID} type="submit" class="btn btn-primary input-group-append">Add Ticket</button>
+          <button disabled={!ticketPrice || !ticketUID || !ticketEID} type="submit" class="btn btn-primary input-group-append">Add Ticket</button>
         </form>  
       </div>
 
@@ -143,7 +143,7 @@
               <option value="false" selected>False</option>
               <option value="true">True</option>
           </select>
-          <button disabled={!changedTicketPrice && !changedTicketUID && !changedTicketEID} type="submit" class="btn btn-primary input-group-append">Submit Edit</button>
+          <button disabled={!changedTicketID || !changedTicketPrice || !changedTicketUID || !changedTicketEID} type="submit" class="btn btn-primary input-group-append">Submit Edit</button>
         </form>  
       </div>
 

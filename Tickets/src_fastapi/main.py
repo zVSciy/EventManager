@@ -40,31 +40,23 @@ def add_ticket(ticket: TicketInput, db: Session = Depends(get_db)):
 
 @app.put("/tickets/{ticket_id}")
 def edit_ticket(ticket_id: int, updated_ticket: TicketInput, db: Session = Depends(get_db)):
-    try:
-        ticket = db.query(models.Ticket).filter(models.Ticket.id == ticket_id).first()
-        if not ticket:
-            raise HTTPException(status_code=404, detail={
-                "status": "Error 404 - Not Found",
-                "msg": f"Ticket with `id`: `{ticket_id}` doesn't exist."
-            })
-
-        ticket.price = updated_ticket.price
-        ticket.row = updated_ticket.row
-        ticket.seat_number = updated_ticket.seat_number
-        ticket.vip = updated_ticket.vip
-        ticket.user_id = updated_ticket.user_id
-        ticket.event_id = updated_ticket.event_id
-
-        db.commit()
-        db.refresh(ticket)
-        return ticket
-
-    except Exception as ex:
-        db.close()
-        raise HTTPException(status_code=500, detail={
-            "status": "Error 500 - Server Error",
-            "msg": "Unexpected error occured during ticket editing - are all inputs correct?"
+    ticket = db.query(models.Ticket).filter(models.Ticket.id == ticket_id).first()
+    if not ticket:
+        raise HTTPException(status_code=404, detail={
+            "status": "Error 404 - Not Found",
+            "msg": f"Ticket with `id`: `{ticket_id}` doesn't exist."
         })
+
+    ticket.price = updated_ticket.price
+    ticket.row = updated_ticket.row
+    ticket.seat_number = updated_ticket.seat_number
+    ticket.vip = updated_ticket.vip
+    ticket.user_id = updated_ticket.user_id
+    ticket.event_id = updated_ticket.event_id
+
+    db.commit()
+    db.refresh(ticket)
+    return ticket
 
 @app.delete("/tickets/{ticket_id}")
 def delete_ticket(ticket_id: int, db: Session = Depends(get_db)):
