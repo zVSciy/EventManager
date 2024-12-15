@@ -6,28 +6,27 @@
     let ticketsData = '';
     let errorMessage = '';
 
-    let ticketID = ''
     let ticketPrice = '';
     let ticketRow = '';
     let ticketSeatNumber = '';
-    let ticketVIP = false;
+    let ticketVIP = 'false';
     let ticketUID = '';
     let ticketEID = '';
 
-    let changedTicketID = ''
+    let changedTicketID;
     let changedTicketPrice = '';
     let changedTicketRow = '';
     let changedTicketSeatNumber = '';
-    let changedTicketVIP = '';
+    let changedTicketVIP = 'false';
     let changedTicketUID = '';
     let changedTicketEID = '';
 
-    let ticketToDelete = '';
+    let ticketToDelete = 1;
 
     async function getTickets() {
         const response = await fetch(`/api/tickets?event_id=${encodeURIComponent(eventID)}`,
         {
-            method: "GET"
+          method: "GET"
         });
 
         if (response.ok) {
@@ -45,7 +44,7 @@
         `vip=${encodeURIComponent(ticketVIP)}&user_id=${encodeURIComponent(ticketUID)}&`+
         `event_id=${encodeURIComponent(ticketEID)}`,
         {
-            method: "POST"
+          method: "POST"
         });
 
         if (response.ok) {
@@ -63,7 +62,7 @@
         `seat_number=${encodeURIComponent(changedTicketSeatNumber)}&vip=${encodeURIComponent(changedTicketVIP)}&`+
         `user_id=${encodeURIComponent(changedTicketUID)}&event_id=${encodeURIComponent(changedTicketEID)}`,
         {
-            method: "PUT"
+          method: "PUT"
         });
 
         if (response.ok) {
@@ -78,7 +77,7 @@
     async function deleteTickets() {
         const response = await fetch(`/api/tickets?ticket_id=${encodeURIComponent(ticketToDelete)}`,
         {
-            method: "DELETE"
+          method: "DELETE"
         });
 
         if (response.ok) {
@@ -110,7 +109,7 @@
       </div>
 
       <div class="col-12 mt-4">
-        <h2 class="text-center">Add Ticket</h2>
+        <h2 class="text-center">Add Tickets</h2>
         <form on:submit|preventDefault={addTickets} class="input-group">
           <div class="input-group-prepend">
             <label class="input-group-text">Price, Row, Seat, UID, EID, VIP</label>
@@ -120,12 +119,43 @@
           <input type="number" class="form-control" bind:value={ticketSeatNumber} placeholder="Seat"/>
           <input type="number" class="form-control" bind:value={ticketUID} placeholder="UID"/>
           <input type="number" class="form-control" bind:value={ticketEID} placeholder="EID"/>
-          <select class="form-control" bind:value={ticketVIP}>
-              <option value="false">False</option>
+          <select class="form-select" bind:value={ticketVIP}>
+              <option value="false" selected>False</option>
               <option value="true">True</option>
           </select>
           <button disabled={!ticketPrice && !ticketUID && !ticketEID} type="submit" class="btn btn-primary input-group-append">Add Ticket</button>
         </form>  
+      </div>
+
+      <div class="col-12 mt-4">
+        <h2 class="text-center">Edit Tickets</h2>
+        <form on:submit|preventDefault={editTickets} class="input-group">
+          <div class="input-group-prepend">
+            <label class="input-group-text">TID, Price, Row, Seat, UID, EID, VIP</label>
+          </div>
+          <input type="number" class="form-control" bind:value={changedTicketID} placeholder="TID"/>
+          <input type="number" class="form-control" bind:value={changedTicketPrice} placeholder="Price"/>
+          <input type="text" class="form-control" bind:value={changedTicketRow} placeholder="Row"/>
+          <input type="number" class="form-control" bind:value={changedTicketSeatNumber} placeholder="Seat"/>
+          <input type="number" class="form-control" bind:value={changedTicketUID} placeholder="UID"/>
+          <input type="number" class="form-control" bind:value={changedTicketEID} placeholder="EID"/>
+          <select class="form-select" bind:value={changedTicketVIP}>
+              <option value="false" selected>False</option>
+              <option value="true">True</option>
+          </select>
+          <button disabled={!changedTicketPrice && !changedTicketUID && !changedTicketEID} type="submit" class="btn btn-primary input-group-append">Submit Edit</button>
+        </form>  
+      </div>
+
+      <div class="col-12 mt-4">
+        <h2 class="text-center">Delete Tickets</h2>
+        <form on:submit|preventDefault={deleteTickets} class="input-group">
+          <div class="input-group-prepend">
+            <label class="input-group-text">TicketID</label>
+          </div>
+          <input type="number" class="form-control" bind:value={ticketToDelete} placeholder="TicketID"/>
+          <button disabled={!ticketToDelete} type="submit" class="btn btn-primary input-group-append">Delete Ticket</button>
+        </form>
       </div>
 
     <div class="col-12 mt-4">

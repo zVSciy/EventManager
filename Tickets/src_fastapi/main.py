@@ -29,6 +29,7 @@ def add_ticket(ticket: TicketInput, db: Session = Depends(get_db)):
         db.add(new_ticket)
         db.commit()
         db.refresh(new_ticket)
+        return new_ticket
 
     except Exception as ex:
         raise HTTPException(status_code=500, detail={
@@ -36,11 +37,8 @@ def add_ticket(ticket: TicketInput, db: Session = Depends(get_db)):
             "msg": "Unexpected error occured during ticket creation - are all inputs correct?"
         })
     
-    finally:
-        db.close()
-    return new_ticket
 
-@app.put("/tickets/{ticket-id}")
+@app.put("/tickets/{ticket_id}")
 def edit_ticket(ticket_id: int, updated_ticket: TicketInput, db: Session = Depends(get_db)):
     try:
         ticket = db.query(models.Ticket).filter(models.Ticket.id == ticket_id).first()
@@ -59,19 +57,16 @@ def edit_ticket(ticket_id: int, updated_ticket: TicketInput, db: Session = Depen
 
         db.commit()
         db.refresh(ticket)
+        return ticket
 
     except Exception as ex:
+        db.close()
         raise HTTPException(status_code=500, detail={
             "status": "Error 500 - Server Error",
             "msg": "Unexpected error occured during ticket editing - are all inputs correct?"
         })
 
-    finally:
-        db.close()
-
-    return ticket
-
-@app.delete("/tickets/{ticket-id}")
+@app.delete("/tickets/{ticket_id}")
 def delete_ticket(ticket_id: int, db: Session = Depends(get_db)):
     try:
         ticket = db.query(models.Ticket).filter(models.Ticket.id == ticket_id).first()

@@ -8,7 +8,7 @@
     {:else if ticketsData}
             <div class="row row-cols-lg-5 row-cols-sm-2 justify-content-center p-2">
             {#each ticketsData as data}
-                <div class="col border p-2">
+                <div class="col">
                     <h2>Ticket {data.id}</h2>
                     <p>Price: {data.price}<br>
                     Paid: {data.paid}<br>
