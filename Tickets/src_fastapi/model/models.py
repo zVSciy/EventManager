@@ -15,3 +15,6 @@ class Ticket(Base):
     vip: Mapped[bool] = mapped_column(Boolean(), nullable=False)
     user_id: Mapped[int] = mapped_column(Integer(), nullable=False)
     event_id: Mapped[int] = mapped_column(Integer(), nullable=False)
+
+    def __repr__(self):
+        return f'Ticket(id={self.id}, price={self.price}, paid={self.paid}, row={self.row}, seat_number={self.seat_number}, vip={self.vip}, user_id={self.user_id}, event_id={self.event_id})'
