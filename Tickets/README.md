@@ -59,9 +59,11 @@ If you are not familiar with Docker, here are some parameters that might be help
 
 ## Testing
 > [!NOTE]
-> As no integration with other services has been done with the Ticket service so far, keep in mind that given endpoints might need some adjustments when integrated with other services - it might be possible that endpoints are also added or completely changed, regarding how the integration is done (CRUD functions seem to be enough to start off). The same goes for the GUI - every functionality might not be practical yet.
+> As no integration with other services has been done so far, keep in mind that given endpoints might need some further adjustments when integrated with other services - it might be possible that endpoints are also added or completely changed, regarding how the integration is done (CRUD functions seem to be enough to start off). The same goes for the GUI - every functionality might not be practical yet.
 
-...
+Currently, the FastAPI application of the Ticket service is automatically tested with the `src_fastapi/test_app.py` file which includes some unit testing. This python script is executed when provisioning the API container - the output of the unit test is shown in the CLI if the parameter `-d` is NOT in use.
+
+However, testing processes on the graphical user interface must be performed manually.
 
 ---
 
