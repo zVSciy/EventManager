@@ -31,7 +31,7 @@ def add_ticket(ticket: TicketInput, db: Session = Depends(get_db)):
         db.refresh(new_ticket)
         return new_ticket
 
-    except Exception as ex:
+    except Exception:
         raise HTTPException(status_code=500, detail={
             "status": "Error 500 - Server Error",
             "msg": "Unexpected error occured during ticket creation - are all inputs correct?"
