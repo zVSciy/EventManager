@@ -51,19 +51,16 @@ def create_notification(input_notification: BaseNotification, db: Session = Depe
     db.refresh(new_notification)
     return new_notification
 
-
 @app.put("/notifications/{notification_id}")
-def update_notification( notification_id: int, input_notification = BaseNotificationOptional, db: Session = Depends(get_db)):
-    #evaluate inputs
-
-
+def update_notification(notification_id: int, input_notification: BaseNotificationOptional, db: Session = Depends(get_db)):
+    # Evaluate inputs
     notification = db.query(Notifications).filter(Notifications.id == notification_id).first()
+    if not notification:
+        raise HTTPException(status_code=404, detail="Notification not found")
 
-    print(input_notification.fields())
-    #unpack the input_notification
-    for key, value in input_notification.fields().items():
-        if value != None:
-            setattr(notification, key, value)
+    # Unpack the input_notification
+    for key, value in input_notification.dict(exclude_unset=True).items():
+        setattr(notification, key, value)
 
     db.commit()
     db.refresh(notification)

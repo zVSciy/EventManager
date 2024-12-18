@@ -1,7 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional
 
-
 class BaseNotificationOptional(BaseModel):
     description: Optional[str]
     status: Optional[str]
