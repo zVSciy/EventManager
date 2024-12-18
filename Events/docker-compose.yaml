@@ -34,15 +34,16 @@ services:
        timeout: 1s
 
     ports:
-    - "3306:3306"
+    - "3305:3306"
 
-  web:
+  api:
     build:
       context: .
-      dockerfile: ./docker/FastAPI/DockerFile
+      dockerfile: DockerFile
     
     volumes:
     - my-fast-data:/media
+    - ./src:/app
 
 
     depends_on:
@@ -59,8 +60,18 @@ services:
     - "8000:8000"
 
     command: >
-      sh -c "uvicorn main:app --host 0.0.0.0 "
+      sh -c "python test.py && 
+             exec uvicorn main:app --host 0.0.0.0 --reload"
 
     networks:
     - my-network
 
+  events:
+    build: ./eventsSvelte
+    ports:
+     - "5173:5173"
+    volumes:
+      - ./eventsSvelte:/app
+      - /app/node_modules
+    networks:
+      - my-network

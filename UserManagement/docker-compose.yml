@@ -11,10 +11,10 @@ services:
 
   db:
     image: mysql:latest
-    
+
     volumes:
       - my-mysql-data:/var/lib/mysql
-    
+
     env_file: .env
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
@@ -27,7 +27,7 @@ services:
       - my-network
 
     healthcheck:
-       test: 'echo "select now(); " | mysql -u${MYSQL_USER} -p${MYSQL_PASSWORD}'
+       test: 'echo "select now(); " | mysql -h ${MYSQL_DATABASE_HOST} -u${MYSQL_USER} -p${MYSQL_PASSWORD}'
        interval: 1s
        retries: 10
        start_period: 10s
@@ -36,11 +36,11 @@ services:
     ports:
     - "3306:3306"
 
-  web:
+  backend:
     build:
       context: .
-      dockerfile: ./docker/FastAPI/DockerFile
-    
+      dockerfile: ./docker/FastAPI/Dockerfile
+
     volumes:
     - my-fast-data:/media
     - ./ssl:/app/ssl
@@ -54,7 +54,7 @@ services:
       ALLOWED_HOSTS: ${ALLOWED_HOSTS}
 
     working_dir: "/app"
-    
+
     ports:
     - "8000:8000"
 
@@ -64,22 +64,33 @@ services:
     networks:
     - my-network
 
-
-  nginx:
-    image: nginx:latest
-
-    restart: always
-
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
-      - ./ssl:/etc/nginx/ssl
-    
+  frontend:
+    build:
+      context: .
+      dockerfile: ./docker/Svelte/Dockerfile
     ports:
-      - "8080:80"
-      - "8443:443"
-    
-    depends_on:
-      - web
-    
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
     networks:
-    - my-network
+      - my-network
+
+  # nginx:
+  #   image: nginx:latest
+
+  #   restart: always
+
+  #   volumes:
+  #     - ./nginx.conf:/etc/nginx/nginx.conf
+  #     - ./ssl:/etc/nginx/ssl
+
+  #   ports:
+  #     - "8080:80"
+  #     - "8443:443"
+
+  #   depends_on:
+  #     - web
+
+  #   networks:
+  #   - my-network

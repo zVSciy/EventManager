@@ -1,13 +1,24 @@
 # EventManager
 Am boutta readme 
 
+## Table of Contents
+- [Concepts](#concepts)
+  - [Process](#process)
+- [API Endpoints](#api-endpoints)
+  - [Event](#event)
+  - [Ticket](#ticket)
+  - [Payment](#payment)
+  - [Notification](#notification)
+  - [Feedback](#feedback)
+  - [User](#user)
+
 # Concepts
 ## Process
-![image](https://github.com/user-attachments/assets/8a319b5d-f45f-47e2-beca-79070e116fe3)
+![image](Process_Detailed.drawio.svg)
 
 
-## Microservices Idea
-![image](https://github.com/user-attachments/assets/7d39198e-47e7-498f-9850-06615f22271d)
+# Events
+Can be built with Docker compose up --build in the event folder. Was programmed by Pinter
 
 # API Endpoints
 ## Event
@@ -243,66 +254,22 @@ Event INT  (References to Event.id)
 
 ## Payment
 
-#### Endpoints Exclusive to Own Interface:
-
-### POST /login
+### GET /payments/{id}
 ```http
-POST /login
-Content-Type: application/json
-
-{
-  "username": "user123",
-  "password": "password123"
-}
+GET /payments/{id}
+Authorization: Bearer token
 ```
 **Response:**
 ```json
 {
-  "token": "session-token-123"
-}
-```
-
-### POST /logout
-```http
-POST /logout
-Content-Type: application/json
-Authorization: Bearer session-token-123
-```
-**Response:**
-```json
-{
-  "message": "Logged out successfully"
-}
-```
-
-#### Additional Endpoints:
-
-### GET /accounts/{userId}
-```http
-GET /accounts/user123
-```
-**Response:**
-```json
-{
-  "userId": "user123",
-  "accountStatus": "exists"
-}
-```
-
-### POST /accounts
-```http
-POST /accounts
-Content-Type: application/json
-
-{
-  "userId": "user123"
-}
-```
-**Response:**
-```json
-{
-  "userId": "user123",
-  "accountStatus": "created"
+  "id": "abcabc",
+  "userId": "user1@example.com",
+  "recipientId": "user2@example.com",
+  "amount": 100.0,
+  "paymentReference": "some payment reference",
+  "status": "processed",
+  "createdAt": "(date)",
+  "processedAt": "(date)"
 }
 ```
 
@@ -310,31 +277,22 @@ Content-Type: application/json
 ```http
 POST /payments
 Content-Type: application/json
+Authorization: Bearer token
+Idempotency-Key: some-unique-key
 
 {
-  "userId": "user123",
-  "amount": 100,
-  "currency": "EUR"
+  "userId": "user1@example.com",
+  "recipientId": "user2@example.com",
+  "amount": 100.0,
+  "currency": "EUR",
+  "paymentReference": "some payment reference"
 }
 ```
 **Response:**
 ```json
 {
-  "paymentId": "payment123",
-  "status": "initiated"
-}
-```
-
-### POST /payments/{paymentId}/process
-```http
-POST /payments/payment123/process
-Content-Type: application/json
-```
-**Response:**
-```json
-{
-  "paymentId": "payment123",
-  "status": "processed"
+  "status": "processed",
+  "id": "abcabc"
 }
 ```
 
@@ -344,7 +302,7 @@ Content-Type: application/json
   - ``id``, ``userId``, ``accountStatus``, ``balance``, ``createdAt``
 
 - Payments
-  - ``id``, ``userId``, ``amount``, ``currency``, ``status``, ``createdAt``, ``processedAt``
+  - ``id``, ``userId``, ``recipientId``, ``amount``, ``currency``, ``status``, ``createdAt``, ``processedAt``
 
 
 > Needs Data from Ticket- and Userservice

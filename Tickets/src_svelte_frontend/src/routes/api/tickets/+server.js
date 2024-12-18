@@ -8,16 +8,17 @@ function jsonResponse(json, status = 200) {
 }
 
 export async function GET({ url }) {
-  const isPrivate = url.searchParams.get('is_private');
-  let apiUrl = '';
-  if (isPrivate == 'true' || isPrivate == 'false') {
-    apiUrl = `http://api:8000/notes?is_private=${isPrivate}`;
+  const eventID = url.searchParams.get('event_id');
+  let apiURL = '';
+
+  if (!isNaN(eventID)) {
+    apiURL = `http://api:8000/tickets?event_id=${eventID}`;
   } else {
-    apiUrl = `http://api:8000/notes`;
+    apiURL = `http://api:8000/tickets`;
   }
   
   try {
-    const response = await fetch(apiUrl);
+    const response = await fetch(apiURL);
     if (response.ok) {
       const data = await response.json();
       return jsonResponse(data);
@@ -32,26 +33,28 @@ export async function GET({ url }) {
 }
 
 export async function POST({ url }) {
-  const title = url.searchParams.get('title');
-  const noteBody = url.searchParams.get('note_body');
-  let isPrivate = url.searchParams.get('is_private');
+  const price = url.searchParams.get('price');
+  const row = url.searchParams.get('row');
+  const seatNumber = url.searchParams.get('seat_number');
+  const vip = url.searchParams.get('vip');
+  const userID = url.searchParams.get('user_id');
+  const eventID = url.searchParams.get('event_id');
 
-  if (isPrivate != 'true' && isPrivate != "false") {
-    isPrivate = false;
-  }
-
-  const apiUrl = `http://api:8000/notes`;
-
+  const apiURL = `http://api:8000/tickets`;
+  
   try {
-    const response = await fetch(apiUrl, {
+    const response = await fetch(apiURL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        title: title,
-        note_body: noteBody,
-        is_private: isPrivate
+        price: price,
+        row: row,
+        seat_number: seatNumber,
+        vip: vip,
+        user_id: userID,
+        event_id: eventID
       })
     });
 
@@ -65,37 +68,40 @@ export async function POST({ url }) {
     } else {
       return jsonResponse({status: response.status, error: 'Failed to fetch data!'});
     }
+
   } catch (error) {
     return jsonResponse({status: 500, error: 'Internal server error'});
   }
 }
 
 export async function PUT({ url }) {
-  const noteID = url.searchParams.get('note_id');
-  const title = url.searchParams.get('title');
-  const noteBody = url.searchParams.get('note_body');
-  let isPrivate = url.searchParams.get('is_private');
+  const changedTID = url.searchParams.get('ticket_id');
+  const changedPrice = url.searchParams.get('price');
+  const changedRow = url.searchParams.get('row');
+  const changedSN = url.searchParams.get('seat_number');
+  const changedVIP = url.searchParams.get('vip');
+  const changedUID = url.searchParams.get('user_id');
+  const changedEID = url.searchParams.get('event_id');
 
-  if (isPrivate != 'true' && isPrivate != "false") {
-    isPrivate = false;
+  if (isNaN(changedTID)) {
+    return jsonResponse({status: 400, error: 'TicketID must be a number!'});
   }
 
-  if (isNaN(noteID)) {
-    return jsonResponse({status: 400, error: 'Attribute `id` must be a number!'});
-  }
-
-  const apiUrl = `http://api:8000/notes/${noteID}`;
-
+  const apiURL = `http://api:8000/tickets/${changedTID}`;
+  
   try {
-    const response = await fetch(apiUrl, {
+    const response = await fetch(apiURL, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        title: title,
-        note_body: noteBody,
-        is_private: isPrivate
+        price: changedPrice,
+        row: changedRow,
+        seat_number: changedSN,
+        vip: changedVIP,
+        user_id: changedUID,
+        event_id: changedEID
       })
     });
 
@@ -112,22 +118,23 @@ export async function PUT({ url }) {
     } else {
       return jsonResponse({status: response.status, error: 'Failed to fetch data!'});
     }
+
   } catch (error) {
     return jsonResponse({status: 500, error: 'Internal server error'});
   }
 }
 
 export async function DELETE({ url }) {
-  const noteID = url.searchParams.get('note_id');
+  const ticketID = url.searchParams.get('ticket_id');
   
-  if (isNaN(noteID)) {
-    return jsonResponse({status: 400, error: 'Attribute `id` must be a number!'});
+  if (isNaN(ticketID)) {
+    return jsonResponse({status: 400, error: 'TicketID must be a number!'});
   }
 
-  const apiUrl = `http://api:8000/notes/${noteID}`;
+  const apiURL = `http://api:8000/tickets/${ticketID}`;
 
   try {
-    const response = await fetch(apiUrl, {
+    const response = await fetch(apiURL, {
       method: 'DELETE'
     });
 

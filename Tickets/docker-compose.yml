@@ -5,6 +5,56 @@ networks:
   event-network:
 
 services:
+  #Service "db"
+  db:
+    image: mysql:latest
+
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+    env_file: .env
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE_PORT: ${MYSQL_DATABASE_PORT}
+
+    networks:
+      - event-network
+
+    healthcheck:
+      test: 'echo "select now();" | mysql -h ${MYSQL_DATABASE_HOST} -u${MYSQL_USER} -p${MYSQL_PASSWORD}'
+      interval: 1s
+      retries: 10
+      start_period: 10s
+      timeout: 1s
+
+  #Service "api"
+  api:
+    build:
+      context: .
+      dockerfile: ./docker/fastapi/Dockerfile
+
+    env_file: .env
+
+    restart: always
+
+    # expose:
+    #   - 8000
+    ports:
+      - 8000:8000
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+    command: >
+      sh -c "uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
+
+    networks:
+      - event-network
+
   #Service "sveltekit"
   sveltekit:
     build:
@@ -13,6 +63,9 @@ services:
 
     expose:
       - 5173
+
+    depends_on:
+      - api
 
     networks:
       - event-network

@@ -1,55 +1,41 @@
 <script>
     import { onMount } from 'svelte';
-    import { fetchEvents, updateEvent, updateCancelStatus } from '$lib/api'; // Import der API-Funktion
+    import { goto } from '$app/navigation';
 
     let events = [];
     let error = null;
-    let editingEvent = null; // Speichert das Event, das bearbeitet wird
 
-    // Funktion, um die Events zu laden
     async function loadEvents() {
-        try {
-            events = await fetchEvents();
-        } catch (err) {
-            error = err.message;
-        }
+        const response = await fetch('/api/event');
+        events = await response.json();
+
     }
 
-    // Daten werden beim Laden der Seite geholt
     onMount(loadEvents);
 
-    // Funktion zum Canceln oder Entcanceln eines Events und Reload der Daten
-    async function toggleCancel(event) {
-        const newCanceledStatus = !event.canceled; // Umkehren des aktuellen Status
-        try {
-            await updateCancelStatus(event.ID, newCanceledStatus); // API-Call zum Ändern des Status
-            await loadEvents(); // Events nach dem Update neu laden
-        } catch (err) {
-            error = 'Failed to update event status';
-        }
+    function viewDetails(event) {
+    if (event && event.ID) {
+        goto(`/details/${event.ID}`); // Navigiere zur Details-Seite basierend auf der Event-ID
     }
-
-    // Funktion zum Starten der Bearbeitung eines Events
-    function startEditing(event) {
-        editingEvent = { ...event }; // Event-Daten kopieren
-    }
-
-    // Funktion zum Speichern des bearbeiteten Events
-    async function saveEvent() {
-        try {
-            await updateEvent(editingEvent.ID, editingEvent); // API-Call zum Updaten des Events
-            editingEvent = null; // Bearbeitung beenden
-            await loadEvents(); // Events neu laden
-        } catch (err) {
-            error = 'Failed to update event';
-        }
-    }
-
-    // Funktion zum Abbrechen der Bearbeitung
-    function cancelEditing() {
-        editingEvent = null;
-    }
+}
+export let data;
 </script>
+
+
+<nav class="navbar navbar-expand-lg navbar-light bg-warning">
+    <div class="container-fluid">
+        <button on:click={() => window.location.href='/'} style="margin-bottom: 20px; padding: 10px; background-color: #009879; color: white; border: none; border-radius: 4px; cursor: pointer;">Event Manager</button>    
+
+        <div class="d-flex align-items-center ms-auto">
+            <span class="me-3">Hi, {data.username}!</span>
+
+            {#if data.admin}
+            <button on:click={() => window.location.href='/admin'} style="margin-bottom: 20px; padding: 10px; background-color: #009879; color: white; border: none; border-radius: 4px; cursor: pointer;">Admin</button>    
+            {/if}
+        </div>
+    </div>
+</nav>
+
 
 {#if error}
     <p>{error}</p>
@@ -63,8 +49,6 @@
                     <th>Name</th>
                     <th>Location</th>
                     <th>Start Date</th>
-                    <th>Available Normal Tickets</th>
-                    <th>Available VIP Tickets</th>
                     <th>Canceled</th>
                     <th>Actions</th>
                 </tr>
@@ -72,19 +56,18 @@
             <tbody>
                 {#each events as event}
                     <tr>
-                        <td><a href={`/event/${event.ID}`}>{event.ID}</a></td>
+                        <td>{event.ID}</td> <!-- Sicherstellen, dass ID existiert -->
                         <td>{event.name}</td>
                         <td>{event.location}</td>
                         <td>{new Date(event.startdate).toLocaleString()}</td>
-                        <td>{event.available_normal_tickets}</td>
-                        <td>{event.available_vip_tickets}</td>
                         <td>{event.canceled ? 'Yes' : 'No'}</td>
-                       
+                        <td>
+                            <button on:click={() => viewDetails(event)}>Details</button>
+                        </td>
                     </tr>
                 {/each}
             </tbody>
         </table>
-
     </div>
 {/if}
 
@@ -152,42 +135,44 @@
         background-color: #007f68;
     }
 
-    .edit-form {
-        margin-top: 20px;
-        align-items: center;
-        justify-content: center;
-        display: flex;
+    .navbar {
+        padding: 1rem;
+        border-bottom: 2px solid #ffc107;
     }
 
-    .edit-form form {
-        display: flex;
-        flex-direction: column;
-        width: 300px;
+    .navbar-brand {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #333;
     }
 
-    .edit-form label {
-        margin: 10px 0 5px 0;
+    .navbar-brand:hover {
+        text-decoration: none;
+        color: #000;
     }
 
-    .edit-form input {
-        padding: 8px;
-        margin-bottom: 10px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
+    .ms-auto {
+        margin-left: auto; /* Rechts ausgerichtet */
     }
 
-    .edit-form button {
-        margin-top: 10px;
-        padding: 8px;
-        background-color: #009879;
+    .me-3 {
+        margin-right: 1rem; /* Abstand zwischen Benutzername und Admin-Link */
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
         color: white;
         border: none;
+        padding: 0.5rem 1rem;
         border-radius: 5px;
+        font-size: 1rem;
+        text-decoration: none;
         cursor: pointer;
     }
 
-    .edit-form button:hover {
-        background-color: #007f68;
+    .btn-secondary:hover {
+        background-color: #5a6268;
+        text-decoration: none;
     }
     h1 {
         display: flex;
