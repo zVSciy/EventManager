@@ -1,0 +1,67 @@
+volumes:
+  mysqldata:
+
+networks:
+  my-network:
+
+services:
+
+  db:
+    container_name: mysqlDB
+    image: mysql:latest
+    
+    volumes:
+      - mysqldata:/var/lib/mysql
+    
+    env_file: .env
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE_PORT: ${MYSQL_DATABASE_PORT}
+
+    networks:
+      - my-network
+
+    healthcheck:
+       test: 'echo "select now(); " | mysql -u${MYSQL_USER} -p${MYSQL_PASSWORD}'
+       interval: 1s
+       retries: 10
+       start_period: 10s
+       timeout: 1s
+
+    ports:
+    - "3305:3306"
+
+  api:
+    container_name: NotificationAPI
+    build:
+      context: .
+      dockerfile: ./docker/FastAPI/Dockerfile
+
+
+    
+    volumes:
+    - ./src:/app
+
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+    env_file: .env
+    environment:
+      ALLOWED_HOSTS: '*'
+
+    working_dir: "/app"
+    
+    ports:
+    - "8082:8000"
+
+    command: >
+      sh -c "pytest && 
+             exec uvicorn main:app --host 0.0.0.0 --reload"
+
+    networks:
+    - my-network
