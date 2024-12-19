@@ -445,43 +445,129 @@ ticketId INT (References to Ticket.Id)
 ### GET /reviews/{review_id}
 **Response:**
 ```json
----------------------
+{
+    "content": "Great event!",
+    "event_id": 1,
+    "rating": 5,
+    "user_id": 1,
+    "id": 1
+}
 ```
 
-### GET /reviews/{event_id}
+### GET /reviews/
 **Response:**
 ```json
----------------------
+[
+    {
+        "event_id": 1,
+        "content": "Great event!",
+        "rating": 5,
+        "user_id": 1,
+        "id": 1
+    },
+    {
+        "event_id": 2,
+        "content": "Not bad",
+        "rating": 3,
+        "user_id": 2,
+        "id": 2
+    },
+    {
+        "event_id": 1,
+        "content": "Could be better",
+        "rating": 2,
+        "user_id": 3,
+        "id": 3
+    },
+    {
+        "event_id": 2,
+        "content": "Loved it!",
+        "rating": 5,
+        "user_id": 4,
+        "id": 4
+    }
+]
+```
+
+### GET /reviews/event/{event_id}
+**Response:**
+```json
+[
+    {
+        "event_id": 3,
+        "content": "Terrible experience",
+        "rating": 1,
+        "user_id": 6,
+        "id": 6
+    },
+    {
+        "event_id": 3,
+        "content": "Pretty good",
+        "rating": 4,
+        "user_id": 7,
+        "id": 7
+    }
+]
 ```
 
 ### POST /reviews
 **Request:**
 ```json
----------------------
+{
+    "user_id": 4,
+    "content": "Amazing event!",
+    "rating": 5,
+    "event_id": 1
+}
 ```
 
 **Response:**
 ```json
----------------------
+{
+    "event_id": 1,
+    "content": "Amazing event!",
+    "rating": 5,
+    "user_id": 4,
+    "id": 10
+}
 ```
 
 ### PUT /reviews/{review_id} 
 **Request:**
 ```json
----------------------
+{
+    "user_id": 4,
+    "content": "Shit event!!!",
+    "rating": 1,
+    "event_id": 1
+}
 ```
 
 **Response:**
 ```json
----------------------
+{
+    "event_id": 1,
+    "content": "Shit event!!!",
+    "rating": 1,
+    "user_id": 4,
+    "id": 10
+}
+```
+
+### DELETE /reviews/{review_id} 
+**Response:**
+```json
+{
+    "detail": "Review deleted successfully"
+}
 ```
 
 ### Database Data
-ID INT  PRIMARY KEY  
-User  INT  
-Comment  Text
-Rating INT
-Event INT   
+- ID INT  PRIMARY KEY 
+- User  INT
+- Comment  Text
+- Rating INT
+- Event INT  
 
 > Needs Data from Ticket-, Event- and Userservice.
 
