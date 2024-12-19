@@ -3,7 +3,8 @@ import unittest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from model.database import Base, get_db
+from model.database import get_db
+from model.models import Base
 from main import app
 
 # Mocking the database with SQLite
@@ -35,6 +36,7 @@ class TestAPI(unittest.TestCase):
         # Clearing test database after each test
         self.db.close()
         Base.metadata.drop_all(bind=engine)
+        print("✅ All tests in this TestCase ran successfully!")
 
     def test_register_user_success(self):
         payload = {

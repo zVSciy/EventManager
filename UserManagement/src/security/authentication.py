@@ -1,5 +1,7 @@
-from datetime import datetime, timedelta
+import os
 from jose import jwt
+from dotenv import load_dotenv
+from datetime import datetime, timedelta
 
 def create_access_token(data: dict):
     to_encode = data.copy()
