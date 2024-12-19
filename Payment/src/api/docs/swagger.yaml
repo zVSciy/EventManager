@@ -8,14 +8,14 @@ definitions:
         type: string
       currency:
         type: string
-      userId:
+      user_id:
         type: string
     required:
-    - userId
+    - user_id
     type: object
   models.AccountRequest:
     properties:
-      userId:
+      user_id:
         type: string
     type: object
   models.CreateAccountResponse:
@@ -46,27 +46,27 @@ definitions:
     properties:
       amount:
         type: number
-      createdAt:
+      created_at:
         type: string
       currency:
         type: string
       id:
         type: string
-      paymentReference:
+      payment_reference:
         type: string
-      processedAt:
+      processed_at:
         type: string
-      recipientId:
+      recipient_id:
         type: string
       status:
         type: string
-      userId:
+      user_id:
         type: string
     required:
     - amount
     - currency
-    - recipientId
-    - userId
+    - recipient_id
+    - user_id
     type: object
   models.PaymentRequest:
     properties:
@@ -74,17 +74,17 @@ definitions:
         type: number
       currency:
         type: string
-      paymentReference:
+      payment_reference:
         type: string
-      recipientId:
+      recipient_id:
         type: string
-      userId:
+      user_id:
         type: string
     required:
     - amount
     - currency
-    - recipientId
-    - userId
+    - recipient_id
+    - user_id
     type: object
 host: reiner.gg
 info:
@@ -189,7 +189,7 @@ paths:
         schema:
           $ref: '#/definitions/models.PaymentRequest'
       responses:
-        "200":
+        "201":
           description: Payment created successfully
           schema:
             $ref: '#/definitions/models.CreatePaymentResponse'

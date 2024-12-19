@@ -106,7 +106,7 @@ func GetPayments(w http.ResponseWriter, r *http.Request) {
 // @Tags payments
 // @Param Idempotency-Key header string true "Unique key to prevent duplicate payments"
 // @Param payment body models.PaymentRequest true "Payment details"
-// @Success 200 {object} models.CreatePaymentResponse "Payment created successfully"
+// @Success 201 {object} models.CreatePaymentResponse "Payment created successfully"
 // @Failure 400 {object} models.ErrorResponse "Invalid request or missing idempotency key"
 // @Failure 409 {object} models.ErrorResponse "Duplicate idempotency key"
 // @Router /payments [post]

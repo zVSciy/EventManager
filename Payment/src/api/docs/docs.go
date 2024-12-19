@@ -166,7 +166,7 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "201": {
                         "description": "Payment created successfully",
                         "schema": {
                             "$ref": "#/definitions/models.CreatePaymentResponse"
@@ -235,7 +235,7 @@ const docTemplate = `{
         "models.Account": {
             "type": "object",
             "required": [
-                "userId"
+                "user_id"
             ],
             "properties": {
                 "balance": {
@@ -247,7 +247,7 @@ const docTemplate = `{
                 "currency": {
                     "type": "string"
                 },
-                "userId": {
+                "user_id": {
                     "type": "string"
                 }
             }
@@ -255,7 +255,7 @@ const docTemplate = `{
         "models.AccountRequest": {
             "type": "object",
             "properties": {
-                "userId": {
+                "user_id": {
                     "type": "string"
                 }
             }
@@ -303,14 +303,14 @@ const docTemplate = `{
             "required": [
                 "amount",
                 "currency",
-                "recipientId",
-                "userId"
+                "recipient_id",
+                "user_id"
             ],
             "properties": {
                 "amount": {
                     "type": "number"
                 },
-                "createdAt": {
+                "created_at": {
                     "type": "string"
                 },
                 "currency": {
@@ -319,19 +319,19 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
-                "paymentReference": {
+                "payment_reference": {
                     "type": "string"
                 },
-                "processedAt": {
+                "processed_at": {
                     "type": "string"
                 },
-                "recipientId": {
+                "recipient_id": {
                     "type": "string"
                 },
                 "status": {
                     "type": "string"
                 },
-                "userId": {
+                "user_id": {
                     "type": "string"
                 }
             }
@@ -341,8 +341,8 @@ const docTemplate = `{
             "required": [
                 "amount",
                 "currency",
-                "recipientId",
-                "userId"
+                "recipient_id",
+                "user_id"
             ],
             "properties": {
                 "amount": {
@@ -351,13 +351,13 @@ const docTemplate = `{
                 "currency": {
                     "type": "string"
                 },
-                "paymentReference": {
+                "payment_reference": {
                     "type": "string"
                 },
-                "recipientId": {
+                "recipient_id": {
                     "type": "string"
                 },
-                "userId": {
+                "user_id": {
                     "type": "string"
                 }
             }

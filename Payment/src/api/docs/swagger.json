@@ -160,7 +160,7 @@
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "201": {
                         "description": "Payment created successfully",
                         "schema": {
                             "$ref": "#/definitions/models.CreatePaymentResponse"
@@ -229,7 +229,7 @@
         "models.Account": {
             "type": "object",
             "required": [
-                "userId"
+                "user_id"
             ],
             "properties": {
                 "balance": {
@@ -241,7 +241,7 @@
                 "currency": {
                     "type": "string"
                 },
-                "userId": {
+                "user_id": {
                     "type": "string"
                 }
             }
@@ -249,7 +249,7 @@
         "models.AccountRequest": {
             "type": "object",
             "properties": {
-                "userId": {
+                "user_id": {
                     "type": "string"
                 }
             }
@@ -297,14 +297,14 @@
             "required": [
                 "amount",
                 "currency",
-                "recipientId",
-                "userId"
+                "recipient_id",
+                "user_id"
             ],
             "properties": {
                 "amount": {
                     "type": "number"
                 },
-                "createdAt": {
+                "created_at": {
                     "type": "string"
                 },
                 "currency": {
@@ -313,19 +313,19 @@
                 "id": {
                     "type": "string"
                 },
-                "paymentReference": {
+                "payment_reference": {
                     "type": "string"
                 },
-                "processedAt": {
+                "processed_at": {
                     "type": "string"
                 },
-                "recipientId": {
+                "recipient_id": {
                     "type": "string"
                 },
                 "status": {
                     "type": "string"
                 },
-                "userId": {
+                "user_id": {
                     "type": "string"
                 }
             }
@@ -335,8 +335,8 @@
             "required": [
                 "amount",
                 "currency",
-                "recipientId",
-                "userId"
+                "recipient_id",
+                "user_id"
             ],
             "properties": {
                 "amount": {
@@ -345,13 +345,13 @@
                 "currency": {
                     "type": "string"
                 },
-                "paymentReference": {
+                "payment_reference": {
                     "type": "string"
                 },
-                "recipientId": {
+                "recipient_id": {
                     "type": "string"
                 },
-                "userId": {
+                "user_id": {
                     "type": "string"
                 }
             }

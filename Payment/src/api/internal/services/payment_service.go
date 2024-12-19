@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"errors"
+	"log"
 	"time"
 
 	db "github.com/zVSciy/EventManager/Payment/internal/database"
@@ -39,11 +40,10 @@ func GetPayment(id string) (models.Payment, error) {
 		return models.Payment{}, errors.New("database_not_initialized")
 	}
 
-	var payment models.Payment
-
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
+	var payment models.Payment
 	err = paymentCollection.FindOne(ctx, bson.M{"_id": objectID}).Decode(&payment)
 	if err == nil {
 		return payment, nil
@@ -74,6 +74,10 @@ func GetPayments(userId string) ([]models.Payment, error) {
 		}
 		return []models.Payment{}, err
 	}
+
+	var testPayment models.Payment
+	paymentCollection.FindOne(ctx, bson.M{"user_id": userId}).Decode(&testPayment)
+	log.Println(testPayment)
 
 	cur, err := paymentCollection.Find(ctx, bson.M{"user_id": userId})
 	if err != nil {
@@ -111,16 +115,21 @@ func CreatePayment(payment models.Payment, idempotencyKeyStr string) (models.Pay
 
 	var account models.Account
 	err = accountCollection.FindOne(ctx, bson.M{"user_id": payment.UserID}).Decode(&account)
-	if err == nil {
-		// ACCOUNT CREATION TEMPORARY SOLUTION
-		account := models.Account{
-			ID:        payment.UserID,
-			Balance:   100,
-			Currency:  "EUR",
-			CreatedAt: util.Now(),
-		}
-		_, err = accountCollection.InsertOne(ctx, account)
-		if err != nil {
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			// ACCOUNT CREATION TEMPORARY SOLUTION
+			account = models.Account{
+				ID:        payment.UserID,
+				Balance:   100,
+				Currency:  "EUR",
+				CreatedAt: util.Now(),
+			}
+
+			_, err = accountCollection.InsertOne(ctx, account)
+			if err != nil {
+				return models.Payment{}, err
+			}
+		} else {
 			return models.Payment{}, err
 		}
 	}
@@ -157,58 +166,49 @@ func CreatePayment(payment models.Payment, idempotencyKeyStr string) (models.Pay
 		return models.Payment{}, err
 	}
 
-	session, err := db.Client.StartSession()
-	if err != nil {
-		return models.Payment{}, err
-	}
-	if err = session.StartTransaction(); err != nil {
+	insertedID := result.InsertedID.(primitive.ObjectID)
+	payment.ID = insertedID.Hex()
+
+	if _, err := accountCollection.UpdateOne(
+		ctx,
+		bson.M{"user_id": payment.UserID},
+		bson.M{"$inc": bson.M{"balance": -payment.Amount}},
+	); err != nil {
 		return models.Payment{}, err
 	}
 
-	if err = mongo.WithSession(ctx, session, func(sc mongo.SessionContext) error {
-		if _, err := accountCollection.UpdateOne(
-			sc,
-			bson.M{"user_id": payment.UserID},
-			bson.M{"$inc": bson.M{"balance": -payment.Amount}},
-		); err != nil {
-			return err
-		}
-		if _, err := accountCollection.UpdateOne(
-			sc,
-			bson.M{"user_id": payment.RecipientID},
-			bson.M{"$inc": bson.M{"balance": payment.Amount}},
-		); err != nil {
-			return err
-		}
-
-		if _, err := paymentCollection.UpdateOne(
-			sc,
-			bson.M{"_id": payment.ID},
-			bson.M{"$set": bson.M{"status": "processed"}},
-		); err != nil {
-			return err
-		}
-
-		if err = session.CommitTransaction(sc); err != nil {
-			return err
-		}
-		return nil
-	}); err != nil {
-		_ = session.AbortTransaction(ctx)
+	if _, err := accountCollection.UpdateOne(
+		ctx,
+		bson.M{"user_id": payment.RecipientID},
+		bson.M{"$inc": bson.M{"balance": payment.Amount}},
+	); err != nil {
 		return models.Payment{}, err
 	}
-	session.EndSession(ctx)
+
+	if _, err := paymentCollection.UpdateOne(
+		ctx,
+		bson.M{"_id": insertedID},
+		bson.M{"$set": bson.M{"status": "processed"}},
+	); err != nil {
+		return models.Payment{}, err
+	}
+	payment.Status = "processed"
 
 	return payment, nil
 }
 
 func SetPaymentCancelled(payment models.Payment) error {
+	paymentID, err := primitive.ObjectIDFromHex(payment.ID)
+	if err != nil {
+		return err
+	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	if _, err := paymentCollection.UpdateOne(
 		ctx,
-		bson.M{"_id": payment.ID},
+		bson.M{"_id": paymentID},
 		bson.M{"$set": bson.M{"status": "cancelled"}},
 	); err != nil {
 		return err

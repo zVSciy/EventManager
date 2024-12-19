@@ -4,3 +4,4 @@
 bin/
 tmp/
 test.*
+*.code-workspace
