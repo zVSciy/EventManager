@@ -448,13 +448,13 @@ ticketId INT (References to Ticket.Id)
 ---------------------
 ```
 
-### GET /review/{event_id}
+### GET /reviews/{event_id}
 **Response:**
 ```json
 ---------------------
 ```
 
-### POST /review
+### POST /reviews
 **Request:**
 ```json
 ---------------------
