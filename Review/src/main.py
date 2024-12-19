@@ -31,7 +31,7 @@ def get_db():
         yield db
     finally:
         db.close()
-# Get review by ID
+#? Get review by ID
 @app.get("/reviews/{review_id}")
 def get_review(review_id: int, db: Session = Depends(get_db)):
     logger.info(f"Fetching review with ID: {review_id}")
@@ -41,7 +41,7 @@ def get_review(review_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Review not found")
     return review
 
-# Create a review
+#? Create a review
 @app.post("/reviews/")
 def create_review(review: ReviewCreate, db: Session = Depends(get_db)):
     logger.info(f"Creating review for user ID: {review.user_id}")
@@ -52,16 +52,16 @@ def create_review(review: ReviewCreate, db: Session = Depends(get_db)):
     logger.info(f"Review created successfully with ID: {db_review.id}")
     return db_review
 
-# Get all reviews by event ID
-@app.get("/reviews/{event_id}")
-def get_reviews(event_id:int, db: Session = Depends(get_db)):
-    logger.info(f"Fetching review with ID: {event_id}")
+#? Get all reviews by event ID
+@app.get("/reviews/event/{event_id}")
+def get_reviews(event_id: int, db: Session = Depends(get_db)):
+    logger.info(f"Fetching reviews for event ID: {event_id}")
     reviews = db.query(Review).filter(Review.event_id == event_id).all()
-    if reviews is None:
+    if not reviews:
         raise HTTPException(status_code=404, detail="Reviews not found")
     return reviews
 
-# Delete a review
+#? Delete a review
 @app.delete("/reviews/{review_id}")
 def delete_review(review_id: int, db: Session = Depends(get_db)):
     logger.info(f"Deleting review with ID: {review_id}")
@@ -74,7 +74,7 @@ def delete_review(review_id: int, db: Session = Depends(get_db)):
     logger.info(f"Review with ID {review_id} deleted successfully")
     return {"detail": "Review deleted successfully"}
 
-# Update a review
+#? Update a review
 @app.put("/reviews/{review_id}")
 def update_review(review_id: int, review: ReviewUpdate, db: Session = Depends(get_db)):
     logger.info(f"Updating review with ID: {review_id}")
