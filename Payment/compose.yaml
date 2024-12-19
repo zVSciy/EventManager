@@ -14,17 +14,15 @@ services:
       - "3000"
     volumes:
       - ./src/api:/app
+    depends_on:
+      - db-payment
   
   db-payment:
     image: mongo:latest
     container_name: db-payment
     restart: unless-stopped
-    # environment username&pass only for testing
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=oiejrfhuanaps
     ports:
-      - "27017:27017"
+      - "127.0.0.1:27017:27017"
     # expose:
     #   - "27017"
     volumes:
