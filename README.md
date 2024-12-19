@@ -442,7 +442,7 @@ ticketId INT (References to Ticket.Id)
 > Needs Data from Ticket-, Event- and Paymentservice  
 
 ## Feedback
-### GET /review/{review_id}
+### GET /reviews/{review_id}
 **Response:**
 ```json
 ---------------------
