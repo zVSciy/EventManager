@@ -1,0 +1,28 @@
+volumes:
+  mysqldata:
+
+networks:
+  my-network:
+
+services:
+
+  api:
+    container_name: ReviewAPI
+    build:
+      context: .
+      dockerfile: ./src/Dockerfile
+
+    volumes:
+    - ./src:/app
+
+    working_dir: "/app"
+    
+    ports:
+    - "8083:8000"
+
+    # command: >
+    #   sh -c "pytest && 
+    #          exec uvicorn main:app --host 0.0.0.0 --reload"
+
+    networks:
+    - my-network

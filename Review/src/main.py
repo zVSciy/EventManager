@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from database import SessionLocal, init_db, engine, Base
 from models import Review
 from pydantic import BaseModel
+import subprocess
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -19,6 +20,10 @@ class ReviewCreate(BaseModel):
     content: str
     rating: int
     event_id: int
+
+class ReviewUpdate(BaseModel):
+    content: str
+    rating: int
 
 def get_db():
     db = SessionLocal()
@@ -53,6 +58,38 @@ def get_reviews(event_id:int, db: Session = Depends(get_db)):
     if reviews is None:
         raise HTTPException(status_code=404, detail="Reviews not found")
     return reviews
+
+    @app.delete("/reviews/{review_id}")
+    def delete_review(review_id: int, db: Session = Depends(get_db)):
+        logger.info(f"Deleting review with ID: {review_id}")
+        review = db.query(Review).filter(Review.id == review_id).first()
+        if review is None:
+            logger.error(f"Review with ID {review_id} not found")
+            raise HTTPException(status_code=404, detail="Review not found")
+        db.delete(review)
+        db.commit()
+        logger.info(f"Review with ID {review_id} deleted successfully")
+        return {"detail": "Review deleted successfully"}
+
+ 
+
+    @app.put("/reviews/{review_id}")
+    def update_review(review_id: int, review: ReviewUpdate, db: Session = Depends(get_db)):
+        logger.info(f"Updating review with ID: {review_id}")
+        db_review = db.query(Review).filter(Review.id == review_id).first()
+        if db_review is None:
+            logger.error(f"Review with ID {review_id} not found")
+            raise HTTPException(status_code=404, detail="Review not found")
+        db_review.content = review.content
+        db_review.rating = review.rating
+        db.commit()
+        db.refresh(db_review)
+        logger.info(f"Review with ID {review_id} updated successfully")
+        return db_review
+
+
+
+
 
 if __name__ == "__main__":
     import uvicorn
