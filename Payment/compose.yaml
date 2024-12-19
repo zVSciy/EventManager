@@ -1,0 +1,45 @@
+services:
+  api-payment:
+    build:
+      context: .
+      dockerfile: docker/api/Dockerfile
+      target: development
+    container_name: api-payment
+    restart: unless-stopped
+    environment:
+      - MONGO_URI=${MONGO_URI}
+      - PORT=${PORT}
+      - TZ=${TZ}
+    expose:
+      - "3000"
+    volumes:
+      - ./src/api:/app
+    depends_on:
+      - db-payment
+  
+  db-payment:
+    image: mongo:latest
+    container_name: db-payment
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:27017:27017"
+    # expose:
+    #   - "27017"
+    volumes:
+      - db-payment-data:/data/db
+
+  nginx-payment:
+    image: nginx:latest
+    container_name: nginx-payment
+    restart: unless-stopped
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/ssl
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - api-payment
+
+volumes:
+  db-payment-data:

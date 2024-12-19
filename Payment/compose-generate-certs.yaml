@@ -1,0 +1,38 @@
+services:
+  cert-gen:
+    image: alpine/openssl
+    network_mode: host
+    container_name: cert-gen
+    entrypoint: >
+      sh -c "
+      mkdir -p /ssl &&
+
+      openssl genpkey -algorithm RSA -out /ssl/ca-key.pem &&
+      openssl req -x509 -new -nodes -key /ssl/ca-key.pem -sha256 -days 365 -out /ssl/ca-cert.pem \
+      -subj '/C=AT/ST=Carinthia/L=Villach/O=Reiner CA/OU=Org/CN=Reiner CA' &&
+
+      openssl genpkey -algorithm RSA -out /ssl/server-key.pem &&
+      openssl req -new -key /ssl/server-key.pem -out /ssl/server.csr \
+      -subj '/C=AT/ST=Carinthia/L=Villach/O=Reiner Server/OU=Org/CN=example.com' &&
+      openssl x509 -req -in /ssl/server.csr -CA /ssl/ca-cert.pem -CAkey /ssl/ca-key.pem \
+      -CAcreateserial -out /ssl/server-cert.pem -days 365 -sha256
+      "
+    volumes:
+      - ./test:/ssl
+
+  client-cert-gen:
+    image: alpine/openssl
+    network_mode: host
+    container_name: client-cert-gen
+    entrypoint: >
+      sh -c "
+      openssl genpkey -algorithm RSA -out /ssl/client-key.pem &&
+      openssl req -new -key /ssl/client-key.pem -out /ssl/client.csr \
+      -subj '/C=AT/ST=Carinthia/L=Villach/O=Reiner Client/OU=Org/CN=client' &&
+      openssl x509 -req -in /ssl/client.csr -CA /ssl/ca-cert.pem -CAkey /ssl/ca-key.pem \
+      -CAcreateserial -out /ssl/client-cert.pem -days 365 -sha256
+
+      openssl pkcs12 -export -out /ssl/client-cert.p12 -inkey /ssl/client-key.pem -in /ssl/client-cert.pem -certfile /ssl/ca-cert.pem
+      "
+    volumes:
+      - ./test:/ssl
