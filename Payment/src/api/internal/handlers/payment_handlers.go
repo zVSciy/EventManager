@@ -153,10 +153,11 @@ func CreatePayment(w http.ResponseWriter, r *http.Request) {
 	}
 
 	errorResponses := map[string]int{
-		"idempotency_key_error": http.StatusConflict,
-		"recipient_not_found":   http.StatusNotFound,
-		"incompatible_currency": http.StatusBadRequest,
-		"insufficient_funds":    http.StatusBadRequest,
+		"idempotency_key_error":    http.StatusConflict,
+		"recipient_not_found":      http.StatusNotFound,
+		"incompatible_currency":    http.StatusBadRequest,
+		"insufficient_funds":       http.StatusBadRequest,
+		"database_not_initialized": http.StatusInternalServerError,
 	}
 
 	errStr := err.Error()
