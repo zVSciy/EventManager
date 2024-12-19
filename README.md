@@ -455,13 +455,33 @@ ticketId INT (References to Ticket.Id)
 ```
 
 ### POST /review
+**Request:**
+```json
+---------------------
+```
+
+**Response:**
+```json
+---------------------
+```
+
+### PUT /reviews/{review_id} 
+**Request:**
+```json
+---------------------
+```
+
+**Response:**
+```json
+---------------------
+```
 
 ### Database Data
 ID INT  PRIMARY KEY  
 User  INT  
-Comment  Text  
-Event INT  
-Date  Datetime  
+Comment  Text
+Rating INT
+Event INT   
 
 > Needs Data from Ticket-, Event- and Userservice.
 
