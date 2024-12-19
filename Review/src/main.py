@@ -4,7 +4,6 @@ from sqlalchemy.orm import Session
 from database import SessionLocal, init_db, engine, Base
 from models import Review
 from pydantic import BaseModel
-import subprocess
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -31,6 +30,7 @@ def get_db():
         yield db
     finally:
         db.close()
+
 #? Get review by ID
 @app.get("/reviews/{review_id}")
 def get_review(review_id: int, db: Session = Depends(get_db)):
@@ -40,6 +40,13 @@ def get_review(review_id: int, db: Session = Depends(get_db)):
         logger.error(f"Review with ID {review_id} not found")
         raise HTTPException(status_code=404, detail="Review not found")
     return review
+
+#? Get all reviews
+@app.get("/reviews/")
+def get_all_reviews(db: Session = Depends(get_db)):
+    logger.info("Fetching all reviews")
+    reviews = db.query(Review).all()
+    return reviews
 
 #? Create a review
 @app.post("/reviews/")
@@ -52,7 +59,7 @@ def create_review(review: ReviewCreate, db: Session = Depends(get_db)):
     logger.info(f"Review created successfully with ID: {db_review.id}")
     return db_review
 
-#? Get all reviews by event ID
+#? Get reviews by event ID
 @app.get("/reviews/event/{event_id}")
 def get_reviews(event_id: int, db: Session = Depends(get_db)):
     logger.info(f"Fetching reviews for event ID: {event_id}")
@@ -89,7 +96,6 @@ def update_review(review_id: int, review: ReviewUpdate, db: Session = Depends(ge
     logger.info(f"Review with ID {review_id} updated successfully")
     return db_review
 
-#? Start 
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="127.0.0.1", port=8000)
