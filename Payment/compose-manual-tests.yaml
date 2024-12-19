@@ -1,0 +1,14 @@
+services:
+  api-payment-tests:
+    build:
+      context: .
+      dockerfile: docker/api/Dockerfile
+      target: development
+    container_name: api-payment-tests
+    environment:
+      - MONGO_URI=${MONGO_URI}
+      - PORT=${PORT}
+      - TZ=${TZ}
+    volumes:
+      - ./src/api:/app
+    entrypoint: ["go", "test", "-v", "./..."]
