@@ -442,10 +442,19 @@ ticketId INT (References to Ticket.Id)
 > Needs Data from Ticket-, Event- and Paymentservice  
 
 ## Feedback
-/create  
-/read  
-/update  
-/delete  
+### GET /review/{review_id}
+**Response:**
+```json
+---------------------
+```
+
+### GET /review/{event_id}
+**Response:**
+```json
+---------------------
+```
+
+### POST /review
 
 ### Database Data
 ID INT  PRIMARY KEY  
