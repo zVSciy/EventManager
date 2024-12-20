@@ -26,7 +26,8 @@ Open `nginx.conf`
 
 Modify `server_name` to your needs
 
-And remove the `ssl_client_certificate` directive if you don't want to use a client certificate
+> [!CAUTION]
+> Remove the `ssl_client_certificate`, `ssl_verify_client` and `ssl_verify_depth` directives if you don't want to use a client certificate
 
 
 ### Environment variables
