@@ -18,7 +18,7 @@ services:
       -CAcreateserial -out /ssl/server-cert.pem -days 365 -sha256
       "
     volumes:
-      - ./test:/ssl
+      - ./ssl:/ssl
 
   client-cert-gen:
     image: alpine/openssl
@@ -35,4 +35,4 @@ services:
       openssl pkcs12 -export -out /ssl/client-cert.p12 -inkey /ssl/client-key.pem -in /ssl/client-cert.pem -certfile /ssl/ca-cert.pem
       "
     volumes:
-      - ./test:/ssl
+      - ./ssl:/ssl
