@@ -86,7 +86,7 @@ definitions:
     - recipient_id
     - user_id
     type: object
-host: reiner.gg
+host: localhost
 info:
   contact: {}
   description: API for managing payments

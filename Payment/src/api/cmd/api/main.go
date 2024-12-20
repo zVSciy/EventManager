@@ -18,7 +18,7 @@ import (
 // @title Payment Service API
 // @version 1.0
 // @description API for managing payments
-// @host reiner.gg
+// @host localhost
 // @BasePath /api/v1
 func main() {
 	MONGO_URI := util.Getenv("MONGO_URI", "mongodb://db-payment:27017")

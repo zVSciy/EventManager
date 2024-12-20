@@ -6,7 +6,7 @@
         "contact": {},
         "version": "1.0"
     },
-    "host": "reiner.gg",
+    "host": "localhost",
     "basePath": "/api/v1",
     "paths": {
         "/accounts": {
