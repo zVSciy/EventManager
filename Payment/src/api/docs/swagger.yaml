@@ -96,7 +96,7 @@ paths:
   /accounts:
     post:
       parameters:
-      - description: Account ID
+      - description: User ID
         in: body
         name: account
         required: true

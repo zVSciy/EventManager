@@ -15,7 +15,7 @@ Create Account
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| account | body | Account ID | Yes | [models.AccountRequest](#models.AccountRequest) |
+| account | body | User ID | Yes | [models.AccountRequest](#models.AccountRequest) |
 
 ##### Responses
 

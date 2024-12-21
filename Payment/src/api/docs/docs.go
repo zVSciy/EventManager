@@ -23,7 +23,7 @@ const docTemplate = `{
                 "summary": "Create Account",
                 "parameters": [
                     {
-                        "description": "Account ID",
+                        "description": "User ID",
                         "name": "account",
                         "in": "body",
                         "required": true,

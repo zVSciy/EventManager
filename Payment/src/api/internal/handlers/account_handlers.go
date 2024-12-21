@@ -44,7 +44,7 @@ func GetAccount(w http.ResponseWriter, r *http.Request) {
 // CreateAccount godoc
 // @Summary Create Account
 // @Tags accounts
-// @Param account body models.AccountRequest true "Account ID"
+// @Param account body models.AccountRequest true "User ID"
 // @Success 200 {object} models.CreateAccountResponse "Account created successfully"
 // @Failure 400 {object} models.ErrorResponse "Invalid request"
 // @Router /accounts [post]
