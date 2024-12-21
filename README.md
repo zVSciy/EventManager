@@ -254,58 +254,8 @@ Event INT  (References to Event.id)
 
 ## Payment
 
-### GET /payments/{id}
-```http
-GET /payments/{id}
-Authorization: Bearer token
-```
-**Response:**
-```json
-{
-  "id": "abcabc",
-  "userId": "user1@example.com",
-  "recipientId": "user2@example.com",
-  "amount": 100.0,
-  "paymentReference": "some payment reference",
-  "status": "processed",
-  "createdAt": "(date)",
-  "processedAt": "(date)"
-}
-```
+### Go to [Payment API Specification](Payment/api-spec.md)
 
-### POST /payments
-```http
-POST /payments
-Content-Type: application/json
-Authorization: Bearer token
-Idempotency-Key: some-unique-key
-
-{
-  "userId": "user1@example.com",
-  "recipientId": "user2@example.com",
-  "amount": 100.0,
-  "currency": "EUR",
-  "paymentReference": "some payment reference"
-}
-```
-**Response:**
-```json
-{
-  "status": "processed",
-  "id": "abcabc"
-}
-```
-
-### Database Data
-#### Collections
-- Accounts
-  - ``id``, ``userId``, ``accountStatus``, ``balance``, ``createdAt``
-
-- Payments
-  - ``id``, ``userId``, ``recipientId``, ``amount``, ``currency``, ``status``, ``createdAt``, ``processedAt``
-
-
-> Needs Data from Ticket- and Userservice
 
 ## Notification
 
