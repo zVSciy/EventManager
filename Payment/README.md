@@ -12,7 +12,7 @@ The following command will generate the necessary certificates
 docker compose -f compose-generate-certs.yaml run --rm cert-gen
 ```
 
-If you wish to run the development stage on a server, also generate a client certificate and import it into your browser
+If you wish to run the development stage on a server, also generate a client certificate and import it into your browser (client-cert.p12)
 
 If not, you can ignore the following command
 
@@ -33,9 +33,11 @@ Modify `server_name` to your needs
 ### Environment variables
 
 > [!TIP]
-> Everything will work with the fallback values, so a .env file is not required for functionality
+> Everything will work for localhost with the fallback values, so a .env file would not be required for that.
 
 If you want to change something, rename `example.env` to `.env` and then you can modify the values.
+
+Environment variables prefixed with `SWAGGO_` can be used to adjust the Swagger configuration, ensuring that requests made through the UI are directed to the correct destination.
 
 
 ## Running the containers
@@ -61,12 +63,12 @@ Choose `production` to have only the compiled binary in the image
 #### If everything is ready to go, you can start the containers 
 
 ```sh
-docker compose up -d --build
+docker compose up -d
 ```
 
 ## How to use
 
-You can try out the api under `/swagger`
+You can try out the endpoints at `/swagger`
 
 
 ## Testing

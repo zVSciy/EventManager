@@ -25,6 +25,10 @@ func main() {
 	PORT := fmt.Sprintf(":%s", util.Getenv("PORT", "3000"))
 	TZ := util.Getenv("TZ", "Europe/Vienna")
 
+	SWAGGO_SCHEME := util.Getenv("SWAGGO_SCHEME", "https")
+	SWAGGO_HOST := util.Getenv("SWAGGO_HOST", "localhost")
+	SWAGGO_BASEPATH := util.Getenv("SWAGGO_BASEPATH", "/api/v1")
+
 	log.Println("Initializing Timezone...")
 	util.InitTimezone(TZ)
 
@@ -42,6 +46,15 @@ func main() {
 	mux.HandleFunc("GET /docs", handlers.GetDocs)
 	mux.Handle("/swagger/", httpSwagger.Handler(
 		httpSwagger.URL("/docs"),
+		httpSwagger.BeforeScript(util.InjectScript),
+		httpSwagger.Plugins([]string{"UrlMutatorPlugin"}),
+		httpSwagger.UIConfig(map[string]string{
+			"onComplete": fmt.Sprintf(`() => {
+				window.ui.setScheme('%s');
+				window.ui.setHost('%s');
+				window.ui.setBasePath('%s');
+			}`, SWAGGO_SCHEME, SWAGGO_HOST, SWAGGO_BASEPATH),
+		}),
 	))
 
 	api := http.NewServeMux()
