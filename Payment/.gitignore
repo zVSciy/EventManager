@@ -1,0 +1,7 @@
+*.pem
+*.csr
+*.p12
+bin/
+tmp/
+test.*
+*.code-workspace

@@ -1,6 +1,7 @@
 {
     "python.testing.pytestArgs": [
-        "Notifications"
+        "Notifications",
+        "Review"
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,

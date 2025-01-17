@@ -1,0 +1,235 @@
+basePath: /api/v1
+definitions:
+  models.Account:
+    properties:
+      balance:
+        type: number
+      createdAt:
+        type: string
+      currency:
+        type: string
+      user_id:
+        type: string
+    required:
+    - user_id
+    type: object
+  models.AccountRequest:
+    properties:
+      user_id:
+        type: string
+    type: object
+  models.CreateAccountResponse:
+    properties:
+      message:
+        type: string
+      user_id:
+        type: string
+    type: object
+  models.CreatePaymentResponse:
+    properties:
+      id:
+        type: string
+      status:
+        type: string
+    type: object
+  models.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  models.HealthCheckResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  models.Payment:
+    properties:
+      amount:
+        type: number
+      created_at:
+        type: string
+      currency:
+        type: string
+      id:
+        type: string
+      payment_reference:
+        type: string
+      processed_at:
+        type: string
+      recipient_id:
+        type: string
+      status:
+        type: string
+      user_id:
+        type: string
+    required:
+    - amount
+    - currency
+    - recipient_id
+    - user_id
+    type: object
+  models.PaymentRequest:
+    properties:
+      amount:
+        type: number
+      currency:
+        type: string
+      payment_reference:
+        type: string
+      recipient_id:
+        type: string
+      user_id:
+        type: string
+    required:
+    - amount
+    - currency
+    - recipient_id
+    - user_id
+    type: object
+host: localhost
+info:
+  contact: {}
+  description: API for managing payments
+  title: Payment Service API
+  version: "1.0"
+paths:
+  /accounts:
+    post:
+      parameters:
+      - description: User ID
+        in: body
+        name: account
+        required: true
+        schema:
+          $ref: '#/definitions/models.AccountRequest'
+      responses:
+        "200":
+          description: Account created successfully
+          schema:
+            $ref: '#/definitions/models.CreateAccountResponse'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Create Account
+      tags:
+      - accounts
+  /accounts/{user_id}:
+    get:
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Account details
+          schema:
+            $ref: '#/definitions/models.Account'
+        "404":
+          description: Account not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get Account Details
+      tags:
+      - accounts
+  /accounts/{user_id}/payments:
+    get:
+      parameters:
+      - description: UserID
+        in: path
+        name: user_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: List of payments
+          schema:
+            items:
+              $ref: '#/definitions/models.Payment'
+            type: array
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get Payments by Account
+      tags:
+      - payments
+  /health:
+    get:
+      responses:
+        "200":
+          description: Service is healthy
+          schema:
+            $ref: '#/definitions/models.HealthCheckResponse'
+      summary: Health Check
+      tags:
+      - health
+  /payments:
+    post:
+      parameters:
+      - description: Unique key to prevent duplicate payments
+        in: header
+        name: Idempotency-Key
+        required: true
+        type: string
+      - description: Payment details
+        in: body
+        name: payment
+        required: true
+        schema:
+          $ref: '#/definitions/models.PaymentRequest'
+      responses:
+        "201":
+          description: Payment created successfully
+          schema:
+            $ref: '#/definitions/models.CreatePaymentResponse'
+        "400":
+          description: Invalid request or missing idempotency key
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "409":
+          description: Duplicate idempotency key
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Create Payment
+      tags:
+      - payments
+  /payments/{id}:
+    get:
+      parameters:
+      - description: Payment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Payment details
+          schema:
+            $ref: '#/definitions/models.Payment'
+        "400":
+          description: Invalid payment ID
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Payment not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get Payment
+      tags:
+      - payments
+swagger: "2.0"

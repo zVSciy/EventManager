@@ -1,0 +1,12 @@
+# Config file for Air
+[build]
+  cmd = "swag init -g cmd/api/main.go && go build -o bin/main cmd/api/main.go"
+  bin = "bin/main"
+  dir = "."
+  include_ext = ["go"]
+  exclude_dir = ["vendor", "tmp", "docs"]
+  exclude_regex = ["_test.go"]
+  run_after_build = "chmod +x bin/main"
+
+[log]
+  level = "debug"

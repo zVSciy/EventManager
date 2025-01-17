@@ -254,58 +254,8 @@ Event INT  (References to Event.id)
 
 ## Payment
 
-### GET /payments/{id}
-```http
-GET /payments/{id}
-Authorization: Bearer token
-```
-**Response:**
-```json
-{
-  "id": "abcabc",
-  "userId": "user1@example.com",
-  "recipientId": "user2@example.com",
-  "amount": 100.0,
-  "paymentReference": "some payment reference",
-  "status": "processed",
-  "createdAt": "(date)",
-  "processedAt": "(date)"
-}
-```
+### Go to [Payment API Specification](Payment/api-spec.md)
 
-### POST /payments
-```http
-POST /payments
-Content-Type: application/json
-Authorization: Bearer token
-Idempotency-Key: some-unique-key
-
-{
-  "userId": "user1@example.com",
-  "recipientId": "user2@example.com",
-  "amount": 100.0,
-  "currency": "EUR",
-  "paymentReference": "some payment reference"
-}
-```
-**Response:**
-```json
-{
-  "status": "processed",
-  "id": "abcabc"
-}
-```
-
-### Database Data
-#### Collections
-- Accounts
-  - ``id``, ``userId``, ``accountStatus``, ``balance``, ``createdAt``
-
-- Payments
-  - ``id``, ``userId``, ``recipientId``, ``amount``, ``currency``, ``status``, ``createdAt``, ``processedAt``
-
-
-> Needs Data from Ticket- and Userservice
 
 ## Notification
 
@@ -442,17 +392,132 @@ ticketId INT (References to Ticket.Id)
 > Needs Data from Ticket-, Event- and Paymentservice  
 
 ## Feedback
-/create  
-/read  
-/update  
-/delete  
+### GET /reviews/{review_id}
+**Response:**
+```json
+{
+    "content": "Great event!",
+    "event_id": 1,
+    "rating": 5,
+    "user_id": 1,
+    "id": 1
+}
+```
+
+### GET /reviews/
+**Response:**
+```json
+[
+    {
+        "event_id": 1,
+        "content": "Great event!",
+        "rating": 5,
+        "user_id": 1,
+        "id": 1
+    },
+    {
+        "event_id": 2,
+        "content": "Not bad",
+        "rating": 3,
+        "user_id": 2,
+        "id": 2
+    },
+    {
+        "event_id": 1,
+        "content": "Could be better",
+        "rating": 2,
+        "user_id": 3,
+        "id": 3
+    },
+    {
+        "event_id": 2,
+        "content": "Loved it!",
+        "rating": 5,
+        "user_id": 4,
+        "id": 4
+    }
+]
+```
+
+### GET /reviews/event/{event_id}
+**Response:**
+```json
+[
+    {
+        "event_id": 3,
+        "content": "Terrible experience",
+        "rating": 1,
+        "user_id": 6,
+        "id": 6
+    },
+    {
+        "event_id": 3,
+        "content": "Pretty good",
+        "rating": 4,
+        "user_id": 7,
+        "id": 7
+    }
+]
+```
+
+### POST /reviews
+**Request:**
+```json
+{
+    "user_id": 4,
+    "content": "Amazing event!",
+    "rating": 5,
+    "event_id": 1
+}
+```
+
+**Response:**
+```json
+{
+    "event_id": 1,
+    "content": "Amazing event!",
+    "rating": 5,
+    "user_id": 4,
+    "id": 10
+}
+```
+
+### PUT /reviews/{review_id} 
+**Request:**
+```json
+{
+    "user_id": 4,
+    "content": "Shit event!!!",
+    "rating": 1,
+    "event_id": 1
+}
+```
+
+**Response:**
+```json
+{
+    "event_id": 1,
+    "content": "Shit event!!!",
+    "rating": 1,
+    "user_id": 4,
+    "id": 10
+}
+```
+
+### DELETE /reviews/{review_id} 
+**Response:**
+```json
+{
+    "detail": "Review deleted successfully"
+}
+```
 
 ### Database Data
-ID INT  PRIMARY KEY  
-User  INT  
-Comment  Text  
-Event INT  
-Date  Datetime  
+- ID INT  PRIMARY KEY 
+- User  INT
+- Comment  Text
+- Rating INT
+- Event INT  
 
 > Needs Data from Ticket-, Event- and Userservice.
 
