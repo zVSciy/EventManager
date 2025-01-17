@@ -39,7 +39,7 @@ services:
 
   events_api:
     build:
-      context: .
+      context: ../Events
       dockerfile: ../Events/DockerFile
     
     volumes:
@@ -107,7 +107,7 @@ services:
 
   tickets_api:
     build:
-      context: .
+      context: ../Tickets
       dockerfile: ../Tickets/docker/fastapi/Dockerfile
 
     env_file: .env
@@ -129,7 +129,7 @@ services:
   
   tickets_web:
     build:
-      context: .
+      context: ../Tickets
       dockerfile: ../Tickets/docker/sveltekit/Dockerfile
 
     ports:
@@ -139,4 +139,4 @@ services:
       - tickets_api
 
     networks:
-      - event-network
+      - eventmanager-net
