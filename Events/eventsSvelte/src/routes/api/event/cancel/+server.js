@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 
-const API_BASE_URL = 'http://api:8000'; 
+const API_BASE_URL = 'http://events_api:8000';
 
 export async function PUT({ request, url }) {
     const id = url.searchParams.get('id'); // Fetch event ID from query parameters
