@@ -12,9 +12,9 @@ export async function GET({ url }) {
   let apiURL = '';
 
   if (!isNaN(eventID)) {
-    apiURL = `http://api:8000/tickets?event_id=${eventID}`;
+    apiURL = `http://tickets_api:8000/tickets?event_id=${eventID}`;
   } else {
-    apiURL = `http://api:8000/tickets`;
+    apiURL = `http://tickets_api:8000/tickets`;
   }
   
   try {
@@ -40,7 +40,7 @@ export async function POST({ url }) {
   const userID = url.searchParams.get('user_id');
   const eventID = url.searchParams.get('event_id');
 
-  const apiURL = `http://api:8000/tickets`;
+  const apiURL = `http://tickets_api:8000/tickets`;
   
   try {
     const response = await fetch(apiURL, {
@@ -87,7 +87,7 @@ export async function PUT({ url }) {
     return jsonResponse({status: 400, error: 'TicketID must be a number!'});
   }
 
-  const apiURL = `http://api:8000/tickets/${changedTID}`;
+  const apiURL = `http://tickets_api:8000/tickets/${changedTID}`;
   
   try {
     const response = await fetch(apiURL, {
@@ -131,7 +131,7 @@ export async function DELETE({ url }) {
     return jsonResponse({status: 400, error: 'TicketID must be a number!'});
   }
 
-  const apiURL = `http://api:8000/tickets/${ticketID}`;
+  const apiURL = `http://tickets_api:8000/tickets/${ticketID}`;
 
   try {
     const response = await fetch(apiURL, {

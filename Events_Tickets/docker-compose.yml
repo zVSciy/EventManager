@@ -1,7 +1,7 @@
 volumes:
   events-mysql-data:
   events-fast-data:
-
+  tickets-fast-data:
   tickets-mysql-data:
 
 networks:
@@ -113,6 +113,10 @@ services:
     env_file: .env
 
     restart: always
+    
+    volumes:
+    - tickets-fast-data:/media
+    - ../Tickets/src_fastapi:/app
 
     ports:
       - "8000"
@@ -134,6 +138,10 @@ services:
 
     ports:
       - "8002:5173"
+
+    volumes:
+      - ../Tickets/src_svelte_frontend:/app #Hot-reload
+      - /app/node_modules
 
     depends_on:
       - tickets_api
