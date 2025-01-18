@@ -1,6 +1,5 @@
 <script>
     import { onMount } from 'svelte';
-    import { fetchEvents } from '$lib/api';
 	import { goto } from '$app/navigation';
 
     let name = '';
