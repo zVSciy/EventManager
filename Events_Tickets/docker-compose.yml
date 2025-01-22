@@ -28,7 +28,7 @@ services:
       - eventmanager-net
 
     healthcheck:
-       test: 'echo "select now(); " | mysql -u${EVENTS_MYSQL_USER} -p${EVENTS_MYSQL_PASSWORD}'
+       test: 'echo "select now(); " | mysql -h ${EVENTS_MYSQL_HOST} -u${EVENTS_MYSQL_USER} -p${EVENTS_MYSQL_PASSWORD}'
        interval: 1s
        retries: 10
        start_period: 10s
