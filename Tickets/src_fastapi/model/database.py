@@ -10,7 +10,6 @@ db_port = os.environ.get('TICKETS_MYSQL_DATABASE_PORT', 3306)
 db_database = os.environ.get('TICKETS_MYSQL_DATABASE', 'api_db')
 
 SQLALCHEMY_DB_URL = f"mysql+pymysql://{db_user}:{db_password}@{db_host}:{db_port}/{db_database}"
-print(SQLALCHEMY_DB_URL)
 engine = create_engine(SQLALCHEMY_DB_URL, echo=True)
 DBSession = sessionmaker(engine, autoflush=False)
 

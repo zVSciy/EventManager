@@ -28,7 +28,7 @@ export async function GET({ url }) {
     }
 
   } catch (error) {
-    return jsonResponse({status: 500, error: 'Internal server error'});
+    return jsonResponse({status: 500, error: 'Internal server error (SvelteKit-sided error)'});
   }
 }
 
