@@ -17,6 +17,7 @@ export async function PUT({ url }) {
   const vip = url.searchParams.get('vip');
   let normal_tickets = 0;
   let vip_tickets = 0;
+  console.log(vip)
   if (vip == 'true') {
     vip_tickets = 2;
     if (moreTickets == 0) {

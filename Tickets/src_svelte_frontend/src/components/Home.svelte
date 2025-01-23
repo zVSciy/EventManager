@@ -64,11 +64,11 @@ let moreTickets = 0;
         }
     }
 async function updateAvailableTickets() {
-        const response = await fetch(`/api/events?event_id=${eventID} & delete=${moreTickets} & vip=${ticketVIP}`,
+        const response = await fetch(`/api/events?event_id=${eventID} & delete=${moreTickets} & vip=${encodeURIComponent(ticketVIP)}`,
         {
           method: "PUT"
         });
-
+        console.log(ticketVIP)
         if (response.ok) {
           errorMessage = '';
           let eventData = await response.json();
