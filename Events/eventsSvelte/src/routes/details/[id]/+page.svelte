@@ -40,8 +40,9 @@
         
 
         function goToTickets() {
-        sessionStorage.setItem('eventId', event.ID); // ID in Session Storage speichern
-        goto('/tickets'); // Navigation zur Tickets-Seite
+        const eventId = event.ID;
+    const targetUrl = `http://192.168.17.128:8002/?eventId=${eventId}`;
+    window.location.href = targetUrl; 
     }
     onMount(() => {
         event.ID = window.location.href.split('/').pop();

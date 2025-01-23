@@ -92,12 +92,25 @@ def update_event_tickets(event_id: int, tickets: TicketsUpdate, db: Session = De
     db_event = db.query(Event).filter(Event.ID == event_id).first()
     if db_event is None:
         raise HTTPException(status_code=404, detail="Event not found")
-    
-    if tickets.available_normal_tickets is not None:
-        db_event.available_normal_tickets = tickets.available_normal_tickets
-    if tickets.available_vip_tickets is not None:
-        db_event.available_vip_tickets = tickets.available_vip_tickets
+    if tickets.available_normal_tickets == 1:
+        db_event.available_normal_tickets += 1
+        print(db_event.available_normal_tickets)
+    elif tickets.available_normal_tickets ==0 and (db_event.available_normal_tickets-1)>0:
+        db_event.available_normal_tickets -= 1
+    elif tickets.available_normal_tickets ==2:
+        print(db_event.available_normal_tickets)
+    else:
+        return {"status": 400, "response": "Not enough tickets available"}
+    if tickets.available_vip_tickets == 1:
+        db_event.available_vip_tickets += 1
+        print(db_event.available_vip_tickets)
+    elif tickets.available_vip_tickets ==0 and (db_event.available_vip_tickets-1)>0:
+        db_event.available_vip_tickets -= 1
+    elif tickets.available_vip_tickets ==2:
+        print(db_event.available_vip_tickets)
+    else:
+        return {"status": 400, "response": "Not enough tickets available"}
     
     db.commit()
     db.refresh(db_event)
-    return {"code": 200, "response": "Available tickets were updated successfully", "eventID": db_event.ID}
+    return {"status": 200, "response": "Available tickets were updated successfully", "eventID": db_event.ID}
