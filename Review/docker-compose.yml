@@ -8,16 +8,14 @@ services:
 
     volumes:
       - ./src:/app
-
     build:
       dockerfile: ./src/Dockerfile
-    
+      
     ports:
     - "8083:8000"
 
-    # command: >
-    #   sh -c "pytest && 
-    #          exec uvicorn main:app --host 0.0.0.0 --reload"
+    command: >
+      exec uvicorn main:app --host 0.0.0.0 --reload"
 
     networks:
     - my-network
