@@ -10,7 +10,7 @@ services:
       - ./src:/app
     build:
       dockerfile: ./src/Dockerfile
-      
+
     ports:
     - "8083:8000"
 
