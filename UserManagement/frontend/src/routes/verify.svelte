@@ -5,13 +5,13 @@
 
     async function verifyToken() {
         try {
-            const response = await apiFetch("/verify", {
+            await apiFetch("/verify", {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
             });
             verificationMessage = "Token is valid!";
-        } catch (error) {
+        } catch {
             verificationMessage = "Invalid or expired token.";
         }
     }

@@ -11,11 +11,11 @@
                 },
             });
         } catch (error) {
-            alert("Failed to fetch user data.");
+            alert("Failed to fetch user data." + error);
         }
     }
 
     fetchUserData();
 </script>
 
-<h1>Welcome, {userData.email}!</
+<h1>Welcome, {userData.email}!</h1>
