@@ -63,26 +63,34 @@ let moreTickets = 0;
           errorMessage = 'Failed to fetch tickets data';
         }
     }
+
     async function updateAvailableTickets() {
-        const response = await fetch(`/api/events?event_id=${eventID} & delete=${moreTickets} & vip=${encodeURIComponent(ticketVIP)}`,
+        const response = await fetch(`/api/events?event_id=${eventID}&delete=${moreTickets}&vip=${encodeURIComponent(ticketVIP)}`,
         {
           method: "PUT"
         });
-        console.log(ticketVIP)
+        
+        // console.log(ticketVIP)
+
         if (response.ok) {
           errorMessage = '';
           let eventData = await response.json();
-          console.log(eventData)
-          console.log(eventData[0].status)
+
+          // console.log(eventData)
+          // console.log(eventData[0].status)
+
           if (eventData[0].status == 200 && moreTickets == 0){
             addTickets();
+
           } else if (eventData[0].status == 200 && moreTickets == 1) {
             deleteTickets();
           }
+
         } else {
           eventData = '';
         }
     }
+
     async function editTickets() {
         const response = await fetch(`/api/tickets?ticket_id=${encodeURIComponent(changedTicketID)}&`+
         `price=${encodeURIComponent(changedTicketPrice)}&row=${encodeURIComponent(changedTicketRow)}&`+
