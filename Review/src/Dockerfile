@@ -4,4 +4,5 @@ WORKDIR /app
 COPY /src /app/
 # COPY ./ssl /app/ssl
 RUN pip install -r requirements.txt
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--reload"]
+ENTRYPOINT [ "python", "src/main.py" ]
+CMD ["uvicorn", "run", "--host", "0.0.0.0", "--reload"]
