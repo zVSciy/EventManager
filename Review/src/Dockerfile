@@ -7,4 +7,4 @@ COPY . code
 WORKDIR /code
 
 ENTRYPOINT [ "python", "src/main.py" ]
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--reload", "--log-config", "/code/src/logging_config.yaml"]
+CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port=8000", "--reload", "--log-config", "/code/src/logging_config.yaml"]
