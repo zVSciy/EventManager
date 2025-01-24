@@ -13,7 +13,7 @@ services:
     - "8083:8000"
 
     command: >
-      sh -c "exec uvicorn src.main:app --host 0.0.0.0 --reload"
+      sh -c "exec uvicorn main:app --host 0.0.0.0 --reload"
 
     networks:
     - my-network

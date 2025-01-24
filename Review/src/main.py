@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from database import SessionLocal, init_db, engine, Base
 from models import Review
 from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -11,6 +12,17 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
+origins = [
+    "*"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 # Create the database tables
 # Initialize the database
 init_db()

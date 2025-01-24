@@ -57,6 +57,15 @@
             </div>
 
             <div class="w-full md:w-1/2 px-2 mb-4 flex flex-col">
+                <h1 class="text-3xl font-bold mb-4 text-solana-primary">Get Review by ID</h1>
+                <form id="getReviewForm" class="bg-gray-800 p-4 rounded-lg shadow-md">
+                    <div class="mb-4">
+                        <label for="review_id_get" class="block text-sm font-medium">Review ID:</label>
+                        <input type="number" id="review_id_get" name="review_id_get" min="0" class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-solana-primary" required>
+                    </div>
+                    <button type="submit" id="getReviewButton" class="w-full btn-disabled text-white font-bold py-2 px-4 rounded-md">Get Review</button>
+                </form>
+
                 <h1 class="text-3xl font-bold mb-4 text-solana-primary">Get Reviews by Event ID</h1>
                 <form id="getReviewsForm" class="bg-gray-800 p-4 rounded-lg shadow-md">
                     <div class="mb-4">
@@ -67,6 +76,36 @@
                 </form>
 
                 <div id="reviews" class="mt-8 bg-gray-800 p-16 rounded-lg shadow-md flex-grow"></div>
+            </div>
+
+            <div class="w-full md:w-1/2 px-2 mb-4 flex flex-col">
+                <h1 class="text-3xl font-bold mb-4 text-solana-primary">Update Review</h1>
+                <form id="updateReviewForm" class="bg-gray-800 p-4 rounded-lg shadow-md">
+                    <div class="mb-4">
+                        <label for="review_id_update" class="block text-sm font-medium">Review ID:</label>
+                        <input type="number" id="review_id_update" name="review_id_update" min="0" class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-solana-primary" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="content_update" class="block text-sm font-medium">Content:</label>
+                        <textarea id="content_update" name="content_update" class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-solana-primary" required></textarea>
+                    </div>
+                    <div class="mb-4">
+                        <label for="rating_update" class="block text-sm font-medium">Rating:</label>
+                        <input type="number" id="rating_update" name="rating_update" min="1" max="5" class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-solana-primary" required>
+                    </div>
+                    <button type="submit" id="updateReviewButton" class="w-full btn-disabled text-white font-bold py-2 px-4 rounded-md">Update Review</button>
+                </form>
+            </div>
+
+            <div class="w-full md:w-1/2 px-2 mb-4 flex flex-col">
+                <h1 class="text-3xl font-bold mb-4 text-solana-primary">Delete Review by ID</h1>
+                <form id="deleteReviewForm" class="bg-gray-800 p-4 rounded-lg shadow-md">
+                    <div class="mb-4">
+                        <label for="review_id_delete" class="block text-sm font-medium">Review ID:</label>
+                        <input type="number" id="review_id_delete" name="review_id_delete" min="0" class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-solana-primary" required>
+                    </div>
+                    <button type="submit" id="deleteReviewButton" class="w-full btn-disabled text-white font-bold py-2 px-4 rounded-md">Delete Review</button>
+                </form>
             </div>
         </div>
     </div>
@@ -92,11 +131,28 @@
             updateButtonState('getReviewsForm', 'getReviewsButton');
         });
 
+        document.getElementById('updateReviewForm').addEventListener('input', function() {
+            updateButtonState('updateReviewForm', 'updateReviewButton');
+        });
+
+        document.getElementById('deleteReviewForm').addEventListener('input', function() {
+            updateButtonState('deleteReviewForm', 'deleteReviewButton');
+        });
+
+        document.getElementById('getReviewForm').addEventListener('input', function() {
+            updateButtonState('getReviewForm', 'getReviewButton');
+        });
+
         // Initial check on page load
         document.addEventListener('DOMContentLoaded', function() {
             updateButtonState('reviewForm', 'submitReviewButton');
             updateButtonState('getReviewsForm', 'getReviewsButton');
+            updateButtonState('updateReviewForm', 'updateReviewButton');
+            updateButtonState('deleteReviewForm', 'deleteReviewButton');
+            updateButtonState('getReviewForm', 'getReviewButton');
         });
     </script>
+    <script src="../static/script.js"></script>
+
 </body>
 </html>
