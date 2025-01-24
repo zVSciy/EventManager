@@ -6,7 +6,6 @@ services:
   api:
     container_name: ReviewAPI
     build:
-      context: .
       dockerfile: ./src/Dockerfile
 
     volumes:
@@ -27,7 +26,6 @@ services:
   frontend:
     container_name: ReviewFrontend
     build:
-      context: ./frontend
       dockerfile: ./frontend/Dockerfile
 
     volumes:
