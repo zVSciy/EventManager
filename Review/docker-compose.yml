@@ -1,5 +1,8 @@
 networks:
   my-network:
+    ipam:
+      config:
+        - subnet: 192.168.1.0/24
 
 services:
 
@@ -17,6 +20,8 @@ services:
 
     networks:
     - my-network
+    extra_hosts:
+      - "api:192.168.1.1"
 
   frontend:
     container_name: ReviewFrontend
