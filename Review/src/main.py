@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
+# Create the database tables
 # Initialize the database
 init_db()
 
