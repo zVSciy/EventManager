@@ -10,7 +10,7 @@ document.getElementById('reviewForm').addEventListener('submit', async function(
         return;
     }
 
-    const response = await fetch('http://ReviewAPI:8083/reviews/', {
+    const response = await fetch('http://ReviewAP:8083/reviews/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
