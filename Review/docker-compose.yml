@@ -22,14 +22,9 @@ services:
     container_name: ReviewFrontend
     build:
       dockerfile: ./frontend/Dockerfile
-
-    volumes:
-    - ./frontend:/app
-
-    working_dir: "/app"
     
     ports:
-    - "3000:3000"
+    - "5000:5000"
 
     networks:
     - my-network
