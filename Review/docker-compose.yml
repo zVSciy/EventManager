@@ -7,7 +7,7 @@ services:
     container_name: ReviewAPI
 
     build:
-      dockerfile: ./src/Dockerfile
+      dockerfile: ./backend/Dockerfile
 
     ports:
     - "8083:8000"
@@ -23,9 +23,7 @@ services:
 
     build:
       dockerfile: ./frontend/Dockerfile
-    
     ports:
-    - "5000:5000"
-
+      - "3000:80"
     networks:
-    - my-network
+      - my-network

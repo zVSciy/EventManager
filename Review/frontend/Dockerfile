@@ -1,12 +1,20 @@
-FROM python:3
+# Use an official Node.js runtime as a parent image
+FROM node:14-alpine
 
-COPY frontend/requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+WORKDIR /app
 
-COPY . code
-WORKDIR /code
+COPY package*.json ./
 
+RUN npm install
 
-ENTRYPOINT ["python", "frontend/app.py"]
-CMD ["flask", "run", "--host=0.0.0.0", "--port=5000"]
+COPY . .
 
+RUN npm run build
+
+FROM nginx:alpine
+
+COPY --from=0 /app/build /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
