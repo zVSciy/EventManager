@@ -7,7 +7,6 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    subprocess.run(["python", "flask_app/create_json.py"])
     return render_template("index.html")
 
 if __name__ == "__main__":
