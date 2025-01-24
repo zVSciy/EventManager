@@ -5,6 +5,10 @@ services:
 
   api:
     container_name: ReviewAPI
+
+    volumes:
+      - ./src:/app
+
     build:
       dockerfile: ./src/Dockerfile
     
@@ -20,6 +24,10 @@ services:
 
   frontend:
     container_name: ReviewFrontend
+
+    volumes:
+      - ./frontend:/app
+
     build:
       dockerfile: ./frontend/Dockerfile
     
