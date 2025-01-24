@@ -15,7 +15,7 @@ services:
     - "8083:8000"
 
     command: >
-      exec uvicorn main:app --host 0.0.0.0 --reload"
+      exec uvicorn main:app --host 0.0.0.0 --reload
 
     networks:
     - my-network
