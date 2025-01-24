@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from database import SessionLocal, init_db, engine, Base
 from models import Review
 from pydantic import BaseModel
+import uvicorn
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
