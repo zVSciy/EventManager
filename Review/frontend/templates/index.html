@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review App</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .solana-primary {
+            background-color: #00FFA3;
+        }
+        .solana-secondary {
+            background-color: #DC1FFF;
+        }
+        .btn-disabled {
+            background-color: #FF0000;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+    <nav class="bg-gray-800 p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="#" class="text-white text-xl font-bold">Review App</a>
+            <div>
+                <a href="#" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Placeholder Link 1</a>
+                <a href="#" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Placeholder Link 2</a>
+            </div>
+        </div>
+    </nav>
+    <div class="container mx-auto p-4">
+        <div class="flex flex-wrap -mx-2">
+            <div class="w-full md:w-1/2 px-2 mb-4 flex flex-col">
+                <h1 class="text-3xl font-bold mb-4 text-solana-primary">Submit a Review</h1>
+                <form id="reviewForm" class="bg-gray-800 p-4 rounded-lg shadow-md flex-grow">
+                    <div class="mb-4">
+                        <label for="user_id" class="block text-sm font-medium">User ID:</label>
+                        <input type="number" id="user_id" name="user_id" min="0" class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-solana-primary" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="content" class="block text-sm font-medium">Content:</label>
+                        <textarea id="content" name="content" class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-solana-primary" required></textarea>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="rating" class="block text-sm font-medium">Rating:</label>
+                        <input type="number" id="rating" name="rating" min="1" max="5" class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-solana-primary" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="event_id" class="block text-sm font-medium">Event ID:</label>
+                        <input type="number" id="event_id" name="event_id" min="0" class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-solana-primary" required>
+                    </div>
+
+                    <button type="submit" id="submitReviewButton" class="w-full btn-disabled text-white font-bold py-2 px-4 rounded-md">Submit Review</button>
+                </form>
+            </div>
+
+            <div class="w-full md:w-1/2 px-2 mb-4 flex flex-col">
+                <h1 class="text-3xl font-bold mb-4 text-solana-primary">Get Reviews by Event ID</h1>
+                <form id="getReviewsForm" class="bg-gray-800 p-4 rounded-lg shadow-md">
+                    <div class="mb-4">
+                        <label for="event_id_get" class="block text-sm font-medium">Event ID:</label>
+                        <input type="number" id="event_id_get" name="event_id_get" min="0" class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-solana-primary" required>
+                    </div>
+                    <button type="submit" id="getReviewsButton" class="w-full btn-disabled text-white font-bold py-2 px-4 rounded-md">Get Reviews</button>
+                </form>
+
+                <div id="reviews" class="mt-8 bg-gray-800 p-16 rounded-lg shadow-md flex-grow"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateButtonState(formId, buttonId) {
+            const form = document.getElementById(formId);
+            const button = document.getElementById(buttonId);
+            if (form.checkValidity()) {
+                button.classList.remove('btn-disabled');
+                button.classList.add('solana-primary');
+            } else {
+                button.classList.remove('solana-primary');
+                button.classList.add('btn-disabled');
+            }
+        }
+
+        document.getElementById('reviewForm').addEventListener('input', function() {
+            updateButtonState('reviewForm', 'submitReviewButton');
+        });
+
+        document.getElementById('getReviewsForm').addEventListener('input', function() {
+            updateButtonState('getReviewsForm', 'getReviewsButton');
+        });
+
+        // Initial check on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateButtonState('reviewForm', 'submitReviewButton');
+            updateButtonState('getReviewsForm', 'getReviewsButton');
+        });
+    </script>
+</body>
+</html>

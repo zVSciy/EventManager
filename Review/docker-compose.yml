@@ -1,6 +1,3 @@
-volumes:
-  mysqldata:
-
 networks:
   my-network:
 
@@ -23,6 +20,23 @@ services:
     # command: >
     #   sh -c "pytest && 
     #          exec uvicorn main:app --host 0.0.0.0 --reload"
+
+    networks:
+    - my-network
+
+  frontend:
+    container_name: ReviewFrontend
+    build:
+      context: ./frontend
+      dockerfile: ./frontend/Dockerfile
+
+    volumes:
+    - ./frontend:/app
+
+    working_dir: "/app"
+    
+    ports:
+    - "3000:3000"
 
     networks:
     - my-network
