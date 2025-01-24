@@ -89,6 +89,7 @@ def edit_ticket(ticket_id: int, updated_ticket: TicketInput, db: Session = Depen
     ticket.seat_number = updated_ticket.seat_number
     ticket.vip = updated_ticket.vip
     ticket.user_id = updated_ticket.user_id
+    ticket.event_id = updated_ticket.event_id
 
     db.commit()
     db.refresh(ticket)

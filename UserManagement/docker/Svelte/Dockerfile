@@ -1,4 +1,4 @@
-FROM node:18-alpine
+FROM node:lts-alpine
 
 WORKDIR /app
 
@@ -7,6 +7,7 @@ COPY frontend/package*.json ./
 
 # Install dependencies
 RUN npm install --legacy-peer-deps
+RUN npm install
 
 # Copy the rest of the frontend source code
 COPY frontend ./
