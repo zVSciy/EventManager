@@ -39,12 +39,9 @@ services:
     build:
       context: .
       dockerfile: ./docker/FastAPI/Dockerfile
-
-
     
-    volumes:
-    - ./src:/app
-
+    # volumes:
+    # - ./src:/app
 
     depends_on:
       db:
@@ -62,6 +59,28 @@ services:
     command: >
       sh -c "pytest && 
              exec uvicorn main:app --host 0.0.0.0 --reload"
+
+    networks:
+    - my-network
+
+  frontend:
+    container_name: NotificationFrontend
+    build:
+      context: .
+      dockerfile: ./docker/Django/Dockerfile
+
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+    - ./frontend/frontend_notifications/:/app
+
+    env_file: .env
+    environment:
+      ALLOWED_HOSTS: '*'
+    
+    ports:
+    - "8090:8090"
 
     networks:
     - my-network
