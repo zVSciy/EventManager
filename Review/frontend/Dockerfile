@@ -1,6 +1,6 @@
 FROM python:3
 
-COPY flask_app/requirements.txt ./
+COPY frontend/requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . code
