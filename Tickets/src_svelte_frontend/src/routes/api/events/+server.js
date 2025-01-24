@@ -27,7 +27,7 @@ export async function PUT({ url }) {
     }
     
   } else {
-    vip_tickets =2;
+    normal_tickets =2;
     if (moreTickets == 1) {
       normal_tickets = 1;}
       else if (moreTickets == 0) {
