@@ -62,25 +62,3 @@ services:
 
     networks:
     - my-network
-
-  frontend:
-    container_name: NotificationFrontend
-    build:
-      context: .
-      dockerfile: ./docker/Django/Dockerfile
-
-    depends_on:
-      db:
-        condition: service_healthy
-    volumes:
-    - ./frontend/frontend_notifications/:/app
-
-    env_file: .env
-    environment:
-      ALLOWED_HOSTS: '*'
-    
-    ports:
-    - "8090:8090"
-
-    networks:
-    - my-network
