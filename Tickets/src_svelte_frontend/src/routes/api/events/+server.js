@@ -18,6 +18,7 @@ export async function PUT({ url }) {
   let normal_tickets = 0;
   let vip_tickets = 0;
   console.log(vip)
+  console.log(moreTickets)
   if (vip == 'true') {
     vip_tickets = 2;
     if (moreTickets == 0) {
@@ -27,7 +28,7 @@ export async function PUT({ url }) {
     }
     
   } else {
-    vip_tickets =2;
+    normal_tickets =2;
     if (moreTickets == 1) {
       normal_tickets = 1;}
       else if (moreTickets == 0) {
