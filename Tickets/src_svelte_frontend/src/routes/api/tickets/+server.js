@@ -28,7 +28,7 @@ export async function GET({ url }) {
     }
 
   } catch (error) {
-    return jsonResponse({status: 500, error: 'Internal server error (SvelteKit-sided error)'});
+    return jsonResponse({status: 500, error: error});
   }
 }
 
@@ -70,7 +70,7 @@ export async function POST({ url }) {
     }
 
   } catch (error) {
-    return jsonResponse({status: 500, error: 'Internal server error'});
+    return jsonResponse({status: 500, error: error});
   }
 }
 
@@ -119,7 +119,7 @@ export async function PUT({ url }) {
     }
 
   } catch (error) {
-    return jsonResponse({status: 500, error: 'Internal server error'});
+    return jsonResponse({status: 500, error: error});
   }
 }
 
@@ -148,6 +148,6 @@ export async function DELETE({ url }) {
       return jsonResponse({status: response.status, error: 'Failed to fetch data!'});
     }
   } catch (error) {
-    return jsonResponse({status: 500, error: 'Internal server error'});
+    return jsonResponse({status: 500, error: error});
   }
 }

@@ -63,7 +63,7 @@ let moreTickets = 0;
           errorMessage = 'Failed to fetch tickets data';
         }
     }
-async function updateAvailableTickets() {
+    async function updateAvailableTickets() {
         const response = await fetch(`/api/events?event_id=${eventID} & delete=${moreTickets} & vip=${encodeURIComponent(ticketVIP)}`,
         {
           method: "PUT"
