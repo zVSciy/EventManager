@@ -9,7 +9,7 @@ app = FastAPI()
 
 @app.get("/tickets")
 def read_tickets(event_id: int = None, db: Session = Depends(get_db)):
-    if event_id:
+    if type(event_id) == int:
         tickets = db.query(models.Ticket).filter(models.Ticket.event_id == event_id).all()
     else:
         tickets = db.query(models.Ticket).all()
@@ -17,26 +17,41 @@ def read_tickets(event_id: int = None, db: Session = Depends(get_db)):
 
 @app.post("/tickets")
 def add_ticket(ticket: TicketInput, db: Session = Depends(get_db)):
-    try:
-        new_ticket = models.Ticket(
-            price=ticket.price,
-            row=ticket.row,
-            seat_number=ticket.seat_number,
-            vip=ticket.vip,
-            user_id=ticket.user_id,
-            event_id=ticket.event_id,
-        )
-        db.add(new_ticket)
-        db.commit()
-        db.refresh(new_ticket)
-        return new_ticket
+        
+    price_max_length = models.Ticket.price.property.columns[0].type.display_width
+    row_max_length = models.Ticket.row.property.columns[0].type.length
+    seat_number_max_length = models.Ticket.seat_number.property.columns[0].type.display_width
 
-    except Exception:
-        raise HTTPException(status_code=500, detail={
-            "status": "Error 500 - Server Error",
-            "msg": "Unexpected error occured during ticket creation - are all inputs correct?"
+    if len(str(ticket.price)) > price_max_length: #Check if price is too long (max length in MySQL database)
+        raise HTTPException(status_code=400, detail={
+            "status": "Error 400 - Bad Request",
+            "msg": f"Attribute `price` is too long. This attribute mustn't be longer than {price_max_length} numbers."
         })
-    
+
+    if len(str(ticket.row)) > row_max_length: #Check if row is too long (max length in MySQL database)
+        raise HTTPException(status_code=400, detail={
+            "status": "Error 400 - Bad Request",
+            "msg": f"Attribute `row` is too long. This attribute mustn't be longer than {row_max_length} character(s)."
+        })
+
+    if len(str(ticket.seat_number)) > seat_number_max_length: #Check if seat_number is too long (max length in MySQL database)
+        raise HTTPException(status_code=400, detail={
+            "status": "Error 400 - Bad Request",
+            "msg": f"Attribute `seat_number` is too long. This attribute mustn't be longer than {seat_number_max_length} numbers."
+        })
+
+    new_ticket = models.Ticket(
+        price=ticket.price,
+        row=ticket.row,
+        seat_number=ticket.seat_number,
+        vip=ticket.vip,
+        user_id=ticket.user_id,
+        event_id=ticket.event_id,
+    )
+    db.add(new_ticket)
+    db.commit()
+    db.refresh(new_ticket)
+    return new_ticket
 
 @app.put("/tickets/{ticket_id}")
 def edit_ticket(ticket_id: int, updated_ticket: TicketInput, db: Session = Depends(get_db)):
@@ -45,6 +60,28 @@ def edit_ticket(ticket_id: int, updated_ticket: TicketInput, db: Session = Depen
         raise HTTPException(status_code=404, detail={
             "status": "Error 404 - Not Found",
             "msg": f"Ticket with `id`: `{ticket_id}` doesn't exist."
+        })
+
+    price_max_length = models.Ticket.price.property.columns[0].type.display_width
+    row_max_length = models.Ticket.row.property.columns[0].type.length
+    seat_number_max_length = models.Ticket.seat_number.property.columns[0].type.display_width
+    
+    if len(str(updated_ticket.price)) > price_max_length: #Check if price is too long (max length in MySQL database)
+        raise HTTPException(status_code=400, detail={
+            "status": "Error 400 - Bad Request",
+            "msg": f"Attribute `price` is too long. This attribute mustn't be longer than {price_max_length} numbers."
+        })
+
+    if len(str(updated_ticket.row)) > row_max_length: #Check if row is too long (max length in MySQL database)
+        raise HTTPException(status_code=400, detail={
+            "status": "Error 400 - Bad Request",
+            "msg": f"Attribute `row` is too long. This attribute mustn't be longer than {row_max_length} character(s)."
+        })
+
+    if len(str(updated_ticket.seat_number)) > seat_number_max_length: #Check if seat_number is too long (max length in MySQL database)
+        raise HTTPException(status_code=400, detail={
+            "status": "Error 400 - Bad Request",
+            "msg": f"Attribute `seat_number` is too long. This attribute mustn't be longer than {seat_number_max_length} numbers."
         })
 
     ticket.price = updated_ticket.price

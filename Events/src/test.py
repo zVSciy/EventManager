@@ -66,8 +66,8 @@ class TestEventAPI(unittest.TestCase):
     def test_update_event_tickets(self):
         event_id = 1
         ticket_update_data = {
-            "available_normal_tickets": 80,
-            "available_vip_tickets": 40
+            "available_normal_tickets": 0,
+            "available_vip_tickets": 1
         }
         response = client.put(f"/event/updateTicket/{event_id}", json=ticket_update_data)
         self.assertEqual(response.status_code, 200)

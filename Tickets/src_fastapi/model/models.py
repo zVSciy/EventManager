@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.dialects import mysql
 from typing import Optional
 
 class Base(DeclarativeBase):
@@ -7,11 +8,11 @@ class Base(DeclarativeBase):
 
 class Ticket(Base):
     __tablename__ = "tickets"
-    id: Mapped[int] = mapped_column(Integer(), primary_key=True)
-    price: Mapped[int] = mapped_column(Integer(), nullable=False)
+    id: Mapped[int] = mapped_column(mysql.INTEGER(10), primary_key=True)
+    price: Mapped[int] = mapped_column(mysql.INTEGER(4), nullable=False)
     paid: Mapped[bool] = mapped_column(Boolean(), default=False)
-    row: Mapped[str] = mapped_column(String(1), nullable=True)
-    seat_number: Mapped[int] = mapped_column(Integer(), nullable=True)
+    row: Mapped[str] = mapped_column(String(2), nullable=True)
+    seat_number: Mapped[int] = mapped_column(mysql.INTEGER(4), nullable=True)
     vip: Mapped[bool] = mapped_column(Boolean(), nullable=False)
     user_id: Mapped[int] = mapped_column(Integer(), nullable=False)
     event_id: Mapped[int] = mapped_column(Integer(), nullable=False)

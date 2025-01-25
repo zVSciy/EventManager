@@ -1,8 +1,16 @@
 <script>
     import TicketsDisplay from "./TicketsDisplay.svelte";
-
+   import { onMount } from 'svelte';
     let eventID;
 
+    // ID aus dem Session Storage abrufen
+    onMount(() => {
+        const params = new URLSearchParams(window.location.search);
+        eventID = params.get('eventId');
+        console.log(eventID)
+    });
+    
+let moreTickets = 0;
     let ticketsData = '';
     let errorMessage = '';
 
@@ -56,11 +64,38 @@
         }
     }
 
+    async function updateAvailableTickets() {
+        const response = await fetch(`/api/events?event_id=${eventID}&delete=${moreTickets}&vip=${encodeURIComponent(ticketVIP)}`,
+        {
+          method: "PUT"
+        });
+        
+        // console.log(ticketVIP)
+
+        if (response.ok) {
+          errorMessage = '';
+          let eventData = await response.json();
+
+          // console.log(eventData)
+          // console.log(eventData[0].status)
+
+          if (eventData[0].status == 200 && moreTickets == 0){
+            addTickets();
+
+          } else if (eventData[0].status == 200 && moreTickets == 1) {
+            deleteTickets();
+          }
+
+        } else {
+          eventData = '';
+        }
+    }
+
     async function editTickets() {
         const response = await fetch(`/api/tickets?ticket_id=${encodeURIComponent(changedTicketID)}&`+
         `price=${encodeURIComponent(changedTicketPrice)}&row=${encodeURIComponent(changedTicketRow)}&`+
         `seat_number=${encodeURIComponent(changedTicketSeatNumber)}&vip=${encodeURIComponent(changedTicketVIP)}&`+
-        `user_id=${encodeURIComponent(changedTicketUID)}&event_id=${encodeURIComponent(changedTicketEID)}`,
+        `user_id=${encodeURIComponent(changedTicketUID)}`,
         {
           method: "PUT"
         });
@@ -110,7 +145,7 @@
 
       <div class="col-12 mt-4">
         <h2 class="text-center">Add Tickets</h2>
-        <form on:submit|preventDefault={addTickets} class="input-group">
+        <form on:submit|preventDefault={updateAvailableTickets} class="input-group">
           <div class="input-group-prepend">
             <label class="input-group-text">Price, Row, Seat, UID, EID, VIP</label>
           </div>
@@ -123,7 +158,7 @@
               <option value="false" selected>False</option>
               <option value="true">True</option>
           </select>
-          <button disabled={!ticketPrice || !ticketUID || !ticketEID} type="submit" class="btn btn-primary input-group-append">Add Ticket</button>
+          <button disabled={!ticketPrice || !ticketUID || !ticketEID} type="submit" class="btn btn-primary input-group-append"on:click={() => { moreTickets = 0 }}>Add Ticket</button>
         </form>  
       </div>
 
@@ -138,7 +173,6 @@
           <input type="text" class="form-control" bind:value={changedTicketRow} placeholder="Row"/>
           <input type="number" class="form-control" bind:value={changedTicketSeatNumber} placeholder="Seat"/>
           <input type="number" class="form-control" bind:value={changedTicketUID} placeholder="UID"/>
-          <input type="number" class="form-control" bind:value={changedTicketEID} placeholder="EID"/>
           <select class="form-select" bind:value={changedTicketVIP}>
               <option value="false" selected>False</option>
               <option value="true">True</option>
@@ -149,12 +183,12 @@
 
       <div class="col-12 mt-4">
         <h2 class="text-center">Delete Tickets</h2>
-        <form on:submit|preventDefault={deleteTickets} class="input-group">
+        <form on:submit|preventDefault={updateAvailableTickets} class="input-group">
           <div class="input-group-prepend">
             <label class="input-group-text">TicketID</label>
           </div>
           <input type="number" class="form-control" bind:value={ticketToDelete} placeholder="TicketID"/>
-          <button disabled={!ticketToDelete} type="submit" class="btn btn-primary input-group-append">Delete Ticket</button>
+          <button disabled={!ticketToDelete} type="submit" class="btn btn-primary input-group-append"on:click={() => { moreTickets = 1 }}>Delete Ticket</button>
         </form>
       </div>
 

@@ -4,6 +4,11 @@ WORKDIR /app
 
 COPY frontend/package*.json ./
 
+<<<<<<< HEAD
+# Install dependencies
+RUN npm install --legacy-peer-deps
+=======
+>>>>>>> main
 RUN npm install
 
 COPY . .

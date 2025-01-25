@@ -12,9 +12,9 @@ export async function GET({ url }) {
   let apiURL = '';
 
   if (!isNaN(eventID)) {
-    apiURL = `http://api:8000/tickets?event_id=${eventID}`;
+    apiURL = `http://tickets_api:8000/tickets?event_id=${eventID}`;
   } else {
-    apiURL = `http://api:8000/tickets`;
+    apiURL = `http://tickets_api:8000/tickets`;
   }
   
   try {
@@ -28,7 +28,7 @@ export async function GET({ url }) {
     }
 
   } catch (error) {
-    return jsonResponse({status: 500, error: 'Internal server error'});
+    return jsonResponse({status: 500, error: error});
   }
 }
 
@@ -40,7 +40,7 @@ export async function POST({ url }) {
   const userID = url.searchParams.get('user_id');
   const eventID = url.searchParams.get('event_id');
 
-  const apiURL = `http://api:8000/tickets`;
+  const apiURL = `http://tickets_api:8000/tickets`;
   
   try {
     const response = await fetch(apiURL, {
@@ -70,7 +70,7 @@ export async function POST({ url }) {
     }
 
   } catch (error) {
-    return jsonResponse({status: 500, error: 'Internal server error'});
+    return jsonResponse({status: 500, error: error});
   }
 }
 
@@ -81,13 +81,12 @@ export async function PUT({ url }) {
   const changedSN = url.searchParams.get('seat_number');
   const changedVIP = url.searchParams.get('vip');
   const changedUID = url.searchParams.get('user_id');
-  const changedEID = url.searchParams.get('event_id');
 
   if (isNaN(changedTID)) {
     return jsonResponse({status: 400, error: 'TicketID must be a number!'});
   }
 
-  const apiURL = `http://api:8000/tickets/${changedTID}`;
+  const apiURL = `http://tickets_api:8000/tickets/${changedTID}`;
   
   try {
     const response = await fetch(apiURL, {
@@ -120,7 +119,7 @@ export async function PUT({ url }) {
     }
 
   } catch (error) {
-    return jsonResponse({status: 500, error: 'Internal server error'});
+    return jsonResponse({status: 500, error: error});
   }
 }
 
@@ -131,7 +130,7 @@ export async function DELETE({ url }) {
     return jsonResponse({status: 400, error: 'TicketID must be a number!'});
   }
 
-  const apiURL = `http://api:8000/tickets/${ticketID}`;
+  const apiURL = `http://tickets_api:8000/tickets/${ticketID}`;
 
   try {
     const response = await fetch(apiURL, {
@@ -149,6 +148,6 @@ export async function DELETE({ url }) {
       return jsonResponse({status: response.status, error: 'Failed to fetch data!'});
     }
   } catch (error) {
-    return jsonResponse({status: 500, error: 'Internal server error'});
+    return jsonResponse({status: 500, error: error});
   }
 }
