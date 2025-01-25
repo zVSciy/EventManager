@@ -41,7 +41,7 @@
 
         function goToTickets() {
         const eventId = event.ID;
-    const targetUrl = `http://192.168.75.138:8002/?eventId=${eventId}`;
+    const targetUrl = `http://192.168.17.128:8002/?eventId=${eventId}`;
     window.location.href = targetUrl; 
     }
     onMount(() => {
