@@ -33,16 +33,16 @@ export DOCKER_HOST=unix://$XDG_RUNTIME_DIR/docker.sock
 The Docker engine is now placed in the current user's directory which means that the Docker runtime uses user permissions instead of `root` ones.
 
 ## Privsioning and testing this integration
-Just a sample text...
-
----
-
-# Test
 1. Go in the Event Service GUI should be http://<container-host>:8001
 2. Klick on the Details button for the first Event (you can also create or update Events under the admin panel in the Event service)
 3. Here you can see now the details for the Event and there is a button Buy tickets. Klick on it and it will redirect you to the Tickets service. Important you must change redirect IP address to your container-host address.
 4. On the Ticket service you can add a ticket or delete a ticket. This has an impact for the available_tickets for the event.
 5. If the add or delete function worked it should be a change for the available_tickets on details page.
+
+
+---
+
+
 
 
 **Author:** kingdanxi & pintere6\
