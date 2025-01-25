@@ -9,8 +9,8 @@
             await login(email, password);
             alert("Login successful!");
             window.location.href = "/dashboard";
-        } catch (err) {
-            alert("Login failed!");
+        } catch (error) {
+            alert("Login failed!" + error);
         }
     }
 </script>
