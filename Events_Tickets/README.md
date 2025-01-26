@@ -1,5 +1,5 @@
 # EventManager - Service Integration
-This README.md contains all essential steps for provisioning and testing the integration of the Server and Ticket service from the EventManager project. There is also an additional guide for Docker Rootless as all associated containers are useable via rootless Docker.
+This README.md contains all essential steps for provisioning and testing the integration of the Server and Ticket and Event service from the EventManager project. There is also an additional guide for Docker Rootless as all associated containers are useable via rootless Docker.
 
 ## Requirements
 * Ubuntu 24.04 Server (recommended)
