@@ -15,11 +15,11 @@ export async function PUT({ url }) {
   const eventID = url.searchParams.get('event_id');
   const moreTickets = url.searchParams.get('delete');
   const vip = url.searchParams.get('vip');
-  let normal_tickets = 0;
-  let vip_tickets = 0;
+  let normal_tickets = 2;
+  let vip_tickets = 2;
   console.log(vip)
   if (vip == 'true') {
-    vip_tickets = 2;
+  
     if (moreTickets == 0) {
       vip_tickets = 0;
     }else if (moreTickets == 1) {
@@ -27,7 +27,7 @@ export async function PUT({ url }) {
     }
     
   } else {
-    normal_tickets =2;
+  
     if (moreTickets == 1) {
       normal_tickets = 1;}
       else if (moreTickets == 0) {

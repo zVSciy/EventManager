@@ -50,7 +50,7 @@ let moreTickets = 0;
         const response = await fetch(`/api/tickets?price=${encodeURIComponent(ticketPrice)}&`+
         `row=${encodeURIComponent(ticketRow)}&seat_number=${encodeURIComponent(ticketSeatNumber)}&`+
         `vip=${encodeURIComponent(ticketVIP)}&user_id=${encodeURIComponent(ticketUID)}&`+
-        `event_id=${encodeURIComponent(ticketEID)}`,
+        `event_id=${encodeURIComponent(eventID)}`,
         {
           method: "POST"
         });
@@ -82,9 +82,7 @@ let moreTickets = 0;
           if (eventData[0].status == 200 && moreTickets == 0){
             addTickets();
 
-          } else if (eventData[0].status == 200 && moreTickets == 1) {
-            deleteTickets();
-          }
+          } 
 
         } else {
           eventData = '';
@@ -118,6 +116,10 @@ let moreTickets = 0;
         if (response.ok) {
           errorMessage = '';
           ticketsData = await response.json();
+          console.log(ticketsData);
+          if (ticketsData.status == 200 && moreTickets == 1) {
+            updateAvailableTickets();
+          }
         } else {
           ticketsData = '';
           errorMessage = 'Failed to fetch tickets data';
@@ -153,12 +155,11 @@ let moreTickets = 0;
           <input type="text" class="form-control" bind:value={ticketRow} placeholder="Row"/>
           <input type="number" class="form-control" bind:value={ticketSeatNumber} placeholder="Seat"/>
           <input type="number" class="form-control" bind:value={ticketUID} placeholder="UID"/>
-          <input type="number" class="form-control" bind:value={ticketEID} placeholder="EID"/>
           <select class="form-select" bind:value={ticketVIP}>
               <option value="false" selected>False</option>
               <option value="true">True</option>
           </select>
-          <button disabled={!ticketPrice || !ticketUID || !ticketEID} type="submit" class="btn btn-primary input-group-append"on:click={() => { moreTickets = 0 }}>Add Ticket</button>
+          <button disabled={!ticketPrice || !ticketUID } type="submit" class="btn btn-primary input-group-append"on:click={() => { moreTickets = 0 }}>Add Ticket</button>
         </form>  
       </div>
 
@@ -183,7 +184,7 @@ let moreTickets = 0;
 
       <div class="col-12 mt-4">
         <h2 class="text-center">Delete Tickets</h2>
-        <form on:submit|preventDefault={updateAvailableTickets} class="input-group">
+        <form on:submit|preventDefault={deleteTickets} class="input-group">
           <div class="input-group-prepend">
             <label class="input-group-text">TicketID</label>
           </div>
