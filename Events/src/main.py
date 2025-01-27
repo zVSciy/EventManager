@@ -95,7 +95,7 @@ def update_event_tickets(event_id: int, tickets: TicketsUpdate, db: Session = De
     if tickets.available_normal_tickets == 1:
         db_event.available_normal_tickets += 1
         print(db_event.available_normal_tickets)
-    elif tickets.available_normal_tickets ==0 and (db_event.available_normal_tickets-1)>0:
+    elif tickets.available_normal_tickets ==0 and (db_event.available_normal_tickets-1)>=0:
         db_event.available_normal_tickets -= 1
     elif tickets.available_normal_tickets ==2:
         print(db_event.available_normal_tickets)
@@ -104,7 +104,7 @@ def update_event_tickets(event_id: int, tickets: TicketsUpdate, db: Session = De
     if tickets.available_vip_tickets == 1:
         db_event.available_vip_tickets += 1
         print(db_event.available_vip_tickets)
-    elif tickets.available_vip_tickets ==0 and (db_event.available_vip_tickets-1)>0:
+    elif tickets.available_vip_tickets ==0 and (db_event.available_vip_tickets-1)>=0:
         db_event.available_vip_tickets -= 1
     elif tickets.available_vip_tickets ==2:
         print(db_event.available_vip_tickets)
