@@ -34,24 +34,20 @@ The Docker engine is now placed in the current user's directory which means that
 
 ## Privsioning and testing this integration
 ### Starting the Container
-First of all you must create a .env file in the Event_Tickets folder. You have an example for it there than you can start the container:
+First of all, you must create a `.env` file in the Event_Tickets folder. A corresponding `env_exmaple` can be found in the mentioned folder. After providing the `.env` file, start the container stack with the following command:
 
 ```bash
 docker compose up --build
 ```
 
 ### Test
-1. Go in the Event Service GUI should be http://container-host:8001
-2. Klick on the Details button for the first Event (you can also create or update Events under the admin panel in the Event service)
-3. Here you can see now the details for the Event and there is a button Buy tickets. Klick on it and it will redirect you to the Tickets service. Important you must change redirect IP address to your container-host address.
-4. On the Ticket service you can add a ticket or delete a ticket. This has an impact for the available_tickets for the event.
-5. If the add or delete function worked it should be a change for the available_tickets on details page.
-
+1. Navigate to the GUI of the `Event service`, the URL should be: http://container-host:8001
+2. Click on the `Details` button for the first event (you may also create or update events under the admin panel in the `Event service`)
+3. On the `Details` page, you can see additional information for the selected event. There is also a `Buy tickets` which redirects to the `Tickets service`. Keep in mind that the redirect IP address must be changed to your container-host address in `/Events/event_svelte/src/routes/details/<id>/+page.svelte`.
+4. On the Ticket service you can add or delete a ticket. This has an impact on the `available_tickets` for the event.
+5. If the add or delete function worked, there should be a change of the `available_tickets` shown on the event details page.
 
 ---
-
-
-
 
 **Author:** kingdanxi & pintere6\
 **Year:** 2024-2025\
