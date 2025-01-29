@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 
-const URL = 'http://localhost:8083';
+const URL = 'http://ReviewBackend:8083';
 
 const API_URLS = {
   submitReview: `${URL}/reviews`,
