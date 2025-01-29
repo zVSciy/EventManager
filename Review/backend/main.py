@@ -109,6 +109,6 @@ def update_review(review_id: int, review: ReviewUpdate, db: Session = Depends(ge
     logger.info(f"Review with ID {review_id} updated successfully")
     return db_review
 
-# if __name__ == "__main__":
-#     import uvicorn
-#     uvicorn.run(app, host="0.0.0.0", port=8000)
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8083)

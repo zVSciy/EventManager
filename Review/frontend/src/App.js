@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 
-const URL = 'http://192.168.75.138:8083';
+const URL = 'http://localhost:8083';
 
 const API_URLS = {
   submitReview: `${URL}/reviews`,
@@ -232,11 +232,11 @@ function App() {
               )}
               {selectedEndpoint === 'getReviews' && (
                 <div className="mb-4">
-                  <label htmlFor="event_id_get" className="block text-sm font-medium">Event ID:</label>
+                  <label htmlFor="event_id" className="block text-sm font-medium">Event ID:</label>
                   <input
                     type="number"
-                    id="event_id_get"
-                    name="event_id_get"
+                    id="event_id"
+                    name="event_id"
                     min="0"
                     className="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-solana-primary"
                     value={formData.event_id}
@@ -248,11 +248,11 @@ function App() {
               {selectedEndpoint === 'updateReview' && (
                 <>
                   <div className="mb-4">
-                    <label htmlFor="review_id_update" className="block text-sm font-medium">Review ID:</label>
+                    <label htmlFor="review_id" className="block text-sm font-medium">Review ID:</label>
                     <input
                       type="number"
-                      id="review_id_update"
-                      name="review_id_update"
+                      id="review_id"
+                      name="review_id"
                       min="0"
                       className="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-solana-primary"
                       value={formData.review_id}
@@ -261,10 +261,10 @@ function App() {
                     />
                   </div>
                   <div className="mb-4">
-                    <label htmlFor="content_update" className="block text-sm font-medium">Content:</label>
+                    <label htmlFor="content" className="block text-sm font-medium">Content:</label>
                     <textarea
-                      id="content_update"
-                      name="content_update"
+                      id="content"
+                      name="content"
                       className="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-solana-primary"
                       value={formData.content}
                       onChange={handleInputChange}
@@ -272,11 +272,11 @@ function App() {
                     ></textarea>
                   </div>
                   <div className="mb-4">
-                    <label htmlFor="rating_update" className="block text-sm font-medium">Rating:</label>
+                    <label htmlFor="rating" className="block text-sm font-medium">Rating:</label>
                     <input
                       type="number"
-                      id="rating_update"
-                      name="rating_update"
+                      id="rating"
+                      name="rating"
                       min="1"
                       max="5"
                       className="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-solana-primary"
@@ -289,11 +289,11 @@ function App() {
               )}
               {selectedEndpoint === 'deleteReview' && (
                 <div className="mb-4">
-                  <label htmlFor="review_id_delete" className="block text-sm font-medium">Review ID:</label>
+                  <label htmlFor="review_id" className="block text-sm font-medium">Review ID:</label>
                   <input
                     type="number"
-                    id="review_id_delete"
-                    name="review_id_delete"
+                    id="review_id"
+                    name="review_id"
                     min="0"
                     className="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-solana-primary"
                     value={formData.review_id}
