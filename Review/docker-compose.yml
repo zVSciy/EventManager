@@ -1,28 +1,26 @@
+version: '3.8'
+
 networks:
   my-network:
 
 services:
-
   api:
-    container_name: ReviewAPI
-
+    container_name: ReviewBackend
     build:
-      dockerfile: ./backend/Dockerfile
-
+      context: ./backend
+      dockerfile: Dockerfile
     ports:
-    - "8083:8000"
-
+      - "8083:8000"
     command: >
       sh -c "exec uvicorn main:app --host 0.0.0.0 --reload"
-
     networks:
-    - my-network
+      - my-network
 
   frontend:
     container_name: ReviewFrontend
-
     build:
-      dockerfile: ./frontend/Dockerfile
+      context: ./frontend
+      dockerfile: Dockerfile
     ports:
       - "3000:80"
     networks:
