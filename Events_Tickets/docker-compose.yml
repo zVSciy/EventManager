@@ -8,6 +8,29 @@ networks:
   eventmanager-net:
 
 services:
+#GENERAL - REVERSE PROXY
+  nginx:
+    image: nginx:latest
+
+    restart: always
+    
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/ssl
+    
+    ports:
+      - "8080:443"
+    
+    depends_on:
+      - events_db
+      - events_api
+      - events_web
+      - tickets_db
+      - tickets_api
+      - tickets_web
+
+    networks:
+      - eventmanager-net
 
 # CONTAINERS - EVENTS
   events_db:

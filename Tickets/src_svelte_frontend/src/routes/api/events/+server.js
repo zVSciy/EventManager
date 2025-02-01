@@ -7,10 +7,6 @@ function jsonResponse(json, status = 200) {
   });
 }
 
-
-
-
-
 export async function PUT({ url }) {
   const eventID = url.searchParams.get('event_id');
   const moreTickets = url.searchParams.get('delete');

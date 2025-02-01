@@ -1,6 +1,6 @@
 <script>
     import TicketsDisplay from "./TicketsDisplay.svelte";
-   import { onMount } from 'svelte';
+    import { onMount } from 'svelte';
     let eventID;
 
     // ID aus dem Session Storage abrufen
@@ -10,7 +10,7 @@
         console.log(eventID)
     });
     
-let moreTickets = 0;
+    let moreTickets = 0;
     let ticketsData = '';
     let errorMessage = '';
 
@@ -125,7 +125,6 @@ let moreTickets = 0;
           errorMessage = 'Failed to fetch tickets data';
         }
     }
-
 </script>
 
 <nav class="p-2 navbar navbar-expand-sm bg-dark navbar-dark">
