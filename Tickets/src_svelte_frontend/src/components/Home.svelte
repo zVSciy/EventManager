@@ -19,7 +19,6 @@
     let ticketSeatNumber = '';
     let ticketVIP = 'false';
     let ticketUID = '';
-    let ticketEID = '';
 
     let changedTicketID;
     let changedTicketPrice = '';
@@ -70,18 +69,12 @@
           method: "PUT"
         });
         
-        // console.log(ticketVIP)
-
         if (response.ok) {
           errorMessage = '';
           let eventData = await response.json();
 
-          // console.log(eventData)
-          // console.log(eventData[0].status)
-
           if (eventData[0].status == 200 && moreTickets == 0){
             addTickets();
-
           } 
 
         } else {
