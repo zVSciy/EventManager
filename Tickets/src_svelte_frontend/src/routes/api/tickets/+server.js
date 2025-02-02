@@ -81,6 +81,7 @@ export async function PUT({ url }) {
   const changedSN = url.searchParams.get('seat_number');
   const changedVIP = url.searchParams.get('vip');
   const changedUID = url.searchParams.get('user_id');
+  const changedEID = url.searchParams.get('event_id');
 
   if (isNaN(changedTID)) {
     return jsonResponse({status: 400, error: 'TicketID must be a number!'});

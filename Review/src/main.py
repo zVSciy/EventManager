@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from database import SessionLocal, init_db, engine, Base
 from models import Review
 from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -11,6 +12,18 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
+origins = [
+    "*"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+# Create the database tables
 # Initialize the database
 init_db()
 
@@ -96,6 +109,6 @@ def update_review(review_id: int, review: ReviewUpdate, db: Session = Depends(ge
     logger.info(f"Review with ID {review_id} updated successfully")
     return db_review
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+# if __name__ == "__main__":
+#     import uvicorn
+#     uvicorn.run(app, host="0.0.0.0", port=8000)

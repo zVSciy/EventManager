@@ -36,12 +36,11 @@
         goto('/');
     }
     function goToFeedBack() {
-        goto('#', { replaceState: true });    }
-        
-
-        function goToTickets() {
+        goto('#', { replaceState: true });    
+    }    
+    function goToTickets() {
         const eventId = event.ID;
-    const targetUrl = `http://192.168.75.138:8002/?eventId=${eventId}`;
+    const targetUrl = `/app_ticket?eventId=${eventId}`;
     window.location.href = targetUrl; 
     }
     onMount(() => {

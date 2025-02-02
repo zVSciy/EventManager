@@ -1,7 +1,10 @@
 FROM python:3.10
-ENV PYTHONUNBUFFERED 1
-WORKDIR /app
-COPY /src /app/
-# COPY ./ssl /app/ssl
-RUN pip install -r requirements.txt
+
+COPY src/requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . code
+WORKDIR /code/src
+
+EXPOSE 8083
 CMD uvicorn main:app --reload
