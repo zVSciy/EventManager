@@ -57,9 +57,4 @@
     .specialParagraph {
         font-size: 1em;
     }
-
-    h2 {
-        font-size: 1em;
-        font-weight: bold;
-    }
 </style>

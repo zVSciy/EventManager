@@ -44,8 +44,8 @@ export async function PUT({ url }) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-       available_normal_tickets: normal_tickets ,
-       available_vip_tickets: vip_tickets
+        available_normal_tickets: normal_tickets ,
+        available_vip_tickets: vip_tickets
       })
     });
 
