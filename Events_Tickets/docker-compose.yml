@@ -80,7 +80,7 @@ services:
     working_dir: "/app"
     
     ports:
-    - "8000:8000"
+    - "8000"
 
     command: >
       sh -c "python test.py && 
@@ -93,7 +93,7 @@ services:
     build: ../Events/eventsSvelte
 
     ports:
-     - "8001:5173"
+     - "5173"
 
     volumes:
       - ../Events/eventsSvelte:/app #Hot-reload
@@ -161,7 +161,7 @@ services:
       dockerfile: ../Tickets/docker/sveltekit/Dockerfile
 
     ports:
-      - "8002:5173"
+      - "5173"
 
     volumes:
       - ../Tickets/src_svelte_frontend:/app #Hot-reload

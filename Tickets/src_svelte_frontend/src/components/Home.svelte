@@ -1,4 +1,5 @@
 <script>
+    import { base } from '$app/paths';
     import TicketsDisplay from "./TicketsDisplay.svelte";
     import { onMount } from 'svelte';
     export let data;
@@ -23,7 +24,7 @@
     let ticketUID = '';
 
     async function getTickets() {
-        const response = await fetch(`/api/tickets?event_id=${encodeURIComponent(eventID)}`,
+        const response = await fetch(`${base}/api/tickets?event_id=${encodeURIComponent(eventID)}`,
         {
           method: "GET"
         });
@@ -38,7 +39,7 @@
     }
 
     async function addTickets() {
-        const response = await fetch(`/api/tickets?price=${encodeURIComponent(ticketPrice)}&`+
+        const response = await fetch(`${base}/api/tickets?price=${encodeURIComponent(ticketPrice)}&`+
         `row=${encodeURIComponent(ticketRow)}&seat_number=${encodeURIComponent(ticketSeatNumber)}&`+
         `vip=${encodeURIComponent(ticketVIP)}&user_id=${encodeURIComponent(ticketUID)}&`+
         `event_id=${encodeURIComponent(eventID)}`,
@@ -56,7 +57,7 @@
     }
 
     async function updateAvailableTickets() {
-        const response = await fetch(`/api/events?event_id=${eventID}&delete=${moreTickets}&vip=${encodeURIComponent(ticketVIP)}`,
+        const response = await fetch(`${base}/api/events?event_id=${eventID}&delete=${moreTickets}&vip=${encodeURIComponent(ticketVIP)}`,
         {
           method: "PUT"
         });
@@ -81,11 +82,14 @@
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item">
-                    <a class="nav-link active" href="/">Main</a>
+                    <a class="nav-link" href="/app_event">Events</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="{base}">Main</a>
                 </li>
                 {#if data && data.admin}
                     <li class="nav-item">
-                        <a class="nav-link" href="/admin">Admin</a>
+                        <a class="nav-link" href="{base}/admin">Admin</a>
                     </li>
                 {/if}
             </ul>
@@ -95,7 +99,7 @@
                     <li class="nav-item">
                         <span class="navbar-text text-light">Welcome,
                             {data.username}</span>
-                        <a class="btn btn-sm btn-primary ms-2" href="/">Logout</a>
+                        <a class="btn btn-sm btn-primary ms-2" href="{base}">Logout</a>
                     </li>
                 </ul>
             {/if}
