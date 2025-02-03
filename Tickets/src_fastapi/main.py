@@ -28,13 +28,13 @@ def add_ticket(ticket: TicketInput, db: Session = Depends(get_db)):
             "msg": f"Attribute `price` is too long. This attribute mustn't be longer than {price_max_length} numbers."
         })
 
-    if len(str(ticket.row)) > row_max_length: #Check if row is too long (max length in MySQL database)
+    if ticket.row and len(ticket.row) > row_max_length: #Check if row is too long (max length in MySQL database)
         raise HTTPException(status_code=400, detail={
             "status": "Error 400 - Bad Request",
             "msg": f"Attribute `row` is too long. This attribute mustn't be longer than {row_max_length} character(s)."
         })
 
-    if len(str(ticket.seat_number)) > seat_number_max_length: #Check if seat_number is too long (max length in MySQL database)
+    if ticket.seat_number and len(str(ticket.seat_number)) > seat_number_max_length: #Check if seat_number is too long (max length in MySQL database)
         raise HTTPException(status_code=400, detail={
             "status": "Error 400 - Bad Request",
             "msg": f"Attribute `seat_number` is too long. This attribute mustn't be longer than {seat_number_max_length} numbers."

@@ -27,8 +27,8 @@
                         <td>{data.id}</td>
                         <td>{data.price}</td>
                         <td>{data.paid}</td>
-                        <td>{data.row}</td>
-                        <td>{data.seat_number}</td>
+                        <td>{data.row ?? "/"}</td>
+                        <td>{data.seat_number ?? "/"}</td>
                         <td>{data.vip}</td>
                         <td>{data.user_id}</td>
                         <td>{data.event_id}</td>

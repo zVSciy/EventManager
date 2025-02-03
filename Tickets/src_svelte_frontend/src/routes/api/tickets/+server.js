@@ -41,22 +41,42 @@ export async function POST({ url }) {
   const eventID = url.searchParams.get('event_id');
 
   const apiURL = `http://tickets_api:8000/tickets`;
+  let response = '';
   
   try {
-    const response = await fetch(apiURL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        price: price,
-        row: row,
-        seat_number: seatNumber,
-        vip: vip,
-        user_id: userID,
-        event_id: eventID
-      })
-    });
+    if (row == '' && seatNumber == '') {
+      response = await fetch(apiURL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          price: price,
+          vip: vip,
+          user_id: userID,
+          event_id: eventID
+        })
+      });
+
+    } else if (row == '' || seatNumber == '') {
+      return jsonResponse({status: 400, error: 'Row and seat number must be both filled!'});
+    
+    } else {
+      response = await fetch(apiURL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          price: price,
+          row: row,
+          seat_number: seatNumber,
+          vip: vip,
+          user_id: userID,
+          event_id: eventID
+        })
+      });
+    }
 
     const data = await response.json();
     if (response.ok) {
