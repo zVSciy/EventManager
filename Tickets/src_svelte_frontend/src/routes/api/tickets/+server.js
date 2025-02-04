@@ -24,7 +24,7 @@ export async function GET({ url }) {
       return jsonResponse(data);
     
     } else {
-      return jsonResponse({status: response.status, error: 'Failed to fetch data!'});
+      return jsonResponse({status: response.status, error: data.detail.msg});
     }
 
   } catch (error) {
@@ -59,7 +59,7 @@ export async function POST({ url }) {
       });
 
     } else if (row == '' || seatNumber == '') {
-      return jsonResponse({status: 400, error: 'Row and seat number must be both filled!'});
+      return jsonResponse({status: 400, error: 'Row and seat number must be both filled or empty!'});
     
     } else {
       response = await fetch(apiURL, {
@@ -82,11 +82,8 @@ export async function POST({ url }) {
     if (response.ok) {
       return jsonResponse([data]);
 
-    } else if (response.status == 400){
-      return jsonResponse({status: response.status, error: data.detail.msg});
-
     } else {
-      return jsonResponse({status: response.status, error: 'Failed to fetch data!'});
+      return jsonResponse({status: response.status, error: data.detail.msg});
     }
 
   } catch (error) {
@@ -129,14 +126,8 @@ export async function PUT({ url }) {
     if (response.ok) {
       return jsonResponse([data]);
 
-    } else if (response.status == 400){
-      return jsonResponse({status: response.status, error: data.detail.msg});
-
-    } else if (response.status == 404){
-      return jsonResponse({status: response.status, error: data.detail.msg});
-
     } else {
-      return jsonResponse({status: response.status, error: 'Failed to fetch data!'});
+      return jsonResponse({status: response.status, error: data.detail.msg});
     }
 
   } catch (error) {
@@ -162,11 +153,8 @@ export async function DELETE({ url }) {
     if (response.ok) {
       return jsonResponse(data);
 
-    } else if (response.status == 404){
-      return jsonResponse({status: response.status, error: data.detail.msg});
-
     } else {
-      return jsonResponse({status: response.status, error: 'Failed to fetch data!'});
+      return jsonResponse({status: response.status, error: data.detail.msg});
     }
   } catch (error) {
     return jsonResponse({status: 500, error: error});

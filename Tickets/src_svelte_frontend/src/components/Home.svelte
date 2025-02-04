@@ -124,12 +124,13 @@
         <h2 class="text-center">Buy Tickets</h2>
         <form on:submit|preventDefault={updateAvailableTickets} class="input-group">
           <div class="input-group-prepend">
-            <label class="input-group-text">Price, Row, Seat, UID, VIP</label>
+            <label class="input-group-text">Price, Row, Seat, UID, EID, VIP</label>
           </div>
           <input type="number" class="form-control" bind:value={ticketPrice} placeholder="Price"/>
           <input type="text" class="form-control" bind:value={ticketRow} placeholder="Row"/>
           <input type="number" class="form-control" bind:value={ticketSeatNumber} placeholder="Seat"/>
           <input type="number" class="form-control" bind:value={ticketUID} placeholder="UID"/>
+          <input type="number" class="form-control" bind:value={eventID} placeholder="EID"/>
           <select class="form-select" bind:value={ticketVIP}>
               <option value="false" selected>False</option>
               <option value="true">True</option>
