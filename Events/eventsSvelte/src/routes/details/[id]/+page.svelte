@@ -39,6 +39,7 @@
     }    
     function goToTickets() {
         const eventId = event.ID;
+        sessionStorage.setItem('eventId', eventId);
         const targetUrl = `/app_ticket?eventId=${eventId}`;
         window.location.href = targetUrl; 
     }

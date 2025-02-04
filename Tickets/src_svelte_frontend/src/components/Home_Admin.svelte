@@ -8,8 +8,7 @@
 
     // ID aus dem Session Storage abrufen
     onMount(() => {
-        const params = new URLSearchParams(window.location.search);
-        eventID = params.get('eventId');
+        eventID = sessionStorage.getItem('eventId');
         console.log(eventID)
     });
     
