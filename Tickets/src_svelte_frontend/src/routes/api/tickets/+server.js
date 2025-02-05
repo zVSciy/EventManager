@@ -34,14 +34,22 @@ export async function GET({ url }) {
 
 export async function POST({ url }) {
   const price = url.searchParams.get('price');
-  const row = url.searchParams.get('row');
-  const seatNumber = url.searchParams.get('seat_number');
+  let row = url.searchParams.get('row');
+  let seatNumber = url.searchParams.get('seat_number');
   const vip = url.searchParams.get('vip');
   const userID = url.searchParams.get('user_id');
   const eventID = url.searchParams.get('event_id');
 
   const apiURL = `http://tickets_api:8000/tickets`;
   let response = '';
+
+  if (row == 'null') {
+    row = '';
+  }
+
+  if (seatNumber == 'null') {
+    seatNumber = '';
+  }
   
   try {
     if (row == '' && seatNumber == '') {

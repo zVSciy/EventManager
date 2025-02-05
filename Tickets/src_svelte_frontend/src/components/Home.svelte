@@ -17,11 +17,14 @@
     let ticketsData = '';
     let errorMessage = '';
 
+    let ticketEID = '';
     let ticketPrice = '';
     let ticketRow = '';
     let ticketSeatNumber = '';
     let ticketVIP = 'false';
     let ticketUID = '';
+
+    let ticketToDelete;
 
     async function getTickets() {
         const response = await fetch(`${base}/api/tickets?event_id=${encodeURIComponent(eventID)}`,
@@ -74,6 +77,26 @@
           eventData = '';
         }
     }
+
+    async function deleteTickets() {
+        const response = await fetch(`${base}/api/tickets?ticket_id=${encodeURIComponent(ticketToDelete)}`,
+        {
+          method: "DELETE"
+        });
+
+        if (response.ok) {
+          errorMessage = '';
+          ticketsData = await response.json();
+          console.log(ticketsData);
+          if (ticketsData.status == 200 && moreTickets == 1) {
+            updateAvailableTickets();
+          }
+        } else {
+          ticketsData = '';
+          errorMessage = 'Failed to fetch tickets data';
+        }
+    }
+
 </script>
 
 <nav class="navbar navbar-expand-md bg-dark navbar-dark">
@@ -115,7 +138,7 @@
           <div class="input-group-prepend">
             <label class="input-group-text">EventID (optional)</label>
           </div>
-          <input type="number" class="form-control" bind:value={eventID} placeholder="EventID"/>
+          <input type="number" class="form-control" bind:value={ticketEID} placeholder="EventID"/>
           <button type="submit" class="btn btn-primary input-group-append">Get Tickets</button>
         </form>
       </div>
@@ -130,13 +153,24 @@
           <input type="text" class="form-control" bind:value={ticketRow} placeholder="Row"/>
           <input type="number" class="form-control" bind:value={ticketSeatNumber} placeholder="Seat"/>
           <input type="number" class="form-control" bind:value={ticketUID} placeholder="UID"/>
-          <input type="number" class="form-control" bind:value={eventID} placeholder="EID"/>
+          <input type="number" class="form-control" bind:value={eventID} placeholder="EID" disabled readonly/>
           <select class="form-select" bind:value={ticketVIP}>
               <option value="false" selected>False</option>
               <option value="true">True</option>
           </select>
           <button disabled={!ticketPrice || !ticketUID } type="submit" class="btn btn-primary input-group-append"on:click={() => { moreTickets = 0 }}>Add Ticket</button>
         </form>  
+      </div>
+
+      <div class="col-12 mt-4">
+        <h2 class="text-center">Cancel Tickets</h2>
+        <form on:submit|preventDefault={deleteTickets} class="input-group">
+          <div class="input-group-prepend">
+            <label class="input-group-text">TicketID</label>
+          </div>
+          <input type="number" class="form-control" bind:value={ticketToDelete} placeholder="TicketID"/>
+          <button disabled={!ticketToDelete} type="submit" class="btn btn-primary input-group-append"on:click={() => { moreTickets = 1 }}>Delete Ticket</button>
+        </form>
       </div>
 
     <div class="col-12 mt-4">

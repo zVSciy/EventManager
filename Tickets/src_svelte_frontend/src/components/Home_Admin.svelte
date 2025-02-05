@@ -16,6 +16,7 @@
     let ticketsData = '';
     let errorMessage = '';
 
+    let ticketEID = '';
     let ticketPrice = '';
     let ticketRow = '';
     let ticketSeatNumber = '';
@@ -161,7 +162,7 @@
           <div class="input-group-prepend">
             <label class="input-group-text">EventID (optional)</label>
           </div>
-          <input type="number" class="form-control" bind:value={eventID} placeholder="EventID"/>
+          <input type="number" class="form-control" bind:value={ticketEID} placeholder="EventID"/>
           <button type="submit" class="btn btn-primary input-group-append">Get Tickets</button>
         </form>
       </div>
@@ -206,7 +207,7 @@
       </div>
 
       <div class="col-12 mt-4">
-        <h2 class="text-center">Delete Tickets</h2>
+        <h2 class="text-center">Cancel Tickets</h2>
         <form on:submit|preventDefault={deleteTickets} class="input-group">
           <div class="input-group-prepend">
             <label class="input-group-text">TicketID</label>
