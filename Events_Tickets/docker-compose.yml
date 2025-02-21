@@ -142,7 +142,7 @@ services:
     - ../Tickets/src_fastapi:/app
 
     ports:
-      - "8000"
+      - "8001:8000"
 
     depends_on:
       tickets_db:

@@ -22,6 +22,18 @@ def read_tickets(event_id: int = None, db: Session = Depends(get_db)):
             "msg": str(ex)
         })
 
+@app.get("/tickets/{ticket_id}")
+def read_tickets(ticket_id: int = None, db: Session = Depends(get_db)):
+    try:
+        tickets = db.query(models.Ticket).filter(models.Ticket.id == ticket_id).first()
+        return tickets
+
+    except Exception as ex:
+        raise HTTPException(status_code=500, detail={
+            "status": "Error 500 - Internal Server Error",
+            "msg": str(ex)
+        })
+        
 @app.post("/tickets")
 def add_ticket(ticket: TicketInput, db: Session = Depends(get_db)):
     try: 
