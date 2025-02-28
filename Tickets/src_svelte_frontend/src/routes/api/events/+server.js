@@ -7,10 +7,6 @@ function jsonResponse(json, status = 200) {
   });
 }
 
-
-
-
-
 export async function PUT({ url }) {
   const eventID = url.searchParams.get('event_id');
   const moreTickets = url.searchParams.get('delete');
@@ -18,6 +14,7 @@ export async function PUT({ url }) {
   let normal_tickets = 2;
   let vip_tickets = 2;
   console.log(vip)
+  console.log(moreTickets)
   if (vip == 'true') {
   
     if (moreTickets == 0) {
@@ -48,8 +45,8 @@ export async function PUT({ url }) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-       available_normal_tickets: normal_tickets ,
-       available_vip_tickets: vip_tickets
+        available_normal_tickets: normal_tickets ,
+        available_vip_tickets: vip_tickets
       })
     });
 

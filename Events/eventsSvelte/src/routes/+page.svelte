@@ -1,4 +1,5 @@
 <script>
+    import { base } from '$app/paths';
     import { onMount } from 'svelte';
     import { goto } from '$app/navigation';
 
@@ -6,7 +7,7 @@
     let error = null;
 
     async function loadEvents() {
-        const response = await fetch('/api/event');
+        const response = await fetch(`${base}/api/event`);
         events = await response.json();
 
     }
@@ -15,7 +16,7 @@
 
     function viewDetails(event) {
     if (event && event.ID) {
-        goto(`/details/${event.ID}`); // Navigiere zur Details-Seite basierend auf der Event-ID
+        goto(`${base}/details/${event.ID}`); // Navigiere zur Details-Seite basierend auf der Event-ID
     }
 }
 export let data;
@@ -24,13 +25,13 @@ export let data;
 
 <nav class="navbar navbar-expand-lg navbar-light bg-warning">
     <div class="container-fluid">
-        <button on:click={() => window.location.href='/'} style="margin-bottom: 20px; padding: 10px; background-color: #009879; color: white; border: none; border-radius: 4px; cursor: pointer;">Event Manager</button>    
+        <button on:click={() => window.location.href=`${base}/`} style="margin-bottom: 20px; padding: 10px; background-color: #009879; color: white; border: none; border-radius: 4px; cursor: pointer;">Event Manager</button>    
 
         <div class="d-flex align-items-center ms-auto">
             <span class="me-3">Hi, {data.username}!</span>
 
             {#if data.admin}
-            <button on:click={() => window.location.href='/admin'} style="margin-bottom: 20px; padding: 10px; background-color: #009879; color: white; border: none; border-radius: 4px; cursor: pointer;">Admin</button>    
+            <button on:click={() => window.location.href=`${base}/admin`} style="margin-bottom: 20px; padding: 10px; background-color: #009879; color: white; border: none; border-radius: 4px; cursor: pointer;">Admin</button>    
             {/if}
         </div>
     </div>
