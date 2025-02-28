@@ -1,6 +1,5 @@
-
-
 <script>
+    import { base } from '$app/paths';
     import { onMount } from 'svelte';
     import { goto } from '$app/navigation';
     import { writable } from 'svelte/store';
@@ -15,7 +14,7 @@
     let event = writable([]);
     console.log(event)
     async function fetchEvent() {
-        const response = await fetch(`/api/event/details`, {
+        const response = await fetch(`${base}/api/event/details`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json; charset=UTF-8",
@@ -33,19 +32,19 @@
         canceled = data.canceled ? 'Yes' : 'No'
     }
     function goToIndexPage() {
-        goto('/');
+        goto(`${base}`);
     }
     function goToFeedBack() {
-        goto('#', { replaceState: true });    }
-        
-
-        function goToTickets() {
+        goto(`${base}/#`, { replaceState: true });    
+    }    
+    function goToTickets() {
         const eventId = event.ID;
-    const targetUrl = `http://192.168.17.128:8002/?eventId=${eventId}`;
-    window.location.href = targetUrl; 
+        sessionStorage.setItem('eventId', eventId);
+        const targetUrl = `/app_ticket?eventId=${eventId}`;
+        window.location.href = targetUrl; 
     }
     onMount(() => {
-        event.ID = window.location.href.split('/').pop();
+        event.ID = window.location.href.split(`/`).pop();
         fetchEvent();
     });
 </script>

@@ -8,13 +8,11 @@ function jsonResponse(json, status = 200) {
 }
 
 export async function GET({ url }) {
-  const eventID = url.searchParams.get('event_id');
+  const ticketID = url.searchParams.get('ticket_id');
   let apiURL = '';
 
-  if (!isNaN(eventID)) {
-    apiURL = `http://tickets_api:8000/tickets?event_id=${eventID}`;
-  } else {
-    apiURL = `http://tickets_api:8000/tickets`;
+  if (!isNaN(ticketID)) {
+    apiURL = `http://tickets_api:8000/tickets/${ticketID}`;
   }
   
   try {

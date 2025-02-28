@@ -41,9 +41,9 @@ docker compose up --build
 ```
 
 ### Test
-1. Navigate to the GUI of the `Event service`, the URL should be: http://container-host:8001
+1. Navigate to the GUI of the `Event service`, the URL should be: http://container-host:8080/app_event (everything is handle with a nginx reverse proxy)
 2. Click on the `Details` button for the first event (you may also create or update events under the admin panel in the `Event service`)
-3. On the `Details` page, you can see additional information for the selected event. There is also a `Buy tickets` which redirects to the `Tickets service`. Keep in mind that the redirect IP address must be changed to your container-host address in `/Events/event_svelte/src/routes/details/<id>/+page.svelte`.
+3. On the `Details` page, you can see additional information for the selected event. There is also a `Buy tickets` which redirects to the `Tickets service`.
 4. On the Ticket service you can add or delete a ticket. This has an impact on the `available_tickets` for the event.
 5. If the add or delete function worked, there should be a change of the `available_tickets` shown on the event details page.
 

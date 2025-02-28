@@ -8,6 +8,29 @@ networks:
   eventmanager-net:
 
 services:
+#GENERAL - REVERSE PROXY
+  nginx:
+    image: nginx:latest
+
+    restart: always
+    
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/ssl
+    
+    ports:
+      - "8080:443"
+    
+    depends_on:
+      - events_db
+      - events_api
+      - events_web
+      - tickets_db
+      - tickets_api
+      - tickets_web
+
+    networks:
+      - eventmanager-net
 
 # CONTAINERS - EVENTS
   events_db:
@@ -57,7 +80,7 @@ services:
     working_dir: "/app"
     
     ports:
-    - "8000:8000"
+    - "8000"
 
     command: >
       sh -c "python test.py && 
@@ -70,7 +93,7 @@ services:
     build: ../Events/eventsSvelte
 
     ports:
-     - "8001:5173"
+     - "5173"
 
     volumes:
       - ../Events/eventsSvelte:/app #Hot-reload
@@ -119,7 +142,7 @@ services:
     - ../Tickets/src_fastapi:/app
 
     ports:
-      - "8000"
+      - "8001:8000"
 
     depends_on:
       tickets_db:
@@ -138,7 +161,7 @@ services:
       dockerfile: ../Tickets/docker/sveltekit/Dockerfile
 
     ports:
-      - "8002:5173"
+      - "5173"
 
     volumes:
       - ../Tickets/src_svelte_frontend:/app #Hot-reload

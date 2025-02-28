@@ -1,4 +1,5 @@
 <script>
+    import { base } from '$app/paths';
     import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 
@@ -13,7 +14,7 @@
     
     async function addEvent() {
       try {
-        const response = await fetch("/api/event", {
+        const response = await fetch(`${base}/api/event`, {
           method: "POST",
           body: JSON.stringify({
             name: name,
@@ -32,7 +33,7 @@
   
         if (response.status === 200) {
           alert('Event wurde erfolgreich erstellt!');
-          goto('/admin')
+          goto(`${base}/admin`)
         } else {
           alert('Fehler beim Erstellen des Event!');
         }

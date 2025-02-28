@@ -3,12 +3,12 @@
     import TicketsDisplay from "./TicketsDisplay.svelte";
     import { onMount } from 'svelte';
     export let data;
-    let ticket;
+
     let eventID;
+    let ticket;
 
     // ID aus dem Session Storage abrufen
     onMount(() => {
-
         eventID = sessionStorage.getItem('eventId');
         console.log(eventID)
     });
@@ -17,13 +17,20 @@
     let ticketsData = '';
     let errorMessage = '';
 
-  
     let ticketEID = '';
     let ticketPrice = '';
     let ticketRow = '';
     let ticketSeatNumber = '';
     let ticketVIP = 'false';
     let ticketUID = '';
+
+    let changedTicketID;
+    let changedTicketPrice = '';
+    let changedTicketRow = '';
+    let changedTicketSeatNumber = '';
+    let changedTicketVIP = 'false';
+    let changedTicketUID = '';
+    let changedTicketEID = '';
 
     let ticketToDelete;
 
@@ -42,24 +49,42 @@
         }
     }
 
-async function addTickets() {
-    const response = await fetch(`${base}/api/tickets?price=${encodeURIComponent(ticketPrice)}&`+
-    `row=${encodeURIComponent(ticketRow)}&seat_number=${encodeURIComponent(ticketSeatNumber)}&`+
-    `vip=${encodeURIComponent(ticketVIP)}&user_id=${encodeURIComponent(ticketUID)}&`+
-    `event_id=${encodeURIComponent(eventID)}`,
-    {
-      method: "POST"
-    });
+    async function addTickets() {
+        const response = await fetch(`${base}/api/tickets?price=${encodeURIComponent(ticketPrice)}&`+
+        `row=${encodeURIComponent(ticketRow)}&seat_number=${encodeURIComponent(ticketSeatNumber)}&`+
+        `vip=${encodeURIComponent(ticketVIP)}&user_id=${encodeURIComponent(ticketUID)}&`+
+        `event_id=${encodeURIComponent(eventID)}`,
+        {
+          method: "POST"
+        });
 
-    if (response.ok) {
-      errorMessage = '';
-      ticketsData = await response.json();
-    } else {
-      ticketsData = '';
-      errorMessage = 'Failed to fetch tickets data';
+        if (response.ok) {
+          errorMessage = '';
+          ticketsData = await response.json();
+        } else {
+          ticketsData = '';
+          errorMessage = 'Failed to fetch tickets data';
+        }
     }
-}
 
+
+    async function editTickets() {
+        const response = await fetch(`${base}/api/tickets?ticket_id=${encodeURIComponent(changedTicketID)}&`+
+        `price=${encodeURIComponent(changedTicketPrice)}&row=${encodeURIComponent(changedTicketRow)}&`+
+        `seat_number=${encodeURIComponent(changedTicketSeatNumber)}&vip=${encodeURIComponent(changedTicketVIP)}&`+
+        `user_id=${encodeURIComponent(changedTicketUID)}&`+`event_id=${encodeURIComponent(changedTicketEID)}`,
+        {
+          method: "PUT"
+        });
+
+        if (response.ok) {
+          errorMessage = '';
+          ticketsData = await response.json();
+        } else {
+          ticketsData = '';
+          errorMessage = 'Failed to fetch tickets data';
+        }
+    }
 async function updateAvailableTickets() {
 
     const response = await fetch(`${base}/api/events?event_id=${eventID}&delete=${moreTickets}&vip=${encodeURIComponent(ticketVIP)}`,
@@ -117,24 +142,22 @@ async function deleteTickets() {
       errorMessage = 'Failed to fetch tickets data';
     }
 }
-
-
 </script>
 
 <nav class="navbar navbar-expand-md bg-dark navbar-dark">
     <div class="container-fluid">
-        <span class="navbar-brand">Tickets | Main</span>
+        <span class="navbar-brand">Tickets | Admin</span>
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item">
                     <a class="nav-link" href="/app_event">Events</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" href="{base}">Main</a>
+                    <a class="nav-link" href="{base}">Main</a>
                 </li>
                 {#if data && data.admin}
                     <li class="nav-item">
-                        <a class="nav-link" href="{base}/admin">Admin</a>
+                        <a class="nav-link active" href="{base}/admin">Admin</a>
                     </li>
                 {/if}
             </ul>
@@ -144,7 +167,7 @@ async function deleteTickets() {
                     <li class="nav-item">
                         <span class="navbar-text text-light">Welcome,
                             {data.username}</span>
-                        <a class="btn btn-sm btn-primary ms-2" href="{base}">Logout</a>
+                        <a class="btn btn-sm btn-primary ms-2" href="{base}/admin">Logout</a>
                     </li>
                 </ul>
             {/if}
@@ -166,7 +189,7 @@ async function deleteTickets() {
       </div>
 
       <div class="col-12 mt-4">
-        <h2 class="text-center">Buy Tickets</h2>
+        <h2 class="text-center">Add Tickets</h2>
         <form on:submit|preventDefault={updateAvailableTickets} class="input-group">
           <div class="input-group-prepend">
             <label class="input-group-text">Price, Row, Seat, UID, EID, VIP</label>
@@ -175,12 +198,32 @@ async function deleteTickets() {
           <input type="text" class="form-control" bind:value={ticketRow} placeholder="Row"/>
           <input type="number" class="form-control" bind:value={ticketSeatNumber} placeholder="Seat"/>
           <input type="number" class="form-control" bind:value={ticketUID} placeholder="UID"/>
-          <input type="number" class="form-control" bind:value={eventID} placeholder="EID" disabled readonly/>
+          <input type="number" class="form-control" bind:value={eventID} placeholder="EID"/>
           <select class="form-select" bind:value={ticketVIP}>
               <option value="false" selected>False</option>
               <option value="true">True</option>
           </select>
           <button disabled={!ticketPrice || !ticketUID } type="submit" class="btn btn-primary input-group-append"on:click={() => { moreTickets = 0 }}>Add Ticket</button>
+        </form>  
+      </div>
+
+      <div class="col-12 mt-4">
+        <h2 class="text-center">Edit Tickets</h2>
+        <form on:submit|preventDefault={editTickets} class="input-group">
+          <div class="input-group-prepend">
+            <label class="input-group-text">TID, Price, Row, Seat, UID, EID, VIP</label>
+          </div>
+          <input type="number" class="form-control" bind:value={changedTicketID} placeholder="TID"/>
+          <input type="number" class="form-control" bind:value={changedTicketPrice} placeholder="Price"/>
+          <input type="text" class="form-control" bind:value={changedTicketRow} placeholder="Row"/>
+          <input type="number" class="form-control" bind:value={changedTicketSeatNumber} placeholder="Seat"/>
+          <input type="number" class="form-control" bind:value={changedTicketUID} placeholder="UID"/>
+          <input type="number" class="form-control" bind:value={changedTicketEID} placeholder="EID"/>
+          <select class="form-select" bind:value={changedTicketVIP}>
+              <option value="false" selected>False</option>
+              <option value="true">True</option>
+          </select>
+          <button disabled={!changedTicketID || !changedTicketPrice || !changedTicketUID || !changedTicketEID} type="submit" class="btn btn-primary input-group-append">Submit Edit</button>
         </form>  
       </div>
 
