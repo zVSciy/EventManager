@@ -16,7 +16,7 @@
                 throw new Error(response.statusText);
             }
             const result = await response.json();
-            alert(result.message);
+            alert(result);
         } catch (error) {
             alert("Failed to register user: " + error.message);
         }

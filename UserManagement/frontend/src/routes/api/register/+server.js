@@ -28,7 +28,7 @@ export async function POST({ request }) {
             })
         });
 
-        return jsonResponse(response, response.status);
+        return jsonResponse(response.status);
     } 
     
     catch (error) {
