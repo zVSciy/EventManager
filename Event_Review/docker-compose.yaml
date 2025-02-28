@@ -70,7 +70,7 @@ services:
     build: ../Events/eventsSvelte
 
     ports:
-     - "5173"
+     - "5173:5173"
 
     volumes:
       - ../Events/eventsSvelte:/app #Hot-reload

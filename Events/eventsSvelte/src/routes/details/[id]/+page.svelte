@@ -35,7 +35,7 @@
         goto(`${base}`);
     }
     function goToFeedBack() {
-        goto(`${base}/#`, { replaceState: true });    
+        window.location.href = `http://192.168.17.128:3000?id=${event.ID}`;  
     }    
     function goToTickets() {
         const eventId = event.ID;
