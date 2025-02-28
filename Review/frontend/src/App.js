@@ -10,9 +10,10 @@ const API_URLS = {
   getReviews: (eventId) => `${URL}/reviews/event/${eventId}`,
   updateReview: (id) => `${URL}/reviews/${id}`,
   deleteReview: (id) => `${URL}/reviews/${id}`,
+  getAllReviews: `${URL}/reviews/`, 
 };
 
-// The rest of your App.js remains unchanged
+
 function App() {
   const [selectedEndpoint, setSelectedEndpoint] = useState('submitReview');
   const [formData, setFormData] = useState({
@@ -35,7 +36,7 @@ function App() {
       const form = formRef.current;
       const button = document.getElementById(buttonId);
       if (form && button) {
-        if (form.checkValidity()) {
+        if (selectedEndpoint === 'getAllReviews' || form.checkValidity()) {
           button.classList.remove('btn-disabled');
           button.classList.add('solana-primary');
         } else {
@@ -44,7 +45,7 @@ function App() {
         }
       }
     }
-
+  
     const forms = [
       { ref: reviewFormRef, buttonId: 'submitReviewButton' },
       { ref: getReviewFormRef, buttonId: 'getReviewButton' },
@@ -52,7 +53,7 @@ function App() {
       { ref: updateReviewFormRef, buttonId: 'updateReviewButton' },
       { ref: deleteReviewFormRef, buttonId: 'deleteReviewButton' },
     ];
-
+  
     forms.forEach(({ ref, buttonId }) => {
       const updateState = () => updateButtonState(ref, buttonId);
       if (ref.current) {
@@ -61,7 +62,7 @@ function App() {
       // Initial check on page load
       updateButtonState(ref, buttonId);
     });
-
+  
     return () => {
       forms.forEach(({ ref, buttonId }) => {
         const updateState = () => updateButtonState(ref, buttonId);
@@ -70,7 +71,7 @@ function App() {
         }
       });
     };
-  }, []);
+  }, [selectedEndpoint]); // Add selectedEndpoint to the dependency array
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -97,6 +98,10 @@ function App() {
         break;
       case 'getReviews':
         url = API_URLS.getReviews(formData.event_id);
+        options = { method: 'GET' };
+        break;
+      case 'getAllReviews':
+        url = API_URLS.getAllReviews;
         options = { method: 'GET' };
         break;
       case 'updateReview':
@@ -152,6 +157,7 @@ function App() {
                 <option value="submitReview">Submit Review</option>
                 <option value="getReview">Get Review by ID</option>
                 <option value="getReviews">Get Reviews by Event ID</option>
+                <option value="getAllReviews">Get All Reviews</option> {/* Add this new option */}
                 <option value="updateReview">Update Review</option>
                 <option value="deleteReview">Delete Review</option>
               </select>
@@ -247,6 +253,11 @@ function App() {
                   />
                 </div>
               )}
+              {selectedEndpoint === 'getAllReviews' && (
+                <div className="mb-4 text-center">
+                  <p className="text-sm font-medium">Click the button to get all reviews</p>
+                </div>
+              )}
               {selectedEndpoint === 'updateReview' && (
                 <>
                   <div className="mb-4">
@@ -304,13 +315,14 @@ function App() {
                   />
                 </div>
               )}
-              <button type="submit" id="submitReviewButton" className="w-full btn-disabled text-white font-bold py-2 px-4 rounded-md">
-                {selectedEndpoint === 'submitReview' && 'Submit Review'}
-                {selectedEndpoint === 'getReview' && 'Get Review'}
-                {selectedEndpoint === 'getReviews' && 'Get Reviews'}
-                {selectedEndpoint === 'updateReview' && 'Update Review'}
-                {selectedEndpoint === 'deleteReview' && 'Delete Review'}
-              </button>
+            <button type="submit" id="submitReviewButton" className="w-full btn-disabled text-white font-bold py-2 px-4 rounded-md">
+              {selectedEndpoint === 'submitReview' && 'Submit Review'}
+              {selectedEndpoint === 'getReview' && 'Get Review'}
+              {selectedEndpoint === 'getReviews' && 'Get Reviews'}
+              {selectedEndpoint === 'getAllReviews' && 'Get All Reviews'}
+              {selectedEndpoint === 'updateReview' && 'Update Review'}
+              {selectedEndpoint === 'deleteReview' && 'Delete Review'}
+            </button>
             </form>
             {response && (
               <div className="mt-4 bg-gray-800 p-4 rounded-lg shadow-md">
