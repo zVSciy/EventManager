@@ -1,6 +1,10 @@
 import { error } from "@sveltejs/kit";
+import https from 'https';
 
-const API_BASE_URL = 'http://backend:8000';
+// Bypass SSL certificate validation (development only)
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
+const API_BASE_URL = 'https://backend:8000';
 
 export async function POST({ request }) {
     const { email, password, first_name, last_name, role } = await request.json();
@@ -18,6 +22,9 @@ export async function POST({ request }) {
                 first_name: first_name,
                 last_name: last_name,
                 role: role
+            }),
+            agent: new https.Agent({
+                rejectUnauthorized: false
             })
         });
 
@@ -25,6 +32,7 @@ export async function POST({ request }) {
     } 
     
     catch (error) {
+        console.log(error)
         return jsonResponse({ message: "An error occurred", error }, 500);
     }
 }
