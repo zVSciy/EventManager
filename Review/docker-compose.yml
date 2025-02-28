@@ -2,6 +2,7 @@ version: '3.8'
 
 networks:
   my-network:
+    driver: bridge
 
 services:
   api:
@@ -10,9 +11,9 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - "8083:8000"
+      - "8083:8083"
     command: >
-      sh -c "exec uvicorn main:app --host 0.0.0.0 --reload"
+      sh -c "exec uvicorn main:app --host 0.0.0.0 --port 8083 --reload"
     networks:
       - my-network
 
@@ -29,5 +30,8 @@ services:
     environment:
       - CHOKIDAR_USEPOLLING=true
       - WDS_SOCKET_PORT=0
+      - NODE_ENV=development
     networks:
       - my-network
+    depends_on:
+      - api

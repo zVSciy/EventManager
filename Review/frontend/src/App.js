@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 
-const URL = 'http://ReviewBackend:8083';
+// Use the proxy with /api prefix
+const URL = '/api';
 
 const API_URLS = {
   submitReview: `${URL}/reviews`,
@@ -11,6 +12,7 @@ const API_URLS = {
   deleteReview: (id) => `${URL}/reviews/${id}`,
 };
 
+// The rest of your App.js remains unchanged
 function App() {
   const [selectedEndpoint, setSelectedEndpoint] = useState('submitReview');
   const [formData, setFormData] = useState({
@@ -126,13 +128,13 @@ function App() {
   return (
     <div className="App">
       <nav className="bg-gray-800 p-4">
-        <div className="container mx-auto flex justify-between items-center">
-          <a href="#" className="text-white text-xl font-bold">Review App</a>
-          <div>
-            <a href="#" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Placeholder Link 1</a>
-            <a href="#" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Placeholder Link 2</a>
-          </div>
+            <div className="container mx-auto flex justify-between items-center">
+        <button className="text-white text-xl font-bold bg-transparent border-0">Review App</button>
+        <div>
+          <button className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium bg-transparent border-0">Placeholder Link 1</button>
+          <button className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium bg-transparent border-0">Placeholder Link 2</button>
         </div>
+      </div>
       </nav>
       <div className="container mx-auto p-4">
         <div className="flex flex-wrap -mx-2">
