@@ -1,17 +1,19 @@
 <script>
-    import { apiFetch } from "../../lib/api";
-
     let userData = {};
 
     async function fetchUserData() {
         try {
-            userData = await apiFetch("/verify", {
+            const response = await fetch("/api/token", {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
             });
+            if (!response.ok) {
+                throw new Error(response.statusText);
+            }
+            userData = await response.json();
         } catch (error) {
-            alert("Failed to fetch user data." + error);
+            alert("Failed to fetch user data: " + error.message);
         }
     }
 

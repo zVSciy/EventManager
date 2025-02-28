@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://localhost:8443';
+const API_BASE_URL = 'http://backend:8000';
 
 export async function apiFetch(endpoint, options = {}) {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, options);

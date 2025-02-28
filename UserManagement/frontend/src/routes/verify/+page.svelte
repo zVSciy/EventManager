@@ -1,17 +1,19 @@
 <script>
-    import { apiFetch } from "../../lib/api";
-
     let verificationMessage = "";
 
     async function verifyToken() {
         try {
-            await apiFetch("/verify", {
+            const response = await fetch("/api/token", {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
             });
-            verificationMessage = "Token is valid!";
-        } catch {
+            if (!response.ok) {
+                throw new Error(response.statusText);
+            }
+            const result = await response.json();
+            verificationMessage = result.message;
+        } catch (error) {
             verificationMessage = "Invalid or expired token.";
         }
     }
