@@ -18,7 +18,7 @@ export async function POST({ request }) {
             },
             body: JSON.stringify({
                 email: email,
-                hashed_password: password,
+                password: password,
                 first_name: first_name,
                 last_name: last_name,
                 role: role
