@@ -35,7 +35,10 @@
         goto(`${base}`);
     }
     function goToFeedBack() {
-        window.location.href = `http://192.168.17.128:3000?id=${event.ID}`;  
+        const eventId = event.ID;
+        sessionStorage.setItem('eventId', eventId);
+        const targetUrl = `/?eventId=${eventId}`;
+        window.location.href = targetUrl;  
     }    
     function goToTickets() {
         const eventId = event.ID;

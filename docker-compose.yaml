@@ -57,12 +57,12 @@ services:
 
   events_api:
     build:
-      context: ../Events
-      dockerfile: ../Events/DockerFile
+      context: Events
+      dockerfile: Events/DockerFile
     
     volumes:
     - events-fast-data:/media
-    - ../Events/src:/app
+    - Events/src:/app
 
     depends_on:
       events_db:
@@ -85,13 +85,13 @@ services:
     - eventmanager-net
 
   events_web:
-    build: ../Events/eventsSvelte
+    build: Events/eventsSvelte
 
     ports:
      - "5173:5173"
 
     volumes:
-      - ../Events/eventsSvelte:/app #Hot-reload
+      - Events/eventsSvelte:/app #Hot-reload
       - /app/node_modules
 
     networks:
@@ -99,7 +99,7 @@ services:
   api:
     container_name: ReviewBackend
     build:
-      context: ../Review/backend
+      context: Review/backend
       dockerfile: Dockerfile
     ports:
       - "8083:8083"
@@ -112,12 +112,12 @@ services:
   frontend:
     container_name: ReviewFrontend
     build:
-      context: ../Review/frontend
+      context: Review/frontend
       dockerfile: Dockerfile.dev
     ports:
       - "3000:3000"
     volumes:
-      - ../Review/frontend:/app
+      - Review/frontend:/app
       - /app/node_modules
     environment:
       - CHOKIDAR_USEPOLLING=true
@@ -127,3 +127,74 @@ services:
       - eventmanager-net
     depends_on:
       - api
+
+# CONTAINERS - TICKETS
+  tickets_db:
+    image: mysql:latest
+
+    volumes:
+      - tickets-mysql-data:/var/lib/mysql
+
+    env_file: .env
+
+    environment:
+      MYSQL_DATABASE: ${TICKETS_MYSQL_DATABASE}
+      MYSQL_USER: ${TICKETS_MYSQL_USER}
+      MYSQL_PASSWORD: ${TICKETS_MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${TICKETS_MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE_PORT: ${TICKETS_MYSQL_DATABASE_PORT}
+
+    networks:
+      - eventmanager-net
+
+    healthcheck:
+      test: 'echo "select now();" | mysql -h ${TICKETS_MYSQL_DATABASE_HOST} -u${TICKETS_MYSQL_USER} -p${TICKETS_MYSQL_PASSWORD}'
+      interval: 1s
+      retries: 10
+      start_period: 10s
+      timeout: 1s
+
+  tickets_api:
+    build:
+      context: Tickets
+      dockerfile: Tickets/docker/fastapi/Dockerfile
+
+    env_file: .env
+
+    restart: always
+    
+    volumes:
+    - tickets-fast-data:/media
+    - Tickets/src_fastapi:/app
+
+    ports:
+      - "8001:8000"
+
+    depends_on:
+      tickets_db:
+        condition: service_healthy
+
+    command: >
+      sh -c "python test_app.py &&
+             uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
+
+    networks:
+      - eventmanager-net
+  
+  tickets_web:
+    build:
+      context: Tickets
+      dockerfile: Tickets/docker/sveltekit/Dockerfile
+
+    ports:
+      - "5173"
+
+    volumes:
+      - Tickets/src_svelte_frontend:/app #Hot-reload
+      - /app/node_modules
+
+    depends_on:
+      - tickets_api
+
+    networks:
+      - eventmanager-net

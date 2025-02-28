@@ -1,5 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
+let eventID;
+
+
+
+
 
 // Use the proxy with /api prefix
 const URL = '/api';
@@ -35,6 +40,9 @@ function App() {
     function updateButtonState(formRef, buttonId) {
       const form = formRef.current;
       const button = document.getElementById(buttonId);
+      eventID = sessionStorage.getItem('eventId');
+      console.log(eventID);
+
       if (form && button) {
         if (selectedEndpoint === 'getAllReviews' || form.checkValidity()) {
           button.classList.remove('btn-disabled');
@@ -216,7 +224,7 @@ function App() {
                       name="event_id"
                       min="0"
                       className="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-solana-primary"
-                      value={formData.event_id}
+                      value={eventID}
                       onChange={handleInputChange}
                       required
                     />
