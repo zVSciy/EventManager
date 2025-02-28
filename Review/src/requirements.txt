@@ -1,7 +1,0 @@
-fastapi==0.115.0
-SQLAlchemy==1.4.32
-uvicorn==0.18.3
-python-dotenv==0.19.2
-requests==2.27.1
-pytest==6.2.5
-httpx==0.23.0
