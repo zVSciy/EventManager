@@ -2,15 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 let eventID;
 
-
-
-
-
 // Use the proxy with /api prefix
 const URL = '/api';
 
 const API_URLS = {
-  submitReview: `${URL}/reviews`,
+  submitReview: `${URL}/reviews/create`,
   getReview: (id) => `${URL}/reviews/${id}`,
   getReviews: (eventId) => `${URL}/reviews/event/${eventId}`,
   updateReview: (id) => `${URL}/reviews/${id}`,
@@ -18,14 +14,12 @@ const API_URLS = {
   getAllReviews: `${URL}/reviews/`, 
 };
 
-
 function App() {
   const [selectedEndpoint, setSelectedEndpoint] = useState('submitReview');
   const [formData, setFormData] = useState({
     user_id: '',
     content: '',
     rating: '',
-    event_id: '',
     review_id: '',
   });
   const [response, setResponse] = useState(null);
@@ -36,15 +30,33 @@ function App() {
   const updateReviewFormRef = useRef(null);
   const deleteReviewFormRef = useRef(null);
 
+  // Extract event ID from URL on component mount
+  useEffect(() => {
+    // Get event ID from URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const eventIdFromUrl = urlParams.get('eventId');
+    
+    if (eventIdFromUrl) {
+      // Store as integer
+      eventID = parseInt(eventIdFromUrl, 10);
+      sessionStorage.setItem('eventId', eventID);
+    } else {
+      // Fallback to session storage
+      const storedEventId = sessionStorage.getItem('eventId');
+      if (storedEventId) {
+        eventID = parseInt(storedEventId, 10);
+      }
+    }
+    console.log("Event ID:", eventID);
+  }, []);
+
   useEffect(() => {
     function updateButtonState(formRef, buttonId) {
       const form = formRef.current;
       const button = document.getElementById(buttonId);
-      eventID = sessionStorage.getItem('eventId');
-      console.log(eventID);
 
       if (form && button) {
-        if (selectedEndpoint === 'getAllReviews' || form.checkValidity()) {
+        if (selectedEndpoint === 'getAllReviews' || selectedEndpoint === 'getReviews' || form.checkValidity()) {
           button.classList.remove('btn-disabled');
           button.classList.add('solana-primary');
         } else {
@@ -79,7 +91,7 @@ function App() {
         }
       });
     };
-  }, [selectedEndpoint]); // Add selectedEndpoint to the dependency array
+  }, [selectedEndpoint]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -91,13 +103,21 @@ function App() {
     let url = '';
     let options = {};
 
+    // Create a copy of form data and add event_id for submission
+    const submissionData = { ...formData };
+    
+    // For endpoints that need event_id, use the one from URL
+    if (selectedEndpoint === 'submitReview') {
+      submissionData.event_id = eventID;
+    }
+
     switch (selectedEndpoint) {
       case 'submitReview':
         url = API_URLS.submitReview;
         options = {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(submissionData),
         };
         break;
       case 'getReview':
@@ -105,7 +125,7 @@ function App() {
         options = { method: 'GET' };
         break;
       case 'getReviews':
-        url = API_URLS.getReviews(formData.event_id);
+        url = API_URLS.getReviews(eventID);
         options = { method: 'GET' };
         break;
       case 'getAllReviews':
@@ -117,7 +137,7 @@ function App() {
         options = {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(submissionData),
         };
         break;
       case 'deleteReview':
@@ -141,18 +161,23 @@ function App() {
   return (
     <div className="App">
       <nav className="bg-gray-800 p-4">
-            <div className="container mx-auto flex justify-between items-center">
-        <button className="text-white text-xl font-bold bg-transparent border-0">Review App</button>
-        <div>
-          <button className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium bg-transparent border-0">Placeholder Link 1</button>
-          <button className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium bg-transparent border-0">Placeholder Link 2</button>
+        <div className="container mx-auto flex justify-between items-center">
+          <button className="text-white text-xl font-bold bg-transparent border-0">Review App</button>
+          <div>
+            <button className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium bg-transparent border-0">Placeholder Link 1</button>
+            <button className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium bg-transparent border-0">Placeholder Link 2</button>
+          </div>
         </div>
-      </div>
       </nav>
       <div className="container mx-auto p-4">
         <div className="flex flex-wrap -mx-2">
           <div className="w-full px-2 mb-4 flex flex-col">
             <h1 className="text-3xl font-bold mb-4 text-solana-primary">Review Management</h1>
+            {eventID && (
+              <div className="mb-4 bg-gray-800 p-2 rounded">
+                <p className="text-white">Current Event ID: <span className="font-bold">{eventID}</span></p>
+              </div>
+            )}
             <div className="mb-4">
               <label htmlFor="endpoint" className="block text-sm font-medium">Select Endpoint:</label>
               <select
@@ -165,7 +190,7 @@ function App() {
                 <option value="submitReview">Submit Review</option>
                 <option value="getReview">Get Review by ID</option>
                 <option value="getReviews">Get Reviews by Event ID</option>
-                <option value="getAllReviews">Get All Reviews</option> {/* Add this new option */}
+                <option value="getAllReviews">Get All Reviews</option>
                 <option value="updateReview">Update Review</option>
                 <option value="deleteReview">Delete Review</option>
               </select>
@@ -216,19 +241,6 @@ function App() {
                       required
                     />
                   </div>
-                  <div className="mb-4">
-                    <label htmlFor="event_id" className="block text-sm font-medium">Event ID:</label>
-                    <input
-                      type="number"
-                      id="event_id"
-                      name="event_id"
-                      min="0"
-                      className="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-solana-primary"
-                      value={eventID}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
                 </>
               )}
               {selectedEndpoint === 'getReview' && (
@@ -247,18 +259,9 @@ function App() {
                 </div>
               )}
               {selectedEndpoint === 'getReviews' && (
-                <div className="mb-4">
-                  <label htmlFor="event_id" className="block text-sm font-medium">Event ID:</label>
-                  <input
-                    type="number"
-                    id="event_id"
-                    name="event_id"
-                    min="0"
-                    className="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-solana-primary"
-                    value={formData.event_id}
-                    onChange={handleInputChange}
-                    required
-                  />
+                <div className="mb-4 text-center">
+                  <p className="text-sm font-medium">Using Event ID: <span className="font-bold">{eventID}</span></p>
+                  <p className="text-sm text-gray-400">(Automatically retrieved from URL)</p>
                 </div>
               )}
               {selectedEndpoint === 'getAllReviews' && (
