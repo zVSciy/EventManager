@@ -5,8 +5,7 @@ networks:
     driver: bridge
 
 services:
-  api:
-    container_name: ReviewBackend
+  review_api:
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -17,8 +16,7 @@ services:
     networks:
       - my-network
 
-  frontend:
-    container_name: ReviewFrontend
+  review_web:
     build:
       context: ./frontend
       dockerfile: Dockerfile.dev
@@ -34,4 +32,4 @@ services:
     networks:
       - my-network
     depends_on:
-      - api
+      - review_api
