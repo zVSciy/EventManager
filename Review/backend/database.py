@@ -30,7 +30,7 @@ def init_db():
         
         db.query(Review).delete()
         reviews = [
-            {"user_id": 1, "content": "Great event!", "rating": 5, "event_id": 1},
+            {"user_id": 1, "content": "Great event!", "rating": 5, "event_id": 9999},
         ]
         for review in reviews:
             db.add(Review(**review))
