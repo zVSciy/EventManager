@@ -3,7 +3,7 @@ import './App.css';
 let eventID;
 
 // Use the proxy with /api prefix
-const URL = '/api';
+const URL = '/app_review/api';
 
 const API_URLS = {
   submitReview: `${URL}/reviews/create`,
@@ -165,7 +165,7 @@ function App() {
           <button className="text-white text-xl font-bold bg-transparent border-0">Review App</button>
           <div>
             <a 
-              href="https://www.eventmanager.com:8080/app_event/"
+              href="/app_event/"
               className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
             >
               Back to Events

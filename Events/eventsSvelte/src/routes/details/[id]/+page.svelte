@@ -37,7 +37,7 @@
     function goToFeedBack() {
         const eventId = event.ID;
         sessionStorage.setItem('eventId', eventId);
-        const targetUrl = `/?eventId=${eventId}`;
+        const targetUrl = `/app_review?eventId=${eventId}`;
         window.location.href = targetUrl;  
     }    
     function goToTickets() {
