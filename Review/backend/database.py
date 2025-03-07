@@ -31,14 +31,6 @@ def init_db():
         db.query(Review).delete()
         reviews = [
             {"user_id": 1, "content": "Great event!", "rating": 5, "event_id": 1},
-            {"user_id": 2, "content": "Not bad", "rating": 3, "event_id": 2},
-            {"user_id": 3, "content": "Could be better", "rating": 2, "event_id": 1},
-            {"user_id": 4, "content": "Loved it!", "rating": 5, "event_id": 2},
-            {"user_id": 5, "content": "It was okay", "rating": 3, "event_id": 2},
-            {"user_id": 6, "content": "Terrible experience", "rating": 1, "event_id": 3},
-            {"user_id": 7, "content": "Pretty good", "rating": 4, "event_id": 3},
-            {"user_id": 8, "content": "Not worth it", "rating": 2, "event_id": 4},
-            {"user_id": 9, "content": "Fantastic!", "rating": 5, "event_id": 4}
         ]
         for review in reviews:
             db.add(Review(**review))
