@@ -167,8 +167,6 @@ function App() {
             <a 
               href="https://www.eventmanager.com:8080/app_event/"
               className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-              target="_blank"
-              rel="noopener noreferrer"
             >
               Back to Events
             </a>
