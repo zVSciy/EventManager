@@ -164,8 +164,14 @@ function App() {
         <div className="container mx-auto flex justify-between items-center">
           <button className="text-white text-xl font-bold bg-transparent border-0">Review App</button>
           <div>
-            <button className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium bg-transparent border-0">Placeholder Link 1</button>
-            <button className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium bg-transparent border-0">Placeholder Link 2</button>
+            <a 
+              href="https://www.eventmanager.com:8080/app_event/"
+              className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Back to Events
+            </a>
           </div>
         </div>
       </nav>
