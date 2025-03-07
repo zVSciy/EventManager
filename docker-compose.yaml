@@ -8,7 +8,11 @@ networks:
   eventmanager-net:
 
 services:
-#GENERAL - REVERSE PROXY
+
+# -------------------------
+#  GENERAL - REVERSE PROXY
+# -------------------------
+
   nginx:
     image: nginx:latest
 
@@ -27,7 +31,11 @@ services:
       - events_web
     networks:
       - eventmanager-net
-# CONTAINERS - EVENTS
+
+# -------------------------
+#   CONTAINERS - EVENTS
+# -------------------------
+
   events_db:
     image: mysql:latest
     
@@ -57,12 +65,12 @@ services:
 
   events_api:
     build:
-      context: Events
-      dockerfile: Events/DockerFile
+      context: ./Events
+      dockerfile: ./DockerFile
     
     volumes:
     - events-fast-data:/media
-    - Events/src:/app
+    - ./Events/src:/app
 
     depends_on:
       events_db:
@@ -85,50 +93,63 @@ services:
     - eventmanager-net
 
   events_web:
-    build: Events/eventsSvelte
+    build: ./Events/eventsSvelte
 
     ports:
      - "5173:5173"
 
     volumes:
-      - Events/eventsSvelte:/app #Hot-reload
+      - ./Events/eventsSvelte:/app #Hot-reload
       - /app/node_modules
 
     networks:
       - eventmanager-net
-  api:
-    container_name: ReviewBackend
+
+# -------------------------
+#   CONTAINERS - REVIEW
+# -------------------------
+
+  review_api:    
     build:
-      context: Review/backend
+      context: ./Review/backend
       dockerfile: Dockerfile
+
     ports:
       - "8083:8083"
+
     command: >
       sh -c "exec uvicorn main:app --host 0.0.0.0 --port 8083 --reload"
+
     networks:
       - eventmanager-net
 
-## Review Services
-  frontend:
-    container_name: ReviewFrontend
+  review_web:
     build:
-      context: Review/frontend
+      context: ./Review/frontend
       dockerfile: Dockerfile.dev
+
     ports:
       - "3000:3000"
+
     volumes:
-      - Review/frontend:/app
+      - ./Review/frontend:/app
       - /app/node_modules
+
     environment:
       - CHOKIDAR_USEPOLLING=true
       - WDS_SOCKET_PORT=0
       - NODE_ENV=development
+
     networks:
       - eventmanager-net
-    depends_on:
-      - api
 
-# CONTAINERS - TICKETS
+    depends_on:
+      - review_api
+
+# -------------------------
+#   CONTAINERS - TICKETS
+# -------------------------
+
   tickets_db:
     image: mysql:latest
 
@@ -156,8 +177,8 @@ services:
 
   tickets_api:
     build:
-      context: Tickets
-      dockerfile: Tickets/docker/fastapi/Dockerfile
+      context: ./Tickets
+      dockerfile: ./docker/fastapi/Dockerfile
 
     env_file: .env
 
@@ -165,7 +186,7 @@ services:
     
     volumes:
     - tickets-fast-data:/media
-    - Tickets/src_fastapi:/app
+    - ./Tickets/src_fastapi:/app
 
     ports:
       - "8001:8000"
@@ -183,14 +204,14 @@ services:
   
   tickets_web:
     build:
-      context: Tickets
-      dockerfile: Tickets/docker/sveltekit/Dockerfile
+      context: ./Tickets
+      dockerfile: ./docker/sveltekit/Dockerfile
 
     ports:
       - "5173"
 
     volumes:
-      - Tickets/src_svelte_frontend:/app #Hot-reload
+      - ./Tickets/src_svelte_frontend:/app #Hot-reload
       - /app/node_modules
 
     depends_on:
