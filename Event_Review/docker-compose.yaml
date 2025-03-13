@@ -1,0 +1,129 @@
+volumes:
+  events-mysql-data:
+  events-fast-data:
+  tickets-fast-data:
+  tickets-mysql-data:
+
+networks:
+  eventmanager-net:
+
+services:
+#GENERAL - REVERSE PROXY
+  nginx:
+    image: nginx:latest
+
+    restart: always
+    
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/ssl
+    
+    ports:
+      - "8080:443"
+    
+    depends_on:
+      - events_db
+      - events_api
+      - events_web
+    networks:
+      - eventmanager-net
+# CONTAINERS - EVENTS
+  events_db:
+    image: mysql:latest
+    
+    volumes:
+      - events-mysql-data:/var/lib/mysql
+    
+    env_file: .env
+    environment:
+      MYSQL_DATABASE: ${EVENTS_MYSQL_DATABASE}
+      MYSQL_USER: ${EVENTS_MYSQL_USER}
+      MYSQL_PASSWORD: ${EVENTS_MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${EVENTS_MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE_PORT: ${EVENTS_MYSQL_DATABASE_PORT}
+
+    networks:
+      - eventmanager-net
+
+    healthcheck:
+       test: 'echo "select now(); " | mysql -h ${EVENTS_MYSQL_HOST} -u${EVENTS_MYSQL_USER} -p${EVENTS_MYSQL_PASSWORD}'
+       interval: 1s
+       retries: 10
+       start_period: 10s
+       timeout: 1s
+
+    ports:
+    - "3306"
+
+  events_api:
+    build:
+      context: ../Events
+      dockerfile: ../Events/DockerFile
+    
+    volumes:
+    - events-fast-data:/media
+    - ../Events/src:/app
+
+    depends_on:
+      events_db:
+        condition: service_healthy
+
+    env_file: .env
+    environment:
+      ALLOWED_HOSTS: '*'
+
+    working_dir: "/app"
+    
+    ports:
+    - "8000"
+
+    command: >
+      sh -c "python test.py && 
+             exec uvicorn main:app --host 0.0.0.0 --reload"
+
+    networks:
+    - eventmanager-net
+
+  events_web:
+    build: ../Events/eventsSvelte
+
+    ports:
+     - "5173:5173"
+
+    volumes:
+      - ../Events/eventsSvelte:/app #Hot-reload
+      - /app/node_modules
+
+    networks:
+      - eventmanager-net
+  api:
+    container_name: ReviewBackend
+    build:
+      context: ../Review/backend
+      dockerfile: Dockerfile
+    ports:
+      - "8083:8083"
+    command: >
+      sh -c "exec uvicorn main:app --host 0.0.0.0 --port 8083 --reload"
+    networks:
+      - eventmanager-net
+
+## Review Services
+  frontend:
+    container_name: ReviewFrontend
+    build:
+      context: ../Review/frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ../Review/frontend:/app
+      - /app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - WDS_SOCKET_PORT=0
+      - NODE_ENV=development
+    networks:
+      - eventmanager-net
+    depends_on:
+      - api

@@ -35,7 +35,10 @@
         goto(`${base}`);
     }
     function goToFeedBack() {
-        goto(`${base}/#`, { replaceState: true });    
+        const eventId = event.ID;
+        sessionStorage.setItem('eventId', eventId);
+        const targetUrl = `/app_review?eventId=${eventId}`;
+        window.location.href = targetUrl;  
     }    
     function goToTickets() {
         const eventId = event.ID;

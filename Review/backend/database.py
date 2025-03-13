@@ -12,36 +12,44 @@ db_dir = os.path.join(os.path.dirname(__file__), 'db')
 os.makedirs(db_dir, exist_ok=True)
 
 db_path = os.path.join(db_dir, 'reviews.sqlite')
+
+# Remove the database file if it exists
+def clean_db_file():
+    if os.path.exists(db_path):
+        try:
+            logger.info(f"Removing existing database file at {db_path}")
+            os.remove(db_path)
+        except Exception as e:
+            logger.error(f"Error removing database file: {e}")
+
 SQLALCHEMY_DATABASE_URL = f"sqlite:///{db_path}"
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def init_db():
-    logger.info("Initializing the database and creating tables if they don't exist")
+    logger.info("Initializing the database")
+    
+    # Remove the old database file
+    clean_db_file()
+    
+    # Create all tables
+    logger.info("Creating tables")
     Base.metadata.create_all(bind=engine)
     
+    # Add sample data
     db = SessionLocal()
     try:
-        inspector = inspect(engine)
-        if not inspector.has_table("reviews"):
-            logger.error("The reviews table does not exist.")
-            return
-        
-        db.query(Review).delete()
+        logger.info("Adding sample data")
         reviews = [
-            {"user_id": 1, "content": "Great event!", "rating": 5, "event_id": 1},
-            {"user_id": 2, "content": "Not bad", "rating": 3, "event_id": 2},
-            {"user_id": 3, "content": "Could be better", "rating": 2, "event_id": 1},
-            {"user_id": 4, "content": "Loved it!", "rating": 5, "event_id": 2},
-            {"user_id": 5, "content": "It was okay", "rating": 3, "event_id": 2},
-            {"user_id": 6, "content": "Terrible experience", "rating": 1, "event_id": 3},
-            {"user_id": 7, "content": "Pretty good", "rating": 4, "event_id": 3},
-            {"user_id": 8, "content": "Not worth it", "rating": 2, "event_id": 4},
-            {"user_id": 9, "content": "Fantastic!", "rating": 5, "event_id": 4}
+            {"user_id": 1, "content": "Great event!", "rating": 5, "event_id": 9999},
         ]
         for review in reviews:
             db.add(Review(**review))
         db.commit()
+        logger.info("Sample data added successfully")
+    except Exception as e:
+        logger.error(f"Error adding sample data: {e}")
+        db.rollback()
     finally:
         db.close()

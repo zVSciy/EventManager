@@ -2,12 +2,12 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 
 module.exports = function(app) {
   app.use(
-    '/api',
+    '/app_review/api',
     createProxyMiddleware({
-      target: 'http://ReviewBackend:8083',
+      target: 'http://review_api:8083',
       changeOrigin: true,
       pathRewrite: {
-        '^/api': '', // Remove /api prefix when forwarding to the backend
+        '^/app_review/api': '', // Remove /api prefix when forwarding to the backend
       },
     })
   );

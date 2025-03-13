@@ -60,7 +60,7 @@ def get_all_reviews(db: Session = Depends(get_db)):
     return reviews
 
 #? Create a review
-@app.post("/reviews/")
+@app.post("/reviews/create")
 def create_review(review: ReviewCreate, db: Session = Depends(get_db)):
     logger.info(f"Creating review for user ID: {review.user_id}")
     db_review = Review(user_id=review.user_id, content=review.content, rating=review.rating, event_id=review.event_id)
