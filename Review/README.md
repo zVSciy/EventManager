@@ -36,11 +36,9 @@ The tests will automatically run when the Docker container is started. To run th
    docker-compose run api pytest
    ```
 
-### Manual Testing with Postman
+### Manual Testing
 
-Set up Postman:
-
-Open Postman and create a new collection for the Review Service.
+Use the react.js frontend
 
 You can test every endpoint listed below:
 
