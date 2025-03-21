@@ -37,7 +37,7 @@ services:
 # -------------------------
 
   events_db:
-    image: registry.gitlab.com/kavalarj/eventmanager/events_db:latest
+    image: mysql:latest
 
     volumes:
       - events-mysql-data:/var/lib/mysql
