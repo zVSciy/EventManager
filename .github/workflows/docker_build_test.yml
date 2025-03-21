@@ -24,8 +24,8 @@ jobs:
 
       - name: Debug Print GitLab Secrets
         run: |
-          echo "GITLAB_USERNAME: ${{ secrets.GITLAB_USERNAME }}"
-          echo "GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}"
+          echo "GITLAB_USERNAME: ${{ vars.GITLAB_USERNAME }}"
+          echo "GITLAB_TOKEN: ${{ vars.GITLAB_TOKEN }}"
 
       - name: Build
         run: docker-compose -f docker-compose.yaml build
@@ -39,8 +39,8 @@ jobs:
         uses: docker/login-action@v2
         with:
           registry: registry.gitlab.com
-          username: ${{ secrets.GITLAB_USERNAME }}
-          password: ${{ secrets.GITLAB_TOKEN }}
+          username: ${{ vars.GITLAB_USERNAME }}
+          password: ${{ vars.GITLAB_TOKEN }}
 
       - name: Push images
         run: docker-compose -f docker-compose.yaml push
