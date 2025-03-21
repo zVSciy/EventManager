@@ -1,5 +1,5 @@
 # EventManager
-Am boutta readme test
+Am boutta readme
 
 ## Table of Contents
 - [Concepts](#concepts)
