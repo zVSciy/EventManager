@@ -1,0 +1,230 @@
+volumes:
+  events-mysql-data:
+  events-fast-data:
+  tickets-fast-data:
+  tickets-mysql-data:
+
+networks:
+  eventmanager-net:
+
+services:
+
+# -------------------------
+#  GENERAL - REVERSE PROXY
+# -------------------------
+
+  nginx:
+    image: nginx:latest
+
+    restart: always
+    
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/ssl
+    
+    ports:
+      - "8080:443"
+    
+    depends_on:
+      - events_db
+      - events_api
+      - events_web
+    networks:
+      - eventmanager-net
+
+# -------------------------
+#   CONTAINERS - EVENTS
+# -------------------------
+
+  events_db:
+    image: mysql:latest
+
+    volumes:
+      - events-mysql-data:/var/lib/mysql
+    
+    env_file: .env
+    environment:
+      MYSQL_DATABASE: ${EVENTS_MYSQL_DATABASE}
+      MYSQL_USER: ${EVENTS_MYSQL_USER}
+      MYSQL_PASSWORD: ${EVENTS_MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${EVENTS_MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE_PORT: ${EVENTS_MYSQL_DATABASE_PORT}
+
+    networks:
+      - eventmanager-net
+
+    healthcheck:
+       test: 'echo "select now(); " | mysql -h ${EVENTS_MYSQL_HOST} -u${EVENTS_MYSQL_USER} -p${EVENTS_MYSQL_PASSWORD}'
+       interval: 1s
+       retries: 10
+       start_period: 10s
+       timeout: 1s
+
+    ports:
+    - "3306"
+
+  events_api:
+    image: registry.gitlab.com/kavalarj/eventmanager/events_api:latest
+    build:
+      context: ./Events
+      dockerfile: ./DockerFile
+    
+    volumes:
+    - events-fast-data:/media
+    - ./Events/src:/app
+
+    depends_on:
+      events_db:
+        condition: service_healthy
+
+    env_file: .env
+    environment:
+      ALLOWED_HOSTS: '*'
+
+    working_dir: "/app"
+    
+    ports:
+    - "8000"
+
+    command: >
+      sh -c "python test.py && 
+             exec uvicorn main:app --host 0.0.0.0 --reload"
+
+    networks:
+    - eventmanager-net
+
+  events_web:
+    image: registry.gitlab.com/kavalarj/eventmanager/events_web:latest
+
+    build: ./Events/eventsSvelte
+
+    ports:
+     - "5173:5173"
+
+    volumes:
+      - ./Events/eventsSvelte:/app #Hot-reload
+      - /app/node_modules
+
+    networks:
+      - eventmanager-net
+
+# -------------------------
+#   CONTAINERS - REVIEW
+# -------------------------
+
+  review_api:   
+    image: registry.gitlab.com/kavalarj/eventmanager/review_api:latest
+ 
+    build:
+      context: ./Review/backend
+      dockerfile: Dockerfile
+
+    ports:
+      - "8083:8083"
+
+    command: >
+      sh -c "exec uvicorn main:app --host 0.0.0.0 --port 8083 --reload"
+
+    networks:
+      - eventmanager-net
+
+  review_web:
+    image: registry.gitlab.com/kavalarj/eventmanager/review_web:latest
+    build:
+      context: ./Review/frontend
+      dockerfile: Dockerfile.dev
+
+    ports:
+      - "3000:3000"
+
+    volumes:
+      - ./Review/frontend:/app
+      - /app/node_modules
+
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - WDS_SOCKET_PORT=0
+      - NODE_ENV=development
+
+    networks:
+      - eventmanager-net
+
+    depends_on:
+      - review_api
+
+# -------------------------
+#   CONTAINERS - TICKETS
+# -------------------------
+
+  tickets_db: 
+    image: mysql:latest
+
+    volumes:
+      - tickets-mysql-data:/var/lib/mysql
+
+    env_file: .env
+
+    environment:
+      MYSQL_DATABASE: ${TICKETS_MYSQL_DATABASE}
+      MYSQL_USER: ${TICKETS_MYSQL_USER}
+      MYSQL_PASSWORD: ${TICKETS_MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${TICKETS_MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE_PORT: ${TICKETS_MYSQL_DATABASE_PORT}
+
+    networks:
+      - eventmanager-net
+
+    healthcheck:
+      test: 'echo "select now();" | mysql -h ${TICKETS_MYSQL_DATABASE_HOST} -u${TICKETS_MYSQL_USER} -p${TICKETS_MYSQL_PASSWORD}'
+      interval: 1s
+      retries: 10
+      start_period: 10s
+      timeout: 1s
+
+  tickets_api:
+    image: registry.gitlab.com/kavalarj/eventmanager/tickets_api:latest
+
+    build:
+      context: ./Tickets
+      dockerfile: ./docker/fastapi/Dockerfile
+
+    env_file: .env
+
+    restart: always
+    
+    volumes:
+    - tickets-fast-data:/media
+    - ./Tickets/src_fastapi:/app
+
+    ports:
+      - "8001:8000"
+
+    depends_on:
+      tickets_db:
+        condition: service_healthy
+
+    command: >
+      sh -c "python test_app.py &&
+             uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
+
+    networks:
+      - eventmanager-net
+  
+  tickets_web:
+    image: registry.gitlab.com/kavalarj/eventmanager/tickets_web:latest
+    build:
+      context: ./Tickets
+      dockerfile: ./docker/sveltekit/Dockerfile
+
+    ports:
+      - "5173"
+
+    volumes:
+      - ./Tickets/src_svelte_frontend:/app #Hot-reload
+      - /app/node_modules
+
+    depends_on:
+      - tickets_api
+
+    networks:
+      - eventmanager-net
