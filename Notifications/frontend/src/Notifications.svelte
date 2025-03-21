@@ -12,7 +12,7 @@
 
     async function fetchNotifications() {
         try {
-            const response = await fetch('http://192.168.75.81:8082/notifications');
+            const response = await fetch('http://notification_api:8082/notifications');
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -24,7 +24,7 @@
 
     async function createNotification() {
         try {
-            const response = await fetch('http://192.168.75.81:8082/notifications', {
+            const response = await fetch('http://notification_api:8082/notifications', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newNotification)
@@ -41,7 +41,7 @@
 
     async function updateNotification() {
         try {
-            const response = await fetch(`http://192.168.75.81:8082/notifications/${updateNotificationId}`, {
+            const response = await fetch(`http://notification_api:8082/notifications/${updateNotificationId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(updateNotificationData)
@@ -59,7 +59,7 @@
 
     async function deleteNotification(id) {
         try {
-            const response = await fetch(`http://192.168.75.81:8082/notifications/${id}`, {
+            const response = await fetch(`http://notification_api:8082/notifications/${id}`, {
                 method: 'DELETE'
             });
             if (!response.ok) {

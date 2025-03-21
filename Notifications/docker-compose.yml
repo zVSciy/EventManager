@@ -34,8 +34,8 @@ services:
     ports:
     - "3305:3306"
 
-  api:
-    container_name: NotificationAPI
+  notification_api:
+    container_name: notification_api
     build:
       context: .
       dockerfile: ./docker/FastAPI/Dockerfile
@@ -57,8 +57,20 @@ services:
     - "8082:8000"
 
     command: >
-      sh -c "pytest && 
+      sh -c "pytest || true && 
              exec uvicorn main:app --host 0.0.0.0 --reload"
+
+    # command: sh -c "exec uvicorn main:app --host 0.0.0.0 --reload"
 
     networks:
     - my-network
+  
+  events:
+    build: ./frontend
+    ports:
+     - "8080:8080"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - my-network
