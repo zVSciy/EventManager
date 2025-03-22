@@ -23,10 +23,17 @@
     }
 </script>
 
+<nav>
+    <a href="/">Home</a>
+    <a href="/register">Register</a>
+    <a href="/verify">Verify</a>
+</nav>
+
+<h1>Register</h1>
 <form on:submit|preventDefault={register}>
-    <input bind:value={email} placeholder="Email" />
-    <input bind:value={password} type="password" placeholder="Password" />
-    <input bind:value={first_name} placeholder="First Name" />
-    <input bind:value={last_name} placeholder="Last Name" />
+    <input bind:value={email} placeholder="Email" required />
+    <input bind:value={password} type="password" placeholder="Password" required />
+    <input bind:value={first_name} placeholder="First Name" required />
+    <input bind:value={last_name} placeholder="Last Name" required />
     <button>Register</button>
 </form>

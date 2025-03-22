@@ -13,15 +13,22 @@
                 throw new Error(response.statusText);
             }
             const result = await response.json();
-            alert(result);
+            alert(result + " - Token verified successfully!");
         } catch (error) {
             alert("Failed to verify token: " + error.message);
         }
     }
 </script>
 
+<nav>
+    <a href="/">Home</a>
+    <a href="/register">Register</a>
+    <a href="/verify">Verify</a>
+</nav>
+
+<h1>Verify Token</h1>
 <form on:submit|preventDefault={token}>
-    <input bind:value={email} placeholder="Email" />
-    <input bind:value={password} type="password" placeholder="Password" />
-    <button>Register</button>
+    <input bind:value={email} placeholder="Email" required />
+    <input bind:value={password} type="password" placeholder="Password" required />
+    <button>Verify</button>
 </form>
