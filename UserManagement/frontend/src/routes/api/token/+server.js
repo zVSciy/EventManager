@@ -1,27 +1,45 @@
-import { json } from '@sveltejs/kit';
+import { error } from "@sveltejs/kit";
+import https from 'https';
+
+// Bypass SSL certificate validation (development only)
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
+const API_BASE_URL = 'https://backend:8000';
 
 export async function POST({ request }) {
-    const { username, password } = await request.json();
-    
-    // Simulate user validation
-    const isValid = username === 'user' && password === 'pass';
+    const { email, password } = await request.json();
 
-    if (isValid) {
-        return json({ access_token: 'valid-token', user: { username } });
-    } else {
-        return json({ message: 'Invalid credentials' }, { status: 401 });
+    try {
+        const response = await fetch(`${API_BASE_URL}/token`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                username: email, // OAuth2PasswordRequestForm expects "username"
+                password: password
+            }),
+            agent: new https.Agent({
+                rejectUnauthorized: false
+            })
+        });
+
+        return jsonResponse(response.status);
+        // const responseData = await response.json();
+        // return jsonResponse(responseData, response.status);
+    } 
+    
+    catch (error) {
+        console.log(error);
+        return jsonResponse({ message: "An error occurred", error: error.message }, 500);
     }
 }
 
-export async function GET({ request }) {
-    const token = request.headers.get('Authorization')?.replace('Bearer ', '');
-    
-    // Simulate token validation
-    const isValid = token === 'valid-token';
-
-    if (isValid) {
-        return json({ email: 'user@example.com', message: 'Token is valid!' });
-    } else {
-        return json({ message: 'Invalid or expired token.' }, { status: 401 });
-    }
+function jsonResponse(data, status) {
+    return new Response(JSON.stringify(data), {
+        status: status,
+        headers: {
+            "Content-Type": "application/json",
+        }
+    });
 }
