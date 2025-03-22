@@ -4,7 +4,7 @@ import https from 'https';
 // Bypass SSL certificate validation (development only)
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
-const API_BASE_URL = 'https://backend:8000';
+const API_BASE_URL = 'https://auth_api:8000';
 
 export async function POST({ request }) {
     const { email, password } = await request.json();

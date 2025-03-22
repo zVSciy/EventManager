@@ -17,6 +17,10 @@
             }
             const result = await response.json();
             alert(result);
+            sessionStorage.setItem('email', email);
+            sessionStorage.setItem('password', password);
+            const targetUrl = `/app_event`;
+            window.location.href = targetUrl;
         } catch (error) {
             alert("Failed to register user: " + error.message);
         }
