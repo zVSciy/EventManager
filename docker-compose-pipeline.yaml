@@ -3,6 +3,8 @@ volumes:
   events-fast-data:
   tickets-fast-data:
   tickets-mysql-data:
+  auth-db-data:
+  auth-api-data:
 
 networks:
   eventmanager-net:
