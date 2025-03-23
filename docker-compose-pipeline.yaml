@@ -228,3 +228,79 @@ services:
 
     networks:
       - eventmanager-net
+
+# --------------------------------
+#   CONTAINERS - UserManagement
+# --------------------------------
+
+  auth_db:
+    image: mysql:latest
+
+    volumes:
+      - auth-db-data:/var/lib/mysql
+
+    env_file: .env
+    environment:
+      MYSQL_DATABASE: ${AUTH_MYSQL_DATABASE}
+      MYSQL_USER: ${AUTH_MYSQL_USER}
+      MYSQL_PASSWORD: ${AUTH_MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${AUTH_MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE_PORT: ${AUTH_MYSQL_DATABASE_PORT}
+
+    networks:
+      - eventmanager-net
+
+    healthcheck:
+       test: 'echo "select now(); " | mysql -h ${AUTH_MYSQL_DATABASE_HOST} -u${AUTH_MYSQL_USER} -p${AUTH_MYSQL_PASSWORD}'
+       interval: 1s
+       retries: 10
+       start_period: 10s
+       timeout: 1s
+
+    ports:
+    - "3306"
+
+  auth_api:
+    image: registry.gitlab.com/kavalarj/eventmanager/auth_api:latest
+    build:
+      context: ./UserManagement
+      dockerfile: ./docker/FastAPI/Dockerfile
+
+    volumes:
+    - auth-api-data:/media
+    - ./UserManagement/ssl:/app/ssl
+    - ./UserManagement/src:/app
+
+    depends_on:
+      auth_db:
+        condition: service_healthy
+
+    env_file: .env
+    environment:
+      ALLOWED_HOSTS: ${AUTH_ALLOWED_HOSTS}
+
+    working_dir: "/app"
+
+    ports:
+    - "8000"
+
+    command: >
+      sh -c "python test_api.py && uvicorn main:app --host 0.0.0.0 --ssl-keyfile /app/ssl/certificate.key --ssl-certfile /app/ssl/certificate.crt --workers 4"
+    #  sh -c "python test_api.py &&
+    #         uvicorn main:app --host 0.0.0.0 --ssl-keyfile /app/ssl/certificate.key --ssl-certfile /app/ssl/certificate.crt --workers 4"
+
+    networks:
+      - eventmanager-net
+
+  auth_web:
+    image: registry.gitlab.com/kavalarj/eventmanager/auth_web:latest
+    build:
+      context: ./UserManagement
+      dockerfile: ./docker/Svelte/Dockerfile
+    ports:
+      - "5173"
+    volumes:
+      - ./UserManagement/frontend:/app
+      - /app/node_modules
+    networks:
+      - eventmanager-net
