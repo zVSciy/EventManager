@@ -10,11 +10,8 @@
     // Get ID from Session Storage
     onMount(() => {
         eventID = sessionStorage.getItem('eventId');
-        console.log(eventID);
-
         email = sessionStorage.getItem('email');
         password = sessionStorage.getItem('password');
-        console.log(email);
         token();
     });
     
@@ -31,6 +28,28 @@
     let ticketUID = '';
 
     let ticketToDelete;
+
+    let email = '';
+    let password = '';
+    let error = false;
+
+    async function token() {
+      try {
+        const response = await fetch(`${base}/api/token?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`,
+        {
+          method: "POST",
+        });
+
+        const result = await response.json();
+        if (result.status == 200) {
+          error = false;
+        } else {
+          error = true;
+        }
+      } catch (err) {
+        alert("An error occured: " + err.message);
+      }
+    }
 
     async function getTickets() {
         const response = await fetch(`${base}/api/tickets?event_id=${encodeURIComponent(eventID)}`,
@@ -94,9 +113,7 @@
         if (response.ok) {
           errorMessage = '';
           ticket = await response.json();
-          console.log(ticket)
           ticketVIP = String(ticket.vip);
-          console.log(ticketVIP)
           deleteTickets(); 
         } else {
           ticket = '';
@@ -113,7 +130,6 @@
         if (response.ok) {
           errorMessage = '';
           ticketsData = await response.json();
-          console.log(ticketsData);
           if (ticketsData.status == 200 && moreTickets == 1) {
             updateAvailableTickets(); 
           }
@@ -123,130 +139,109 @@
         }
     }
 
-    let email = '';
-    let password = '';
-    let error = null;
-
-    async function token() {
-      try {
-        const response = await fetch(`${base}/api/token`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            email,
-            password
-          })
-        });
-        if (!response.ok) {
-          throw new Error(response.statusText);
-        } else {
-          error = null;
-        }
-      } catch (error) {
-        alert("Failed to verify credentials: " + error.message);
-      }
+    function logout() {
+        // Clear session storage
+        sessionStorage.clear();
+        // Redirect to the root path (user management)
+        window.location.href = "/";
     }
 </script>
 
-{#if error}
-
-<TokenInvalid/>
-
+{#if error == true}
+  <TokenInvalid/>
 {:else}
-<nav class="navbar navbar-expand-md bg-dark navbar-dark">
-    <div class="container-fluid">
-        <span class="navbar-brand">Tickets | Main</span>
-        <div class="collapse navbar-collapse">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="/app_event">Events</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" href="{base}">Main</a>
-                </li>
-                {#if data && data.admin}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{base}/admin">Admin</a>
-                    </li>
-                {/if}
-            </ul>
+  <nav class="navbar navbar-expand-md bg-dark navbar-dark">
+      <div class="container-fluid">
+          <span class="navbar-brand">Tickets | Main</span>
+          <div class="collapse navbar-collapse">
+              <ul class="navbar-nav me-auto">
+                  <li class="nav-item">
+                      <a class="nav-link" href="/app_event">Events</a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link active" href="{base}">Main</a>
+                  </li>
+                  {#if data && data.admin}
+                      <li class="nav-item">
+                          <a class="nav-link" href="{base}/admin">Admin</a>
+                      </li>
+                  {/if}
+              </ul>
 
-            {#if email}
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <span class="navbar-text text-light">Welcome,
-                            {email}</span>
-                        <a class="btn btn-sm btn-primary ms-2" href="{base}">Logout</a>
-                    </li>
-                </ul>
-            {/if}
-        </div>
-    </div>
-</nav>
-
-<div class="Home p-3 mt-3 text-center container"> 
-    <div class="row">
-      <div class="col-12">
-        <h2 class="text-center">Get Tickets</h2>
-        <form on:submit|preventDefault={getTickets} class="input-group">
-          <div class="input-group-prepend">
-            <label class="input-group-text">EventID (optional)</label>
+              {#if email}
+                  <ul class="navbar-nav ms-auto">
+                      <li class="nav-item">
+                          <span class="navbar-text text-light">Welcome,
+                              {email}</span>
+                          <a class="btn btn-sm btn-primary ms-2" href="/" on:click={logout}>Logout</a>
+                      </li>
+                  </ul>
+              {/if}
           </div>
-          <input type="number" class="form-control" bind:value={ticketEID} placeholder="EventID"/>
-          <button type="submit" class="btn btn-primary input-group-append">Get Tickets</button>
-        </form>
       </div>
+  </nav>
+
+  <div class="Home p-3 mt-3 text-center container"> 
+      <div class="row">
+        <div class="col-12">
+          <h2 class="text-center">Get Tickets</h2>
+          <form on:submit|preventDefault={getTickets} class="input-group">
+            <div class="input-group-prepend">
+              <label class="input-group-text">EventID (optional)</label>
+            </div>
+            <input type="number" class="form-control" bind:value={ticketEID} placeholder="EventID"/>
+            <button type="submit" class="btn btn-primary input-group-append">Get Tickets</button>
+          </form>
+        </div>
+
+        <div class="col-12 mt-4">
+          <h2 class="text-center">Buy Tickets</h2>
+          <form on:submit|preventDefault={updateAvailableTickets} class="input-group">
+            <div class="input-group-prepend">
+              <label class="input-group-text">Price, Row, Seat, UID, EID, VIP</label>
+            </div>
+            <input type="number" class="form-control" bind:value={ticketPrice} placeholder="Price"/>
+            <input type="text" class="form-control" bind:value={ticketRow} placeholder="Row"/>
+            <input type="number" class="form-control" bind:value={ticketSeatNumber} placeholder="Seat"/>
+            <input type="number" class="form-control" bind:value={ticketUID} placeholder="UID"/>
+            <input type="number" class="form-control" bind:value={eventID} placeholder="EID" disabled readonly/>
+            <select class="form-select" bind:value={ticketVIP}>
+                <option value="false" selected>False</option>
+                <option value="true">True</option>
+            </select>
+            <button disabled={!ticketPrice || !ticketUID } type="submit" class="btn btn-primary input-group-append"on:click={() => { moreTickets = 0 }}>Add Ticket</button>
+          </form>  
+        </div>
+
+        <div class="col-12 mt-4">
+          <h2 class="text-center">Cancel Tickets</h2>
+          <form on:submit|preventDefault={getOneTicket} class="input-group">
+            <div class="input-group-prepend">
+              <label class="input-group-text">TicketID</label>
+            </div>
+            <input type="number" class="form-control" bind:value={ticketToDelete} placeholder="TicketID"/>
+            <button disabled={!ticketToDelete} type="submit" class="btn btn-primary input-group-append"on:click={() => { moreTickets = 1 }}>Delete Ticket</button>
+          </form>
+        </div>
 
       <div class="col-12 mt-4">
-        <h2 class="text-center">Buy Tickets</h2>
-        <form on:submit|preventDefault={updateAvailableTickets} class="input-group">
-          <div class="input-group-prepend">
-            <label class="input-group-text">Price, Row, Seat, UID, EID, VIP</label>
+        <h2 class="text-center">Results</h2>
+      {#if ticketsData && ticketsData.error}
+          <div class="message text-danger">
+            <h2>{ticketsData.status}</h2>
+            <p>{ticketsData.error}</p>
           </div>
-          <input type="number" class="form-control" bind:value={ticketPrice} placeholder="Price"/>
-          <input type="text" class="form-control" bind:value={ticketRow} placeholder="Row"/>
-          <input type="number" class="form-control" bind:value={ticketSeatNumber} placeholder="Seat"/>
-          <input type="number" class="form-control" bind:value={ticketUID} placeholder="UID"/>
-          <input type="number" class="form-control" bind:value={eventID} placeholder="EID" disabled readonly/>
-          <select class="form-select" bind:value={ticketVIP}>
-              <option value="false" selected>False</option>
-              <option value="true">True</option>
-          </select>
-          <button disabled={!ticketPrice || !ticketUID } type="submit" class="btn btn-primary input-group-append"on:click={() => { moreTickets = 0 }}>Add Ticket</button>
-        </form>  
-      </div>
-
-      <div class="col-12 mt-4">
-        <h2 class="text-center">Cancel Tickets</h2>
-        <form on:submit|preventDefault={getOneTicket} class="input-group">
-          <div class="input-group-prepend">
-            <label class="input-group-text">TicketID</label>
+      {:else if errorMessage}
+          <div class="message text-warning">
+            <h2>Global Error</h2>
+            <p>{errorMessage}</p>
           </div>
-          <input type="number" class="form-control" bind:value={ticketToDelete} placeholder="TicketID"/>
-          <button disabled={!ticketToDelete} type="submit" class="btn btn-primary input-group-append"on:click={() => { moreTickets = 1 }}>Delete Ticket</button>
-        </form>
+      {:else}
+          <TicketsDisplay {ticketsData}/>
+      {/if}
       </div>
-
-    <div class="col-12 mt-4">
-      <h2 class="text-center">Results</h2>
-    {#if ticketsData && ticketsData.error}
-        <div class="message text-danger">
-          <h2>{ticketsData.status}</h2>
-          <p>{ticketsData.error}</p>
-        </div>
-    {:else if errorMessage}
-        <div class="message text-warning">
-          <h2>Global Error</h2>
-          <p>{errorMessage}</p>
-        </div>
-    {:else}
-        <TicketsDisplay {ticketsData}/>
-    {/if}
-    </div>
-    </div>
-</div>
+      </div>
+  </div>
 {/if}
 
 <style>

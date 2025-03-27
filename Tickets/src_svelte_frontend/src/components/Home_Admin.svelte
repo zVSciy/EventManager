@@ -10,11 +10,8 @@
     // Get ID from Session Storage
     onMount(() => {
         eventID = sessionStorage.getItem('eventId');
-        console.log(eventID);
-
         email = sessionStorage.getItem('email');
         password = sessionStorage.getItem('password');
-        console.log(email);
         token();
     });
     
@@ -38,6 +35,28 @@
     let changedTicketEID = '';
 
     let ticketToDelete;
+
+    let email = '';
+    let password = '';
+    let error = false;
+
+    async function token() {
+      try {
+        const response = await fetch(`${base}/api/token?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`,
+        {
+          method: "POST",
+        });
+
+        const result = await response.json();
+        if (result.status == 200) {
+          error = false;
+        } else {
+          error = true;
+        }
+      } catch (err) {
+        alert("An error occured: " + err.message);
+      }
+    }
 
     async function getTickets() {
         const response = await fetch(`${base}/api/tickets?event_id=${encodeURIComponent(eventID)}`,
@@ -119,9 +138,7 @@
         if (response.ok) {
           errorMessage = '';
           ticket = await response.json();
-          console.log(ticket)
           ticketVIP = String(ticket.vip);
-          console.log(ticketVIP)
           deleteTickets(); 
         } else {
           ticket = '';
@@ -138,7 +155,6 @@
         if (response.ok) {
           errorMessage = '';
           ticketsData = await response.json();
-          console.log(ticketsData);
           if (ticketsData.status == 200 && moreTickets == 1) {
             updateAvailableTickets(); 
           }
@@ -148,40 +164,16 @@
         }
     }
 
-    let email = '';
-    let password = '';
-    let error = '';
-
-    async function token() {
-      try {
-        const response = await fetch(`${base}/api/token`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            email,
-            password
-          })
-        });
-        if (!response.ok) {
-          throw new Error(response.statusText);
-        } else {
-          error = '';
-        }
-      } catch (err) {
-        alert("Failed to verify credentials: " + err.message);
-        error = err.message;
-      }
+    function logout() {
+        // Clear session storage
+        sessionStorage.clear();
+        // Redirect to the root path (user management)
+        window.location.href = "/";
     }
 </script>
 
-{#if error}
-
-<TokenInvalid/>
-
-{:else}
-<nav class="navbar navbar-expand-md bg-dark navbar-dark">
+{#if error == false && data && data.admin}
+  <nav class="navbar navbar-expand-md bg-dark navbar-dark">
     <div class="container-fluid">
         <span class="navbar-brand">Tickets | Admin</span>
         <div class="collapse navbar-collapse">
@@ -204,15 +196,15 @@
                     <li class="nav-item">
                         <span class="navbar-text text-light">Welcome,
                             {data.username}</span>
-                        <a class="btn btn-sm btn-primary ms-2" href="{base}/admin">Logout</a>
+                        <a class="btn btn-sm btn-primary ms-2" href="/" on:click={logout}>Logout</a>
                     </li>
                 </ul>
             {/if}
         </div>
     </div>
-</nav>
+  </nav>
 
-<div class="Home p-3 mt-3 text-center container"> 
+  <div class="Home p-3 mt-3 text-center container"> 
     <div class="row">
       <div class="col-12">
         <h2 class="text-center">Get Tickets</h2>
@@ -292,7 +284,9 @@
     {/if}
     </div>
     </div>
-</div>
+  </div>
+{:else}
+  <TokenInvalid/>
 {/if}
 
 <style>

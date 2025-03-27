@@ -1,4 +1,3 @@
-import { error } from "@sveltejs/kit";
 import https from 'https';
 
 // Bypass SSL certificate validation (development only)
@@ -15,8 +14,9 @@ function jsonResponse(data, status) {
     });
 }
 
-export async function POST({ request }) {
-    const { email, password } = await request.json();
+export async function POST({ url }) {
+    const email = url.searchParams.get('email');
+    const password = url.searchParams.get('password');
 
     try {
         const response = await fetch(`${API_BASE_URL}/token`, {
@@ -33,11 +33,10 @@ export async function POST({ request }) {
             })
         });
 
-        return jsonResponse(response.status);
+        return jsonResponse({status: response.status});
     } 
     
     catch (error) {
-        console.log(error);
-        return jsonResponse({ message: "An error occurred", error: error.message }, 500);
+        return jsonResponse({status: 500, error: error});
     }
 }
