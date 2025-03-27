@@ -125,11 +125,11 @@
 
     let email = '';
     let password = '';
-    let error = '';
+    let error = null;
 
     async function token() {
       try {
-        const response = await fetch('/api/token', {
+        const response = await fetch(`${base}/api/token`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -142,11 +142,10 @@
         if (!response.ok) {
           throw new Error(response.statusText);
         } else {
-          error = '';
+          error = null;
         }
-      } catch (err) {
-        alert("Failed to verify credentials: " + err.message);
-        error = err.message;
+      } catch (error) {
+        alert("Failed to verify credentials: " + error.message);
       }
     }
 </script>

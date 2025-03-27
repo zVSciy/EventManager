@@ -154,7 +154,7 @@
 
     async function token() {
       try {
-        const response = await fetch('/api/token', {
+        const response = await fetch(`${base}/api/token`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
