@@ -1,16 +1,21 @@
 <script>
     import { base } from '$app/paths';
-    import TicketsDisplay from "./TicketsDisplay.svelte";
+    import TicketsDisplay from './TicketsDisplay.svelte';
+    import TokenInvalid from './TokenInvalid.svelte';
     import { onMount } from 'svelte';
     export let data;
-
     let eventID;
     let ticket;
 
-    // ID aus dem Session Storage abrufen
+    // Get ID from Session Storage
     onMount(() => {
         eventID = sessionStorage.getItem('eventId');
-        console.log(eventID)
+        console.log(eventID);
+
+        email = sessionStorage.getItem('email');
+        password = sessionStorage.getItem('password');
+        console.log(email);
+        token();
     });
     
     let moreTickets = 0;
@@ -85,65 +90,97 @@
           errorMessage = 'Failed to fetch tickets data';
         }
     }
-async function updateAvailableTickets() {
+    async function updateAvailableTickets() {
 
-    const response = await fetch(`${base}/api/events?event_id=${eventID}&delete=${moreTickets}&vip=${encodeURIComponent(ticketVIP)}`,
-    {
-      method: "PUT"
-    });
-    
-    if (response.ok) {
-      errorMessage = '';
-      let eventData = await response.json();
+        const response = await fetch(`${base}/api/events?event_id=${eventID}&delete=${moreTickets}&vip=${encodeURIComponent(ticketVIP)}`,
+        {
+          method: "PUT"
+        });
+        
+        if (response.ok) {
+          errorMessage = '';
+          let eventData = await response.json();
 
-      if (eventData[0].status == 200 && moreTickets == 0){
-        addTickets();
-      } 
+          if (eventData[0].status == 200 && moreTickets == 0){
+            addTickets();
+          } 
 
-    } else {
-      eventData = '';
+        } else {
+          eventData = '';
+        }
     }
-}
 
-async function getOneTicket() {
-    const response = await fetch(`${base}/api/tickets/single?ticket_id=${encodeURIComponent(ticketToDelete)}`,
-    {
-      method: "GET"
-    });
+    async function getOneTicket() {
+        const response = await fetch(`${base}/api/tickets/single?ticket_id=${encodeURIComponent(ticketToDelete)}`,
+        {
+          method: "GET"
+        });
 
-    if (response.ok) {
-      errorMessage = '';
-      ticket = await response.json();
-      console.log(ticket)
-      ticketVIP = String(ticket.vip);
-      console.log(ticketVIP)
-      deleteTickets(); 
-    } else {
-      ticket = '';
-      errorMessage = 'Failed to fetch tickets data';
+        if (response.ok) {
+          errorMessage = '';
+          ticket = await response.json();
+          console.log(ticket)
+          ticketVIP = String(ticket.vip);
+          console.log(ticketVIP)
+          deleteTickets(); 
+        } else {
+          ticket = '';
+          errorMessage = 'Failed to fetch tickets data';
+        }
     }
-}
 
-async function deleteTickets() {
-    const response = await fetch(`${base}/api/tickets?ticket_id=${encodeURIComponent(ticketToDelete)}`,
-    {
-      method: "DELETE"
-    });
+    async function deleteTickets() {
+        const response = await fetch(`${base}/api/tickets?ticket_id=${encodeURIComponent(ticketToDelete)}`,
+        {
+          method: "DELETE"
+        });
 
-    if (response.ok) {
-      errorMessage = '';
-      ticketsData = await response.json();
-      console.log(ticketsData);
-      if (ticketsData.status == 200 && moreTickets == 1) {
-        updateAvailableTickets(); 
+        if (response.ok) {
+          errorMessage = '';
+          ticketsData = await response.json();
+          console.log(ticketsData);
+          if (ticketsData.status == 200 && moreTickets == 1) {
+            updateAvailableTickets(); 
+          }
+        } else {
+          ticketsData = '';
+          errorMessage = 'Failed to fetch tickets data';
+        }
+    }
+
+    let email = '';
+    let password = '';
+    let error = '';
+
+    async function token() {
+      try {
+        const response = await fetch('/api/token', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            email,
+            password
+          })
+        });
+        if (!response.ok) {
+          throw new Error(response.statusText);
+        } else {
+          error = '';
+        }
+      } catch (err) {
+        alert("Failed to verify credentials: " + err.message);
+        error = err.message;
       }
-    } else {
-      ticketsData = '';
-      errorMessage = 'Failed to fetch tickets data';
     }
-}
 </script>
 
+{#if error}
+
+<TokenInvalid/>
+
+{:else}
 <nav class="navbar navbar-expand-md bg-dark navbar-dark">
     <div class="container-fluid">
         <span class="navbar-brand">Tickets | Admin</span>
@@ -256,6 +293,7 @@ async function deleteTickets() {
     </div>
     </div>
 </div>
+{/if}
 
 <style>
     .Home {
