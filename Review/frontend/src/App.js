@@ -236,9 +236,6 @@ function App() {
         <div className="container mx-auto flex justify-between items-center">
           <button className="text-white text-xl font-bold bg-transparent border-0">Review App</button>
           <div className="flex items-center">
-            <div className={`mr-4 px-3 py-1 rounded ${isAuthenticated ? 'bg-green-600' : 'bg-red-600'}`}>
-              {isAuthenticated ? 'Authenticated' : 'Not Authenticated'}
-            </div>
             <a 
               href="/app_event/"
               className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
@@ -249,19 +246,21 @@ function App() {
         </div>
       </nav>
       
-      {/* Adjusted margin between navbar and authentication status panel */}
-      <div className="container mx-auto p-4 mt-8">
-        <div className="mb-6 bg-gray-800 p-4 rounded-lg">
-          <h2 className="text-xl font-bold mb-2 text-solana-primary">Authentication Status</h2>
-          <div className="bg-gray-900 p-3 rounded">
-            <p className="text-white">Status: <span className={authDebug.status === 'Authenticated' ? 'text-green-400' : 'text-red-400'}>{authDebug.status}</span></p>
-            <button 
-              onClick={() => verifyToken()} 
-              className="mt-2 solana-primary text-white py-1 px-3 rounded"
-            >
-              Verify Authentication
-            </button>
+      <div className="container mx-auto p-4 mt-4">
+        {/* Authentication Status Bar */}
+        <div className="bg-gray-700 p-2 rounded-lg mb-4 flex justify-between items-center">
+          <div className="flex items-center">
+            <span className="text-white mr-2">Authentication:</span>
+            <div className={`px-3 py-1 rounded ${isAuthenticated ? 'bg-green-600' : 'bg-red-600'}`}>
+              {isAuthenticated ? 'Authenticated' : 'Not Authenticated'}
+            </div>
           </div>
+          <button 
+            onClick={() => verifyToken()} 
+            className="solana-primary text-white py-1 px-3 rounded"
+          >
+            Verify Authentication
+          </button>
         </div>
         
         <div className="flex flex-wrap -mx-2">
