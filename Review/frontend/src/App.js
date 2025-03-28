@@ -249,20 +249,17 @@ function App() {
         </div>
       </nav>
       
-      {/* Added spacing between navbar and authentication status panel */}
-      <div className="container mx-auto p-4 mt-6">
+      {/* Adjusted margin between navbar and authentication status panel */}
+      <div className="container mx-auto p-4 mt-8">
         <div className="mb-6 bg-gray-800 p-4 rounded-lg">
           <h2 className="text-xl font-bold mb-2 text-solana-primary">Authentication Status</h2>
           <div className="bg-gray-900 p-3 rounded">
             <p className="text-white">Status: <span className={authDebug.status === 'Authenticated' ? 'text-green-400' : 'text-red-400'}>{authDebug.status}</span></p>
-            <p className="text-white">Last checked: {authDebug.lastChecked || 'Never'}</p>
-            <p className="text-white">Email: {email ? `${email.substring(0, 3)}***` : 'Not set'}</p>
-            {authDebug.error && <p className="text-red-400">Error: {authDebug.error}</p>}
             <button 
               onClick={() => verifyToken()} 
-              className="mt-2 bg-blue-600 hover:bg-blue-700 text-white py-1 px-3 rounded"
+              className="mt-2 solana-primary text-white py-1 px-3 rounded"
             >
-              Test Token
+              Verify Authentication
             </button>
           </div>
         </div>
@@ -437,13 +434,6 @@ function App() {
                 <pre className="bg-gray-900 p-2 rounded-md text-left text-white">
                   {JSON.stringify(response, null, 2)}
                 </pre>
-                <div className="mt-4 p-2 bg-gray-700 rounded-md">
-                  <h3 className="font-bold text-white">Debug Info:</h3>
-                  <p className="text-white text-sm">Auth Status: {authDebug.status}</p>
-                  <p className="text-white text-sm">Time: {new Date().toLocaleTimeString()}</p>
-                  <p className="text-white text-sm">Email Set: {email ? 'Yes' : 'No'}</p>
-                  <p className="text-white text-sm">Password Set: {password ? 'Yes' : 'No'}</p>
-                </div>
               </div>
             )}
           </div>
