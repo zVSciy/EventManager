@@ -35,6 +35,28 @@ services:
       - eventmanager-net
 
 # -------------------------
+#  GENERAL - INTEGRATION TEST
+# -------------------------
+
+  integration_test:
+    build:
+      context: ./Integration_Tests
+      dockerfile: ./docker/Dockerfile
+
+    depends_on:
+      - auth_api
+      - events_api
+      - tickets_api
+
+    working_dir: /app
+
+    command: >
+      sh -c "python test_app.py"
+
+    networks:
+      - eventmanager-net
+
+# -------------------------
 #   CONTAINERS - EVENTS
 # -------------------------
 
