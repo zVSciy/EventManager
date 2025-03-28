@@ -42,7 +42,6 @@ function App() {
   // Token verification function
   async function verifyToken() {
     try {
-      // Show visual feedback about authentication attempt
       setAuthDebug({
         status: 'Checking...',
         lastChecked: new Date().toLocaleTimeString(),
@@ -71,6 +70,7 @@ function App() {
         return true;
       }
       
+      setIsAuthenticated(false);
       setAuthDebug({
         status: 'Failed',
         lastChecked: new Date().toLocaleTimeString(),
@@ -78,6 +78,7 @@ function App() {
       });
       return false;
     } catch (error) {
+      setIsAuthenticated(false);
       setAuthDebug({
         status: 'Error',
         lastChecked: new Date().toLocaleTimeString(),
@@ -113,6 +114,7 @@ function App() {
       }
     }
     
+    // Always verify token on page load
     if (storedEmail && storedPassword) {
       verifyToken();
     }
@@ -168,6 +170,7 @@ function App() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    // Always verify token before making API call
     const isVerified = await verifyToken();
     
     if (!isVerified) {
@@ -236,6 +239,16 @@ function App() {
         <div className="container mx-auto flex justify-between items-center">
           <button className="text-white text-xl font-bold bg-transparent border-0">Review App</button>
           <div className="flex items-center">
+            <div className={`flex items-center mr-4 px-3 py-1 rounded ${isAuthenticated ? 'bg-green-600' : 'bg-red-600'}`}>
+              <span className="text-white mr-2">Status:</span>
+              <span className="text-white font-bold">{isAuthenticated ? 'Authenticated' : 'Not Authenticated'}</span>
+            </div>
+            <button 
+              onClick={() => verifyToken()} 
+              className="mr-4 bg-blue-600 hover:bg-blue-700 text-white py-1 px-3 rounded text-sm"
+            >
+              Verify
+            </button>
             <a 
               href="/app_event/"
               className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
@@ -247,22 +260,6 @@ function App() {
       </nav>
       
       <div className="container mx-auto p-4 mt-4">
-        {/* Authentication Status Bar */}
-        <div className="bg-gray-700 p-2 rounded-lg mb-4 flex justify-between items-center">
-          <div className="flex items-center">
-            <span className="text-white mr-2">Authentication:</span>
-            <div className={`px-3 py-1 rounded ${isAuthenticated ? 'bg-green-600' : 'bg-red-600'}`}>
-              {isAuthenticated ? 'Authenticated' : 'Not Authenticated'}
-            </div>
-          </div>
-          <button 
-            onClick={() => verifyToken()} 
-            className="solana-primary text-white py-1 px-3 rounded"
-          >
-            Verify Authentication
-          </button>
-        </div>
-        
         <div className="flex flex-wrap -mx-2">
           <div className="w-full px-2 mb-4 flex flex-col">
             <h1 className="text-3xl font-bold mb-4 text-solana-primary">Review Management</h1>
@@ -271,6 +268,7 @@ function App() {
                 <p className="text-white">Current Event ID: <span className="font-bold">{eventID}</span></p>
               </div>
             )}
+            
             <div className="mb-4">
               <label htmlFor="endpoint" className="block text-sm font-medium">Select Endpoint:</label>
               <select
