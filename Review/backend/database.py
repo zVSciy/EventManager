@@ -42,7 +42,7 @@ def init_db():
     try:
         logger.info("Adding sample data")
         reviews = [
-            {"user_id": 1, "content": "Great event!", "rating": 5, "event_id": 9999},
+            {"user_id": "1", "content": "Great event!", "rating": 5, "event_id": 9999},
         ]
         for review in reviews:
             db.add(Review(**review))

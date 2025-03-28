@@ -287,9 +287,8 @@ services:
     - "8000"
 
     command: >
-      sh -c "python test_api.py && uvicorn main:app --host 0.0.0.0 --ssl-keyfile /app/ssl/certificate.key --ssl-certfile /app/ssl/certificate.crt --workers 4"
-    #  sh -c "python test_api.py &&
-    #         uvicorn main:app --host 0.0.0.0 --ssl-keyfile /app/ssl/certificate.key --ssl-certfile /app/ssl/certificate.crt --workers 4"
+      sh -c "python test_api.py &&
+            uvicorn main:app --host 0.0.0.0 --ssl-keyfile /app/ssl/certificate.key --ssl-certfile /app/ssl/certificate.crt --workers 4"
 
     networks:
       - eventmanager-net
