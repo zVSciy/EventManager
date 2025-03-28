@@ -1,6 +1,8 @@
 <script>
     import { onMount } from 'svelte';
 
+    const backend_url = 'http://notification_api:8082';
+
     let notifications = [];
     let newNotification = { description: '', status: '', eventId: '', ticketId: '', timestamp: '', paymentId: '', userId: '' };
     let updateNotificationId = null;
@@ -12,7 +14,7 @@
 
     async function fetchNotifications() {
         try {
-            const response = await fetch('http://notification_api:8082/notifications');
+            const response = await fetch(`${backend_url}/notifications`);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -24,7 +26,7 @@
 
     async function createNotification() {
         try {
-            const response = await fetch('http://notification_api:8082/notifications', {
+            const response = await fetch(`${backend_url}/notifications`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newNotification)
@@ -41,7 +43,7 @@
 
     async function updateNotification() {
         try {
-            const response = await fetch(`http://notification_api:8082/notifications/${updateNotificationId}`, {
+            const response = await fetch(`${backend_url}/notifications/${updateNotificationId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(updateNotificationData)
@@ -59,7 +61,7 @@
 
     async function deleteNotification(id) {
         try {
-            const response = await fetch(`http://notification_api:8082/notifications/${id}`, {
+            const response = await fetch(`${backend_url}/notifications/${id}`, {
                 method: 'DELETE'
             });
             if (!response.ok) {
