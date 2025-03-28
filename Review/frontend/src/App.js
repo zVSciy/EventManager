@@ -243,6 +243,16 @@ function App() {
               <span className="text-white mr-2">Status:</span>
               <span className="text-white font-bold">{isAuthenticated ? 'Authenticated' : 'Not Authenticated'}</span>
             </div>
+            {email && (
+              <div className="mr-4 text-white bg-gray-700 px-3 py-1 rounded">
+                <span className="font-semibold">{email.substring(0, 3)}***</span>
+                {authDebug.lastChecked && (
+                  <span className="text-xs ml-2 text-gray-300">
+                    Verified: {authDebug.lastChecked}
+                  </span>
+                )}
+              </div>
+            )}
             <button 
               onClick={() => verifyToken()} 
               className="mr-4 bg-blue-600 hover:bg-blue-700 text-white py-1 px-3 rounded text-sm"
