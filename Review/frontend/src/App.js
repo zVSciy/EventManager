@@ -49,8 +49,6 @@ function App() {
         error: null
       });
       
-      alert(`Attempting to verify token with email: ${email ? email.substring(0, 3) + '***' : 'missing'}`);
-      
       const response = await fetch(API_URLS.token, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -70,7 +68,6 @@ function App() {
           lastChecked: new Date().toLocaleTimeString(),
           error: null
         });
-        alert("Authentication successful!");
         return true;
       }
       
@@ -79,7 +76,6 @@ function App() {
         lastChecked: new Date().toLocaleTimeString(),
         error: `Invalid result code: ${result}`
       });
-      alert(`Authentication failed: Invalid result code (${result})`);
       return false;
     } catch (error) {
       setAuthDebug({
@@ -87,7 +83,6 @@ function App() {
         lastChecked: new Date().toLocaleTimeString(),
         error: error.message
       });
-      alert(`Failed to verify token: ${error.message}`);
       setResponse({ error: 'Authentication failed', details: error.message });
       return false;
     }
@@ -98,8 +93,6 @@ function App() {
     // Get credentials from session storage
     const storedEmail = sessionStorage.getItem('email');
     const storedPassword = sessionStorage.getItem('password');
-    
-    alert(`Credentials from session storage: Email ${storedEmail ? 'found' : 'not found'}, Password ${storedPassword ? 'found' : 'not found'}`);
     
     if (storedEmail && storedPassword) {
       setEmail(storedEmail);
@@ -175,11 +168,9 @@ function App() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    alert("Verifying token before API request...");
     const isVerified = await verifyToken();
     
     if (!isVerified) {
-      alert("Authentication required - aborting API request");
       setResponse({ error: 'Authentication required' });
       return;
     }
@@ -257,8 +248,10 @@ function App() {
           </div>
         </div>
       </nav>
-      <div className="container mx-auto p-4">
-        <div className="mb-4 bg-gray-800 p-4 rounded-lg">
+      
+      {/* Added spacing between navbar and authentication status panel */}
+      <div className="container mx-auto p-4 mt-6">
+        <div className="mb-6 bg-gray-800 p-4 rounded-lg">
           <h2 className="text-xl font-bold mb-2 text-solana-primary">Authentication Status</h2>
           <div className="bg-gray-900 p-3 rounded">
             <p className="text-white">Status: <span className={authDebug.status === 'Authenticated' ? 'text-green-400' : 'text-red-400'}>{authDebug.status}</span></p>
@@ -273,6 +266,7 @@ function App() {
             </button>
           </div>
         </div>
+        
         <div className="flex flex-wrap -mx-2">
           <div className="w-full px-2 mb-4 flex flex-col">
             <h1 className="text-3xl font-bold mb-4 text-solana-primary">Review Management</h1>
