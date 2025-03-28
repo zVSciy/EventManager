@@ -40,7 +40,7 @@ services:
 
   events_db:
     image: mysql:latest
-    
+
     volumes:
       - events-mysql-data:/var/lib/mysql
     
@@ -66,6 +66,7 @@ services:
     - "3306"
 
   events_api:
+    image: registry.gitlab.com/kavalarj/eventmanager/events_api:latest
     build:
       context: ./Events
       dockerfile: ./DockerFile
@@ -95,10 +96,12 @@ services:
     - eventmanager-net
 
   events_web:
+    image: registry.gitlab.com/kavalarj/eventmanager/events_web:latest
+
     build: ./Events/eventsSvelte
 
     ports:
-     - "5173"
+     - "5173:5173"
 
     volumes:
       - ./Events/eventsSvelte:/app #Hot-reload
@@ -111,13 +114,15 @@ services:
 #   CONTAINERS - REVIEW
 # -------------------------
 
-  review_api:    
+  review_api:   
+    image: registry.gitlab.com/kavalarj/eventmanager/review_api:latest
+ 
     build:
       context: ./Review/backend
       dockerfile: Dockerfile
 
     ports:
-      - "8083"
+      - "8083:8083"
 
     command: >
       sh -c "exec uvicorn main:app --host 0.0.0.0 --port 8083 --reload"
@@ -126,12 +131,13 @@ services:
       - eventmanager-net
 
   review_web:
+    image: registry.gitlab.com/kavalarj/eventmanager/review_web:latest
     build:
       context: ./Review/frontend
       dockerfile: Dockerfile.dev
 
     ports:
-      - "3000"
+      - "3000:3000"
 
     volumes:
       - ./Review/frontend:/app
@@ -152,7 +158,7 @@ services:
 #   CONTAINERS - TICKETS
 # -------------------------
 
-  tickets_db:
+  tickets_db: 
     image: mysql:latest
 
     volumes:
@@ -178,6 +184,8 @@ services:
       timeout: 1s
 
   tickets_api:
+    image: registry.gitlab.com/kavalarj/eventmanager/tickets_api:latest
+
     build:
       context: ./Tickets
       dockerfile: ./docker/fastapi/Dockerfile
@@ -191,7 +199,7 @@ services:
     - ./Tickets/src_fastapi:/app
 
     ports:
-      - "8000"
+      - "8001:8000"
 
     depends_on:
       tickets_db:
@@ -205,6 +213,7 @@ services:
       - eventmanager-net
   
   tickets_web:
+    image: registry.gitlab.com/kavalarj/eventmanager/tickets_web:latest
     build:
       context: ./Tickets
       dockerfile: ./docker/sveltekit/Dockerfile
@@ -254,6 +263,7 @@ services:
     - "3306"
 
   auth_api:
+    image: registry.gitlab.com/kavalarj/eventmanager/auth_api:latest
     build:
       context: ./UserManagement
       dockerfile: ./docker/FastAPI/Dockerfile
@@ -277,7 +287,7 @@ services:
     - "8000"
 
     command: >
-      sh -c "uvicorn main:app --host 0.0.0.0 --ssl-keyfile /app/ssl/certificate.key --ssl-certfile /app/ssl/certificate.crt --workers 4"
+      sh -c "python test_api.py && uvicorn main:app --host 0.0.0.0 --ssl-keyfile /app/ssl/certificate.key --ssl-certfile /app/ssl/certificate.crt --workers 4"
     #  sh -c "python test_api.py &&
     #         uvicorn main:app --host 0.0.0.0 --ssl-keyfile /app/ssl/certificate.key --ssl-certfile /app/ssl/certificate.crt --workers 4"
 
@@ -285,6 +295,7 @@ services:
       - eventmanager-net
 
   auth_web:
+    image: registry.gitlab.com/kavalarj/eventmanager/auth_web:latest
     build:
       context: ./UserManagement
       dockerfile: ./docker/Svelte/Dockerfile

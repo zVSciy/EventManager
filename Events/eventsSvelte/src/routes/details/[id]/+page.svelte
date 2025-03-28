@@ -10,9 +10,30 @@
     let available_normal_tickets = 1;
     let available_vip_tickets = 1;
     let canceled = '';
+    let email = '';
+    let password = '';
     
     let event = writable([]);
     console.log(event)
+    async function token() {
+        try {
+            const response = await fetch("/api/token", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password }),
+            });
+            if (!response.ok) {
+                throw new Error(response.statusText);
+            }
+            const result = await response.json();
+            if (result == 200) {
+                fetchEvent()
+            }
+
+        } catch (error) {
+            alert("Failed to verify token: " + error.message);
+        }
+    }
     async function fetchEvent() {
         const response = await fetch(`${base}/api/event/details`, {
             method: "GET",
@@ -48,7 +69,10 @@
     }
     onMount(() => {
         event.ID = window.location.href.split(`/`).pop();
-        fetchEvent();
+        email = sessionStorage.getItem('email');
+        password = sessionStorage.getItem('password')
+        console.log(email)
+        token();
     });
 </script>
 
