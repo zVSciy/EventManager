@@ -12,6 +12,7 @@ const API_URLS = {
   updateReview: (id) => `${URL}/reviews/${id}`,
   deleteReview: (id) => `${URL}/reviews/${id}`,
   getAllReviews: `${URL}/reviews/`, 
+  token: '/api/token',
 };
 
 function App() {
@@ -23,6 +24,9 @@ function App() {
     review_id: '',
   });
   const [response, setResponse] = useState(null);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const reviewFormRef = useRef(null);
   const getReviewFormRef = useRef(null);
@@ -30,8 +34,43 @@ function App() {
   const updateReviewFormRef = useRef(null);
   const deleteReviewFormRef = useRef(null);
 
-  // Extract event ID from URL on component mount
+  // Token verification function
+  async function verifyToken() {
+    try {
+      const response = await fetch(API_URLS.token, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
+      
+      const result = await response.json();
+      if (result === 200) {
+        setIsAuthenticated(true);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error("Failed to verify token:", error.message);
+      setResponse({ error: 'Authentication failed' });
+      return false;
+    }
+  }
+
+  // Extract event ID from URL and get credentials on component mount
   useEffect(() => {
+    // Get credentials from session storage
+    const storedEmail = sessionStorage.getItem('email');
+    const storedPassword = sessionStorage.getItem('password');
+    
+    if (storedEmail && storedPassword) {
+      setEmail(storedEmail);
+      setPassword(storedPassword);
+    }
+    
     // Get event ID from URL parameters
     const urlParams = new URLSearchParams(window.location.search);
     const eventIdFromUrl = urlParams.get('eventId');
@@ -48,6 +87,11 @@ function App() {
       }
     }
     console.log("Event ID:", eventID);
+    
+    // Verify token on component mount
+    if (storedEmail && storedPassword) {
+      verifyToken();
+    }
   }, []);
 
   useEffect(() => {
@@ -100,6 +144,14 @@ function App() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Verify token before making API request
+    const isVerified = await verifyToken();
+    if (!isVerified) {
+      setResponse({ error: 'Authentication required' });
+      return;
+    }
+    
     let url = '';
     let options = {};
 
