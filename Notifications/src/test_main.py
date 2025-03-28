@@ -46,16 +46,20 @@ def test_read_all_notifications_by_user():
 
 
 def test_update_notification():
+    event_id = client.get("/notifications/user/998989898").json()[0]["id"]
+    event_id = int(event_id)
     update_data = {
-    "description": "TESTNOTIFICATION",
-    "status": "active",
-    "timestamp": 1729235305,
-    "eventId": 72,
-    "paymentId": 123,
-    "ticketId": 123123,
-    "userId": 998989898
+    "description": "string",
+    "status": "string",
+    "timestamp": 5,
+    "eventId": 5,
+    "paymentId": 5,
+    "ticketId": 5,
+    "userId": 0
     }
-    response = client.put("/notifications/1", json=update_data)
+    response = client.put(f"/notifications/{event_id}", json=update_data)
+    # print(response)
+    # print(response.json())
     assert response.status_code == 200
     assert response.json()["description"] == update_data["description"]
     assert response.json()["status"] == update_data["status"]

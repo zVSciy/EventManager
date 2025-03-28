@@ -4,11 +4,23 @@ from database import SessionLocal, engine, Base
 from models import Notifications
 from datetime import datetime
 from inputModels import BaseNotification, BaseNotificationOptional
-
-
+from fastapi.middleware.cors import CORSMiddleware
 
 
 app = FastAPI()
+
+origins = [
+    "*"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 # Create the database tables
 Base.metadata.create_all(bind=engine)
@@ -65,3 +77,13 @@ def update_notification(notification_id: int, input_notification: BaseNotificati
     db.commit()
     db.refresh(notification)
     return notification
+
+@app.delete("/notifications/{notification_id}")
+def delete_notification(notification_id: int, db: Session = Depends(get_db)):
+    notification = db.query(Notifications).filter(Notifications.id == notification_id).first()
+    if not notification:
+        raise HTTPException(status_code=404, detail="Notification not found")
+    
+    db.delete(notification)
+    db.commit()
+    return {"detail": "Notification deleted"}
