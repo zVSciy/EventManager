@@ -13,12 +13,13 @@
         email = sessionStorage.getItem('email');
         password = sessionStorage.getItem('password');
         token();
+        ticketUID = email;
+        ticketEID = eventID;
     });
     
     let moreTickets = 0;
     let ticketsData = '';
     let errorMessage = '';
-
   
     let ticketEID = '';
     let ticketPrice = '';
@@ -52,7 +53,7 @@
     }
 
     async function getTickets() {
-        const response = await fetch(`${base}/api/tickets?event_id=${encodeURIComponent(eventID)}`,
+        const response = await fetch(`${base}/api/user?user_id=${encodeURIComponent(email)}&event_id=${encodeURIComponent(ticketEID)}`,
         {
           method: "GET"
         });
@@ -122,7 +123,7 @@
     }
 
     async function deleteTickets() {
-        const response = await fetch(`${base}/api/tickets?ticket_id=${encodeURIComponent(ticketToDelete)}`,
+        const response = await fetch(`${base}/api/user?user_id=${encodeURIComponent(email)}&ticket_id=${encodeURIComponent(ticketToDelete)}`,
         {
           method: "DELETE"
         });
@@ -198,12 +199,11 @@
           <h2 class="text-center">Buy Tickets</h2>
           <form on:submit|preventDefault={updateAvailableTickets} class="input-group">
             <div class="input-group-prepend">
-              <label class="input-group-text">Price, Row, Seat, UID, EID, VIP</label>
+              <label class="input-group-text">Price, Row, Seat, EID, VIP</label>
             </div>
             <input type="number" class="form-control" bind:value={ticketPrice} placeholder="Price"/>
             <input type="text" class="form-control" bind:value={ticketRow} placeholder="Row"/>
             <input type="number" class="form-control" bind:value={ticketSeatNumber} placeholder="Seat"/>
-            <input type="number" class="form-control" bind:value={ticketUID} placeholder="UID"/>
             <input type="number" class="form-control" bind:value={eventID} placeholder="EID" disabled readonly/>
             <select class="form-select" bind:value={ticketVIP}>
                 <option value="false" selected>False</option>

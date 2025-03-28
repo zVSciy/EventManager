@@ -13,6 +13,7 @@
         email = sessionStorage.getItem('email');
         password = sessionStorage.getItem('password');
         token();
+        ticketEID = eventID;
     });
     
     let moreTickets = 0;
@@ -59,7 +60,7 @@
     }
 
     async function getTickets() {
-        const response = await fetch(`${base}/api/tickets?event_id=${encodeURIComponent(eventID)}`,
+        const response = await fetch(`${base}/api/tickets?event_id=${encodeURIComponent(ticketEID)}`,
         {
           method: "GET"
         });
@@ -195,7 +196,7 @@
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
                         <span class="navbar-text text-light">Welcome,
-                            {data.username}</span>
+                           {email}</span>
                         <a class="btn btn-sm btn-primary ms-2" href="/" on:click={logout}>Logout</a>
                     </li>
                 </ul>
@@ -226,8 +227,8 @@
           <input type="number" class="form-control" bind:value={ticketPrice} placeholder="Price"/>
           <input type="text" class="form-control" bind:value={ticketRow} placeholder="Row"/>
           <input type="number" class="form-control" bind:value={ticketSeatNumber} placeholder="Seat"/>
-          <input type="number" class="form-control" bind:value={ticketUID} placeholder="UID"/>
-          <input type="number" class="form-control" bind:value={eventID} placeholder="EID"/>
+          <input type="text" class="form-control" bind:value={ticketUID} placeholder="UID"/>
+          <input type="number" class="form-control" bind:value={ticketEID} placeholder="EID"/>
           <select class="form-select" bind:value={ticketVIP}>
               <option value="false" selected>False</option>
               <option value="true">True</option>
@@ -246,7 +247,7 @@
           <input type="number" class="form-control" bind:value={changedTicketPrice} placeholder="Price"/>
           <input type="text" class="form-control" bind:value={changedTicketRow} placeholder="Row"/>
           <input type="number" class="form-control" bind:value={changedTicketSeatNumber} placeholder="Seat"/>
-          <input type="number" class="form-control" bind:value={changedTicketUID} placeholder="UID"/>
+          <input type="text" class="form-control" bind:value={changedTicketUID} placeholder="UID"/>
           <input type="number" class="form-control" bind:value={changedTicketEID} placeholder="EID"/>
           <select class="form-select" bind:value={changedTicketVIP}>
               <option value="false" selected>False</option>

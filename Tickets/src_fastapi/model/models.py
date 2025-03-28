@@ -14,7 +14,7 @@ class Ticket(Base):
     row: Mapped[Optional[str]] = mapped_column(String(2), nullable=True)
     seat_number: Mapped[Optional[int]] = mapped_column(mysql.INTEGER(4), nullable=True)
     vip: Mapped[bool] = mapped_column(Boolean(), nullable=False)
-    user_id: Mapped[int] = mapped_column(Integer(), nullable=False)
+    user_id: Mapped[str] = mapped_column(String(50), nullable=False)
     event_id: Mapped[int] = mapped_column(Integer(), nullable=False)
 
     def __repr__(self):

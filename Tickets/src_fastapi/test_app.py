@@ -12,7 +12,7 @@ class TestTicketCreationEditing(unittest.TestCase):
             "row": "A",
             "seat_number": 12,
             "vip": True,
-            "user_id": 9999,
+            "user_id": "test@gmail.com",
             "event_id": 1
         }
         response = client.post('/tickets/', json = test_ticket)
@@ -27,7 +27,7 @@ class TestTicketCreationEditing(unittest.TestCase):
             "row": "B",
             "seat_number": 10,
             "vip": True,
-            "user_id": 9999,
+            "user_id": "test2@gmail.com",
             "event_id": 1
         }
         response = client.put(f'/tickets/{ticket_id}/', json = update_ticket)
@@ -42,7 +42,7 @@ class TestTicketCreationEditing(unittest.TestCase):
             "row": "B",
             "seat_number": 10,
             "vip": True,
-            "user_id": 9999,
+            "user_id": "test2@gmail.com",
             "event_id": 1
         }
         response = client.put(f'/tickets/{ticket_id}/', json = update_ticket)
