@@ -262,10 +262,9 @@ function App() {
                   <div className="mb-4">
                     <label htmlFor="user_id" className="block text-sm font-medium">User ID:</label>
                     <input
-                      type="number"
+                      type="text"
                       id="user_id"
                       name="user_id"
-                      min="0"
                       className="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-solana-primary"
                       value={formData.user_id}
                       onChange={handleInputChange}
