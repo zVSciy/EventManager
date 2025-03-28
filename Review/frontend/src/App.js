@@ -235,7 +235,7 @@ function App() {
 
   return (
     <div className="App">
-      <nav className="bg-gray-800 p-4">
+      <nav className="bg-gray-800 p-4 mb-4">
         <div className="container mx-auto flex justify-between items-center">
           <button className="text-white text-xl font-bold bg-transparent border-0">Review App</button>
           <div className="flex items-center">
