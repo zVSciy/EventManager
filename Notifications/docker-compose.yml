@@ -2,7 +2,7 @@ volumes:
   mysqldata:
 
 networks:
-  my-network:
+  event-network:
 
 services:
 
@@ -22,7 +22,7 @@ services:
       MYSQL_DATABASE_PORT: ${MYSQL_DATABASE_PORT}
 
     networks:
-      - my-network
+      - event-network
 
     healthcheck:
        test: 'echo "select now(); " | mysql -u${MYSQL_USER} -p${MYSQL_PASSWORD}'
@@ -63,14 +63,21 @@ services:
     # command: sh -c "exec uvicorn main:app --host 0.0.0.0 --reload"
 
     networks:
-    - my-network
-  
-  events:
-    build: ./frontend
+      - event-network
+
+  #Service "sveltekit"
+  notification_frontend:
+    build:
+      context: .
+      dockerfile: ./docker/sveltekit/Dockerfile
+
+    # expose:
+    #   - 5173
     ports:
-     - "8080:8080"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
+      - "5173:5173"
+
+    depends_on:
+      - notification_api
+
     networks:
-      - my-network
+      - event-network

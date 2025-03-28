@@ -1,5 +1,5 @@
 <script>
-    import Notifications from './Notifications.svelte';
+    import Notifications from '../components/Notifications.svelte';
 
     export let notifications = [];
 </script>
