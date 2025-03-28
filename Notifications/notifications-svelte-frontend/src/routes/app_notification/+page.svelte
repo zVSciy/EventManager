@@ -1,6 +1,6 @@
 <script>
     import { base } from '$app/paths';
-    import Notifications from '../components/Notifications.svelte';
+    import Notifications from '../../components/Notifications.svelte';
 
     export let notifications = [];
 </script>

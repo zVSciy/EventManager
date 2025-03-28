@@ -5,6 +5,7 @@ volumes:
   tickets-mysql-data:
   auth-db-data:
   auth-api-data:
+  notification_db_data:
 
 networks:
   eventmanager-net:
@@ -31,6 +32,9 @@ services:
       - events_db
       - events_api
       - events_web
+      - notification_api
+      - notification_frontend
+      - notification_db
     networks:
       - eventmanager-net
 
@@ -293,5 +297,82 @@ services:
     volumes:
       - ./UserManagement/frontend:/app
       - /app/node_modules
+    networks:
+      - eventmanager-net
+
+
+  notification_db:
+    container_name: notification_db
+    image: mysql:latest
+    
+    volumes:
+      - notification_db_data:/var/lib/mysql
+    
+    env_file: .env
+    environment:
+      MYSQL_DATABASE: ${NOTIF_MYSQL_DATABASE}
+      MYSQL_USER: ${NOTIF_MYSQL_USER}
+      MYSQL_PASSWORD: ${NOTIF_MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${NOTIF_MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE_PORT: ${NOTIF_MYSQL_DATABASE_PORT}
+
+    networks:
+      - eventmanager-net
+
+    healthcheck:
+       test: 'echo "select now(); " | mysql -u${NOTIF_MYSQL_USER} -p${NOTIF_MYSQL_PASSWORD}'
+       interval: 1s
+       retries: 10
+       start_period: 10s
+       timeout: 1s
+
+    ports:
+    - "3306:3306"
+
+  notification_api:
+    container_name: notification_api
+    build:
+      context: ./Notifications
+      dockerfile: ./docker/FastAPI/Dockerfile
+    
+    # volumes:
+    # - ./src:/app
+
+    depends_on:
+      notification_db:
+        condition: service_healthy
+
+    env_file: .env
+    environment:
+      ALLOWED_HOSTS: '*'
+
+    working_dir: "/app"
+    
+    ports:
+    - "8082:8000"
+
+    command: >
+      sh -c "pytest || true && 
+             exec uvicorn main:app --host 0.0.0.0 --reload"
+
+    # command: sh -c "exec uvicorn main:app --host 0.0.0.0 --reload"
+
+    networks:
+      - eventmanager-net
+
+  #Service "sveltekit"
+  notification_frontend:
+    build:
+      context: ./Notifications
+      dockerfile: ./docker/sveltekit/Dockerfile
+
+    expose:
+      - 5173
+    # ports:
+    #   - "5173:5173"
+
+    depends_on:
+      - notification_api
+
     networks:
       - eventmanager-net
