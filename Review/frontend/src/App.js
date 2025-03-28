@@ -36,22 +36,32 @@ function App() {
 
   // Token verification function
   async function verifyToken() {
+    console.log("Starting token verification...");
+    console.log("Using credentials:", { email: email ? "exists" : "missing", password: password ? "exists" : "missing" });
+    
     try {
+      console.log("Sending token verification request to:", API_URLS.token);
       const response = await fetch(API_URLS.token, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
       
+      console.log("Token verification response status:", response.status);
+      
       if (!response.ok) {
         throw new Error(response.statusText);
       }
       
       const result = await response.json();
+      console.log("Token verification result:", result);
+      
       if (result === 200) {
+        console.log("Authentication successful!");
         setIsAuthenticated(true);
         return true;
       }
+      console.log("Authentication failed: Invalid result code");
       return false;
     } catch (error) {
       console.error("Failed to verify token:", error.message);
@@ -66,9 +76,17 @@ function App() {
     const storedEmail = sessionStorage.getItem('email');
     const storedPassword = sessionStorage.getItem('password');
     
+    console.log("Credentials from sessionStorage:", {
+      email: storedEmail ? "found" : "not found",
+      password: storedPassword ? "found" : "not found"
+    });
+    
     if (storedEmail && storedPassword) {
       setEmail(storedEmail);
       setPassword(storedPassword);
+      console.log("Credentials loaded from sessionStorage");
+    } else {
+      console.log("No credentials found in sessionStorage");
     }
     
     // Get event ID from URL parameters
@@ -90,6 +108,7 @@ function App() {
     
     // Verify token on component mount
     if (storedEmail && storedPassword) {
+      console.log("Attempting token verification on mount...");
       verifyToken();
     }
   }, []);
@@ -146,11 +165,17 @@ function App() {
     e.preventDefault();
     
     // Verify token before making API request
+    console.log("Verifying token before API request...");
     const isVerified = await verifyToken();
+    console.log("Token verification result:", isVerified);
+    
     if (!isVerified) {
+      console.error("Authentication required - aborting API request");
       setResponse({ error: 'Authentication required' });
       return;
     }
+    
+    console.log("Authentication successful, proceeding with API request");
     
     let url = '';
     let options = {};
@@ -201,8 +226,12 @@ function App() {
     }
 
     try {
+      console.log("Sending API request to:", url);
       const response = await fetch(url, options);
+      console.log("API response status:", response.status);
+      
       const data = await response.json();
+      console.log("API response data:", data);
       setResponse(data);
     } catch (error) {
       console.error('Error:', error);
