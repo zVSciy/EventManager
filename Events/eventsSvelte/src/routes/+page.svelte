@@ -57,7 +57,7 @@ export let data;
         <button on:click={() => window.location.href=`${base}/`} style="margin-bottom: 20px; padding: 10px; background-color: #009879; color: white; border: none; border-radius: 4px; cursor: pointer;">Event Manager</button>    
 
         <div class="d-flex align-items-center ms-auto">
-            <span class="me-3">Hi, {data.username}!</span>
+            <span class="me-3">Hi, {email}!</span>
 
             {#if data.admin}
             <button on:click={() => window.location.href=`${base}/admin`} style="margin-bottom: 20px; padding: 10px; background-color: #009879; color: white; border: none; border-radius: 4px; cursor: pointer;">Admin</button>    
