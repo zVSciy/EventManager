@@ -6,17 +6,19 @@ client = TestClient(app)
 
 class TestTicketCreationEditing(unittest.TestCase):
     def test_create_tickets(self):
+        global ticket_id_created
         test_ticket = {
             "price": 200,
             "row": "A",
             "seat_number": 12,
-            "vip": "true",
-            "user_id": 9999,
+            "vip": True,
+            "user_id": "test@gmail.com",
             "event_id": 1
         }
         response = client.post('/tickets/', json = test_ticket)
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.json(), dict)
+        ticket_id_created = response.json().get('id')  # Store the ticket ID
 
     def test_edit_tickets_not_found(self):
         ticket_id = 100000
@@ -25,7 +27,7 @@ class TestTicketCreationEditing(unittest.TestCase):
             "row": "B",
             "seat_number": 10,
             "vip": True,
-            "user_id": 9999,
+            "user_id": "test2@gmail.com",
             "event_id": 1
         }
         response = client.put(f'/tickets/{ticket_id}/', json = update_ticket)
@@ -33,13 +35,14 @@ class TestTicketCreationEditing(unittest.TestCase):
         self.assertEqual(response.json()['detail']['msg'], f"Ticket with `id`: `{ticket_id}` doesn't exist.")
 
     def test_edit_tickets(self):
-        ticket_id = 1
+        self.assertIsNotNone(ticket_id_created, "Ticket ID is not set. Run test_create_tickets first.")
+        ticket_id = ticket_id_created
         update_ticket = {
             "price": 9999,
             "row": "B",
             "seat_number": 10,
             "vip": True,
-            "user_id": 9999,
+            "user_id": "test2@gmail.com",
             "event_id": 1
         }
         response = client.put(f'/tickets/{ticket_id}/', json = update_ticket)
@@ -66,7 +69,8 @@ class TestTicketDeletion(unittest.TestCase):
         self.assertEqual(response.json()['detail']['msg'], f"Ticket with `id`: `{ticket_id}` doesn't exist.")
     
     def test_cancel_tickets(self):
-        ticket_id = 1
+        self.assertIsNotNone(ticket_id_created, "Ticket ID is not set. Run test_create_tickets first.")
+        ticket_id = ticket_id_created
         response = client.delete(f'/tickets/{ticket_id}/')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['msg'], 'Ticket cancelled successfully.')

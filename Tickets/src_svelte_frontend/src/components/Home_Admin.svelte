@@ -1,16 +1,19 @@
 <script>
     import { base } from '$app/paths';
-    import TicketsDisplay from "./TicketsDisplay.svelte";
+    import TicketsDisplay from './TicketsDisplay.svelte';
+    import TokenInvalid from './TokenInvalid.svelte';
     import { onMount } from 'svelte';
     export let data;
-
     let eventID;
     let ticket;
 
-    // ID aus dem Session Storage abrufen
+    // Get ID from Session Storage
     onMount(() => {
         eventID = sessionStorage.getItem('eventId');
-        console.log(eventID)
+        email = sessionStorage.getItem('email');
+        password = sessionStorage.getItem('password');
+        token();
+        ticketEID = eventID;
     });
     
     let moreTickets = 0;
@@ -34,8 +37,30 @@
 
     let ticketToDelete;
 
+    let email = '';
+    let password = '';
+    let error = false;
+
+    async function token() {
+      try {
+        const response = await fetch(`${base}/api/token?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`,
+        {
+          method: "POST",
+        });
+
+        const result = await response.json();
+        if (result.status == 200) {
+          error = false;
+        } else {
+          error = true;
+        }
+      } catch (err) {
+        alert("An error occured: " + err.message);
+      }
+    }
+
     async function getTickets() {
-        const response = await fetch(`${base}/api/tickets?event_id=${encodeURIComponent(eventID)}`,
+        const response = await fetch(`${base}/api/tickets?event_id=${encodeURIComponent(ticketEID)}`,
         {
           method: "GET"
         });
@@ -85,66 +110,71 @@
           errorMessage = 'Failed to fetch tickets data';
         }
     }
-async function updateAvailableTickets() {
+    async function updateAvailableTickets() {
 
-    const response = await fetch(`${base}/api/events?event_id=${eventID}&delete=${moreTickets}&vip=${encodeURIComponent(ticketVIP)}`,
-    {
-      method: "PUT"
-    });
-    
-    if (response.ok) {
-      errorMessage = '';
-      let eventData = await response.json();
+        const response = await fetch(`${base}/api/events?event_id=${eventID}&delete=${moreTickets}&vip=${encodeURIComponent(ticketVIP)}`,
+        {
+          method: "PUT"
+        });
+        
+        if (response.ok) {
+          errorMessage = '';
+          let eventData = await response.json();
 
-      if (eventData[0].status == 200 && moreTickets == 0){
-        addTickets();
-      } 
+          if (eventData[0].status == 200 && moreTickets == 0){
+            addTickets();
+          } 
 
-    } else {
-      eventData = '';
+        } else {
+          eventData = '';
+        }
     }
-}
 
-async function getOneTicket() {
-    const response = await fetch(`${base}/api/tickets/single?ticket_id=${encodeURIComponent(ticketToDelete)}`,
-    {
-      method: "GET"
-    });
+    async function getOneTicket() {
+        const response = await fetch(`${base}/api/tickets/single?ticket_id=${encodeURIComponent(ticketToDelete)}`,
+        {
+          method: "GET"
+        });
 
-    if (response.ok) {
-      errorMessage = '';
-      ticket = await response.json();
-      console.log(ticket)
-      ticketVIP = String(ticket.vip);
-      console.log(ticketVIP)
-      deleteTickets(); 
-    } else {
-      ticket = '';
-      errorMessage = 'Failed to fetch tickets data';
+        if (response.ok) {
+          errorMessage = '';
+          ticket = await response.json();
+          ticketVIP = String(ticket.vip);
+          deleteTickets(); 
+        } else {
+          ticket = '';
+          errorMessage = 'Failed to fetch tickets data';
+        }
     }
-}
 
-async function deleteTickets() {
-    const response = await fetch(`${base}/api/tickets?ticket_id=${encodeURIComponent(ticketToDelete)}`,
-    {
-      method: "DELETE"
-    });
+    async function deleteTickets() {
+        const response = await fetch(`${base}/api/tickets?ticket_id=${encodeURIComponent(ticketToDelete)}`,
+        {
+          method: "DELETE"
+        });
 
-    if (response.ok) {
-      errorMessage = '';
-      ticketsData = await response.json();
-      console.log(ticketsData);
-      if (ticketsData.status == 200 && moreTickets == 1) {
-        updateAvailableTickets(); 
-      }
-    } else {
-      ticketsData = '';
-      errorMessage = 'Failed to fetch tickets data';
+        if (response.ok) {
+          errorMessage = '';
+          ticketsData = await response.json();
+          if (ticketsData.status == 200 && moreTickets == 1) {
+            updateAvailableTickets(); 
+          }
+        } else {
+          ticketsData = '';
+          errorMessage = 'Failed to fetch tickets data';
+        }
     }
-}
+
+    function logout() {
+        // Clear session storage
+        sessionStorage.clear();
+        // Redirect to the root path (user management)
+        window.location.href = "/";
+    }
 </script>
 
-<nav class="navbar navbar-expand-md bg-dark navbar-dark">
+{#if error == false && data && data.admin}
+  <nav class="navbar navbar-expand-md bg-dark navbar-dark">
     <div class="container-fluid">
         <span class="navbar-brand">Tickets | Admin</span>
         <div class="collapse navbar-collapse">
@@ -166,16 +196,16 @@ async function deleteTickets() {
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
                         <span class="navbar-text text-light">Welcome,
-                            {data.username}</span>
-                        <a class="btn btn-sm btn-primary ms-2" href="{base}/admin">Logout</a>
+                           {email}</span>
+                        <a class="btn btn-sm btn-primary ms-2" href="/" on:click={logout}>Logout</a>
                     </li>
                 </ul>
             {/if}
         </div>
     </div>
-</nav>
+  </nav>
 
-<div class="Home p-3 mt-3 text-center container"> 
+  <div class="Home p-3 mt-3 text-center container"> 
     <div class="row">
       <div class="col-12">
         <h2 class="text-center">Get Tickets</h2>
@@ -197,8 +227,8 @@ async function deleteTickets() {
           <input type="number" class="form-control" bind:value={ticketPrice} placeholder="Price"/>
           <input type="text" class="form-control" bind:value={ticketRow} placeholder="Row"/>
           <input type="number" class="form-control" bind:value={ticketSeatNumber} placeholder="Seat"/>
-          <input type="number" class="form-control" bind:value={ticketUID} placeholder="UID"/>
-          <input type="number" class="form-control" bind:value={eventID} placeholder="EID"/>
+          <input type="text" class="form-control" bind:value={ticketUID} placeholder="UID"/>
+          <input type="number" class="form-control" bind:value={ticketEID} placeholder="EID"/>
           <select class="form-select" bind:value={ticketVIP}>
               <option value="false" selected>False</option>
               <option value="true">True</option>
@@ -217,7 +247,7 @@ async function deleteTickets() {
           <input type="number" class="form-control" bind:value={changedTicketPrice} placeholder="Price"/>
           <input type="text" class="form-control" bind:value={changedTicketRow} placeholder="Row"/>
           <input type="number" class="form-control" bind:value={changedTicketSeatNumber} placeholder="Seat"/>
-          <input type="number" class="form-control" bind:value={changedTicketUID} placeholder="UID"/>
+          <input type="text" class="form-control" bind:value={changedTicketUID} placeholder="UID"/>
           <input type="number" class="form-control" bind:value={changedTicketEID} placeholder="EID"/>
           <select class="form-select" bind:value={changedTicketVIP}>
               <option value="false" selected>False</option>
@@ -255,7 +285,10 @@ async function deleteTickets() {
     {/if}
     </div>
     </div>
-</div>
+  </div>
+{:else}
+  <TokenInvalid/>
+{/if}
 
 <style>
     .Home {
