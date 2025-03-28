@@ -56,7 +56,7 @@ services:
     working_dir: "/app"
 
     ports:
-    - "8000:8000"
+    - "6972:8000"
 
     command: >
       sh -c "python test_api.py &&

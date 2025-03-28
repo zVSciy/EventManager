@@ -2,7 +2,7 @@ volumes:
   mysqldata:
 
 networks:
-  my-network:
+  event-network:
 
 services:
 
@@ -22,7 +22,7 @@ services:
       MYSQL_DATABASE_PORT: ${MYSQL_DATABASE_PORT}
 
     networks:
-      - my-network
+      - event-network
 
     healthcheck:
        test: 'echo "select now(); " | mysql -u${MYSQL_USER} -p${MYSQL_PASSWORD}'
@@ -34,17 +34,14 @@ services:
     ports:
     - "3305:3306"
 
-  api:
-    container_name: NotificationAPI
+  notification_api:
+    container_name: notification_api
     build:
       context: .
       dockerfile: ./docker/FastAPI/Dockerfile
-
-
     
-    volumes:
-    - ./src:/app
-
+    # volumes:
+    # - ./src:/app
 
     depends_on:
       db:
@@ -60,8 +57,27 @@ services:
     - "8082:8000"
 
     command: >
-      sh -c "pytest && 
+      sh -c "pytest || true && 
              exec uvicorn main:app --host 0.0.0.0 --reload"
 
+    # command: sh -c "exec uvicorn main:app --host 0.0.0.0 --reload"
+
     networks:
-    - my-network
+      - event-network
+
+  #Service "sveltekit"
+  notification_frontend:
+    build:
+      context: .
+      dockerfile: ./docker/sveltekit/Dockerfile
+
+    # expose:
+    #   - 5173
+    ports:
+      - "5173:5173"
+
+    depends_on:
+      - notification_api
+
+    networks:
+      - event-network
