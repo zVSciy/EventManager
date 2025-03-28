@@ -27,6 +27,11 @@ function App() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authDebug, setAuthDebug] = useState({
+    status: 'Not checked',
+    lastChecked: null,
+    error: null
+  });
 
   const reviewFormRef = useRef(null);
   const getReviewFormRef = useRef(null);
@@ -36,36 +41,54 @@ function App() {
 
   // Token verification function
   async function verifyToken() {
-    console.log("Starting token verification...");
-    console.log("Using credentials:", { email: email ? "exists" : "missing", password: password ? "exists" : "missing" });
-    
     try {
-      console.log("Sending token verification request to:", API_URLS.token);
+      // Show visual feedback about authentication attempt
+      setAuthDebug({
+        status: 'Checking...',
+        lastChecked: new Date().toLocaleTimeString(),
+        error: null
+      });
+      
+      alert(`Attempting to verify token with email: ${email ? email.substring(0, 3) + '***' : 'missing'}`);
+      
       const response = await fetch(API_URLS.token, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
       
-      console.log("Token verification response status:", response.status);
-      
       if (!response.ok) {
-        throw new Error(response.statusText);
+        throw new Error(response.statusText || `HTTP error ${response.status}`);
       }
       
       const result = await response.json();
-      console.log("Token verification result:", result);
       
       if (result === 200) {
-        console.log("Authentication successful!");
         setIsAuthenticated(true);
+        setAuthDebug({
+          status: 'Authenticated',
+          lastChecked: new Date().toLocaleTimeString(),
+          error: null
+        });
+        alert("Authentication successful!");
         return true;
       }
-      console.log("Authentication failed: Invalid result code");
+      
+      setAuthDebug({
+        status: 'Failed',
+        lastChecked: new Date().toLocaleTimeString(),
+        error: `Invalid result code: ${result}`
+      });
+      alert(`Authentication failed: Invalid result code (${result})`);
       return false;
     } catch (error) {
-      console.error("Failed to verify token:", error.message);
-      setResponse({ error: 'Authentication failed' });
+      setAuthDebug({
+        status: 'Error',
+        lastChecked: new Date().toLocaleTimeString(),
+        error: error.message
+      });
+      alert(`Failed to verify token: ${error.message}`);
+      setResponse({ error: 'Authentication failed', details: error.message });
       return false;
     }
   }
@@ -76,17 +99,11 @@ function App() {
     const storedEmail = sessionStorage.getItem('email');
     const storedPassword = sessionStorage.getItem('password');
     
-    console.log("Credentials from sessionStorage:", {
-      email: storedEmail ? "found" : "not found",
-      password: storedPassword ? "found" : "not found"
-    });
+    alert(`Credentials from session storage: Email ${storedEmail ? 'found' : 'not found'}, Password ${storedPassword ? 'found' : 'not found'}`);
     
     if (storedEmail && storedPassword) {
       setEmail(storedEmail);
       setPassword(storedPassword);
-      console.log("Credentials loaded from sessionStorage");
-    } else {
-      console.log("No credentials found in sessionStorage");
     }
     
     // Get event ID from URL parameters
@@ -94,21 +111,16 @@ function App() {
     const eventIdFromUrl = urlParams.get('eventId');
     
     if (eventIdFromUrl) {
-      // Store as integer
       eventID = parseInt(eventIdFromUrl, 10);
       sessionStorage.setItem('eventId', eventID);
     } else {
-      // Fallback to session storage
       const storedEventId = sessionStorage.getItem('eventId');
       if (storedEventId) {
         eventID = parseInt(storedEventId, 10);
       }
     }
-    console.log("Event ID:", eventID);
     
-    // Verify token on component mount
     if (storedEmail && storedPassword) {
-      console.log("Attempting token verification on mount...");
       verifyToken();
     }
   }, []);
@@ -142,7 +154,6 @@ function App() {
       if (ref.current) {
         ref.current.addEventListener('input', updateState);
       }
-      // Initial check on page load
       updateButtonState(ref, buttonId);
     });
   
@@ -164,26 +175,20 @@ function App() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Verify token before making API request
-    console.log("Verifying token before API request...");
+    alert("Verifying token before API request...");
     const isVerified = await verifyToken();
-    console.log("Token verification result:", isVerified);
     
     if (!isVerified) {
-      console.error("Authentication required - aborting API request");
+      alert("Authentication required - aborting API request");
       setResponse({ error: 'Authentication required' });
       return;
     }
     
-    console.log("Authentication successful, proceeding with API request");
-    
     let url = '';
     let options = {};
 
-    // Create a copy of form data and add event_id for submission
     const submissionData = { ...formData };
     
-    // For endpoints that need event_id, use the one from URL
     if (selectedEndpoint === 'submitReview') {
       submissionData.event_id = eventID;
     }
@@ -226,15 +231,10 @@ function App() {
     }
 
     try {
-      console.log("Sending API request to:", url);
       const response = await fetch(url, options);
-      console.log("API response status:", response.status);
-      
       const data = await response.json();
-      console.log("API response data:", data);
       setResponse(data);
     } catch (error) {
-      console.error('Error:', error);
       setResponse({ error: 'An error occurred' });
     }
   };
@@ -244,7 +244,10 @@ function App() {
       <nav className="bg-gray-800 p-4">
         <div className="container mx-auto flex justify-between items-center">
           <button className="text-white text-xl font-bold bg-transparent border-0">Review App</button>
-          <div>
+          <div className="flex items-center">
+            <div className={`mr-4 px-3 py-1 rounded ${isAuthenticated ? 'bg-green-600' : 'bg-red-600'}`}>
+              {isAuthenticated ? 'Authenticated' : 'Not Authenticated'}
+            </div>
             <a 
               href="/app_event/"
               className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
@@ -255,6 +258,21 @@ function App() {
         </div>
       </nav>
       <div className="container mx-auto p-4">
+        <div className="mb-4 bg-gray-800 p-4 rounded-lg">
+          <h2 className="text-xl font-bold mb-2 text-solana-primary">Authentication Status</h2>
+          <div className="bg-gray-900 p-3 rounded">
+            <p className="text-white">Status: <span className={authDebug.status === 'Authenticated' ? 'text-green-400' : 'text-red-400'}>{authDebug.status}</span></p>
+            <p className="text-white">Last checked: {authDebug.lastChecked || 'Never'}</p>
+            <p className="text-white">Email: {email ? `${email.substring(0, 3)}***` : 'Not set'}</p>
+            {authDebug.error && <p className="text-red-400">Error: {authDebug.error}</p>}
+            <button 
+              onClick={() => verifyToken()} 
+              className="mt-2 bg-blue-600 hover:bg-blue-700 text-white py-1 px-3 rounded"
+            >
+              Test Token
+            </button>
+          </div>
+        </div>
         <div className="flex flex-wrap -mx-2">
           <div className="w-full px-2 mb-4 flex flex-col">
             <h1 className="text-3xl font-bold mb-4 text-solana-primary">Review Management</h1>
@@ -425,6 +443,13 @@ function App() {
                 <pre className="bg-gray-900 p-2 rounded-md text-left text-white">
                   {JSON.stringify(response, null, 2)}
                 </pre>
+                <div className="mt-4 p-2 bg-gray-700 rounded-md">
+                  <h3 className="font-bold text-white">Debug Info:</h3>
+                  <p className="text-white text-sm">Auth Status: {authDebug.status}</p>
+                  <p className="text-white text-sm">Time: {new Date().toLocaleTimeString()}</p>
+                  <p className="text-white text-sm">Email Set: {email ? 'Yes' : 'No'}</p>
+                  <p className="text-white text-sm">Password Set: {password ? 'Yes' : 'No'}</p>
+                </div>
               </div>
             )}
           </div>
