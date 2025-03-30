@@ -26,7 +26,7 @@ app.add_middleware(
 init_db()
 
 class ReviewCreate(BaseModel):
-    user_id: int
+    user_id: str
     content: str
     rating: int
     event_id: int
