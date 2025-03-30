@@ -31,6 +31,16 @@ services:
       - events_db
       - events_api
       - events_web
+      - tickets_db
+      - tickets_api
+      - tickets_web
+      - auth_db
+      - auth_api
+      - auth_web
+      - review_api
+      - review_web
+      - integration_test
+      
     networks:
       - eventmanager-net
 
@@ -44,9 +54,14 @@ services:
       dockerfile: ./docker/Dockerfile
 
     depends_on:
-      - auth_api
-      - events_api
-      - tickets_api
+      auth_api:
+        condition: service_healthy
+      events_api:
+        condition: service_healthy
+      tickets_api:
+        condition: service_healthy
+      review_api:
+        condition: service_healthy
 
     working_dir: /app
 
@@ -79,10 +94,10 @@ services:
 
     healthcheck:
        test: 'echo "select now(); " | mysql -h ${EVENTS_MYSQL_HOST} -u${EVENTS_MYSQL_USER} -p${EVENTS_MYSQL_PASSWORD}'
-       interval: 1s
+       interval: 1m
        retries: 10
-       start_period: 10s
-       timeout: 1s
+       start_period: 20s
+       timeout: 3s
 
     ports:
     - "3306"
@@ -112,6 +127,13 @@ services:
     command: >
       sh -c "python test.py && 
              exec uvicorn main:app --host 0.0.0.0 --reload"
+
+    healthcheck:
+      test: ["CMD", "curl", "http://localhost:8000/docs"]
+      interval: 1m
+      retries: 2
+      start_period: 20s
+      timeout: 3s
 
     networks:
     - eventmanager-net
@@ -143,6 +165,13 @@ services:
 
     command: >
       sh -c "exec uvicorn main:app --host 0.0.0.0 --port 8083 --reload"
+
+    healthcheck:
+      test: ["CMD", "curl", "http://localhost:8083/docs"]
+      interval: 1m
+      retries: 2
+      start_period: 20s
+      timeout: 3s
 
     networks:
       - eventmanager-net
@@ -194,10 +223,10 @@ services:
 
     healthcheck:
       test: 'echo "select now();" | mysql -h ${TICKETS_MYSQL_DATABASE_HOST} -u${TICKETS_MYSQL_USER} -p${TICKETS_MYSQL_PASSWORD}'
-      interval: 1s
+      interval: 1m
       retries: 10
-      start_period: 10s
-      timeout: 1s
+      start_period: 20s
+      timeout: 3s
 
   tickets_api:
     build:
@@ -222,6 +251,13 @@ services:
     command: >
       sh -c "python test_app.py &&
              uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
+
+    healthcheck:
+      test: ["CMD", "curl", "http://localhost:8000/docs"]
+      interval: 1m
+      retries: 2
+      start_period: 20s
+      timeout: 3s
 
     networks:
       - eventmanager-net
@@ -266,11 +302,11 @@ services:
       - eventmanager-net
 
     healthcheck:
-       test: 'echo "select now(); " | mysql -h ${AUTH_MYSQL_DATABASE_HOST} -u${AUTH_MYSQL_USER} -p${AUTH_MYSQL_PASSWORD}'
-       interval: 1s
-       retries: 10
-       start_period: 10s
-       timeout: 1s
+      test: 'echo "select now(); " | mysql -h ${AUTH_MYSQL_DATABASE_HOST} -u${AUTH_MYSQL_USER} -p${AUTH_MYSQL_PASSWORD}'
+      interval: 1m
+      retries: 10
+      start_period: 20s
+      timeout: 3s
 
     ports:
     - "3306"
@@ -302,6 +338,13 @@ services:
       sh -c "uvicorn main:app --host 0.0.0.0 --ssl-keyfile /app/ssl/certificate.key --ssl-certfile /app/ssl/certificate.crt --workers 4"
     #  sh -c "python test_api.py &&
     #         uvicorn main:app --host 0.0.0.0 --ssl-keyfile /app/ssl/certificate.key --ssl-certfile /app/ssl/certificate.crt --workers 4"
+
+    healthcheck:
+      test: ["CMD", "curl", "--insecure", "https://localhost:8000/docs"]
+      interval: 1m
+      retries: 2
+      start_period: 20s
+      timeout: 3s
 
     networks:
       - eventmanager-net
