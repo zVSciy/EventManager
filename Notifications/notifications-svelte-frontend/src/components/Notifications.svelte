@@ -1,7 +1,8 @@
 <script>
     import { onMount } from 'svelte';
+    import { base } from '$app/paths';
 
-    const backend_url = 'http://notification_api:8082';
+    const backend_url = `${base}/api`;
 
     let notifications = [];
     let newNotification = { description: '', status: '', eventId: '', ticketId: '', timestamp: '', paymentId: '', userId: '' };
