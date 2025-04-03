@@ -32,7 +32,7 @@ jobs:
           docker save $(docker images -q) -o /tmp/docker-images/images.tar
       
       - name: Upload Docker images
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: docker-images
           path: /tmp/docker-images/images.tar
