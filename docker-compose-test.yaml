@@ -63,8 +63,166 @@ services:
     networks:
       - eventmanager-net
 
-  # Include other services needed for integration tests...
-  
+  events_web:
+    image: registry.gitlab.com/kavalarj/eventmanager/events_web:latest
+    depends_on:
+      events_api:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      REACT_APP_API_URL: http://events_api:8000
+    networks:
+      - eventmanager-net
+
+  tickets_db:
+    image: mysql:latest
+    volumes:
+      - tickets-mysql-data:/var/lib/mysql
+    env_file: .env
+    environment:
+      MYSQL_DATABASE: ${TICKETS_MYSQL_DATABASE}
+      MYSQL_USER: ${TICKETS_MYSQL_USER}
+      MYSQL_PASSWORD: ${TICKETS_MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${TICKETS_MYSQL_ROOT_PASSWORD}
+    networks:
+      - eventmanager-net
+    healthcheck:
+      test: 'echo "select now(); " | mysql -h ${TICKETS_MYSQL_HOST} -u${TICKETS_MYSQL_USER} -p${TICKETS_MYSQL_PASSWORD}'
+      interval: 1s
+      retries: 10
+      start_period: 10s
+      timeout: 1s
+
+  tickets_api:
+    image: registry.gitlab.com/kavalarj/eventmanager/tickets_api:latest
+    depends_on:
+      tickets_db:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      ALLOWED_HOSTS: '*'
+    working_dir: "/app"
+    networks:
+      - eventmanager-net
+
+  tickets_web:
+    image: registry.gitlab.com/kavalarj/eventmanager/tickets_web:latest
+    depends_on:
+      tickets_api:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      REACT_APP_API_URL: http://tickets_api:8000
+    networks:
+      - eventmanager-net
+
+  auth_db:
+    image: mysql:latest
+    volumes:
+      - auth-mysql-data:/var/lib/mysql
+    env_file: .env
+    environment:
+      MYSQL_DATABASE: ${AUTH_MYSQL_DATABASE}
+      MYSQL_USER: ${AUTH_MYSQL_USER}
+      MYSQL_PASSWORD: ${AUTH_MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${AUTH_MYSQL_ROOT_PASSWORD}
+    networks:
+      - eventmanager-net
+    healthcheck:
+      test: 'echo "select now(); " | mysql -h ${AUTH_MYSQL_HOST} -u${AUTH_MYSQL_USER} -p${AUTH_MYSQL_PASSWORD}'
+      interval: 1s
+      retries: 10
+      start_period: 10s
+      timeout: 1s
+
+  auth_api:
+    image: registry.gitlab.com/kavalarj/eventmanager/auth_api:latest
+    depends_on:
+      auth_db:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      ALLOWED_HOSTS: '*'
+    working_dir: "/app"
+    networks:
+      - eventmanager-net
+
+  auth_web:
+    image: registry.gitlab.com/kavalarj/eventmanager/auth_web:latest
+    depends_on:
+      auth_api:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      REACT_APP_API_URL: http://auth_api:8000
+    networks:
+      - eventmanager-net
+
+  review_api:
+    image: registry.gitlab.com/kavalarj/eventmanager/review_api:latest
+    depends_on:
+      events_api:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      ALLOWED_HOSTS: '*'
+    working_dir: "/app"
+    networks:
+      - eventmanager-net
+
+  review_web:
+    image: registry.gitlab.com/kavalarj/eventmanager/review_web:latest
+    depends_on:
+      review_api:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      REACT_APP_API_URL: http://review_api:8000
+    networks:
+      - eventmanager-net
+
+  notification_db:
+    image: mysql:latest
+    volumes:
+      - notification-mysql-data:/var/lib/mysql
+    env_file: .env
+    environment:
+      MYSQL_DATABASE: ${NOTIFICATION_MYSQL_DATABASE}
+      MYSQL_USER: ${NOTIFICATION_MYSQL_USER}
+      MYSQL_PASSWORD: ${NOTIFICATION_MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${NOTIFICATION_MYSQL_ROOT_PASSWORD}
+    networks:
+      - eventmanager-net
+    healthcheck:
+      test: 'echo "select now(); " | mysql -h ${NOTIFICATION_MYSQL_HOST} -u${NOTIFICATION_MYSQL_USER} -p${NOTIFICATION_MYSQL_PASSWORD}'
+      interval: 1s
+      retries: 10
+      start_period: 10s
+      timeout: 1s
+
+  notification_api:
+    image: registry.gitlab.com/kavalarj/eventmanager/notification_api:latest
+    depends_on:
+      notification_db:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      ALLOWED_HOSTS: '*'
+    working_dir: "/app"
+    networks:
+      - eventmanager-net
+
+  notification_web:
+    image: registry.gitlab.com/kavalarj/eventmanager/notification_web:latest
+    depends_on:
+      notification_api:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      REACT_APP_API_URL: http://notification_api:8000
+    networks:
+      - eventmanager-net
+
   integration_test:
     build:
       context: ./Integration_Tests
@@ -90,4 +248,6 @@ services:
 
 volumes:
   events-mysql-data:
-  # ...existing volumes from docker-compose.yaml...
+  tickets-mysql-data:
+  auth-mysql-data:
+  notification-mysql-data:
