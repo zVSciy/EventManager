@@ -5,6 +5,8 @@ volumes:
   tickets-mysql-data:
   auth-db-data:
   auth-api-data:
+  notification_db_data:
+
 
 networks:
   eventmanager-net:
