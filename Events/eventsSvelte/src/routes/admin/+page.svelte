@@ -108,6 +108,7 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-warning">
     <div class="container-fluid">
         <button on:click={() => window.location.href=`${base}`} style="margin-bottom: 20px; padding: 10px; background-color: #009879; color: white; border: none; border-radius: 4px; cursor: pointer;">Event Manager</button>    
+        <button on:click={() => window.location.href=`/app_notification`} style="margin-bottom: 20px; padding: 10px; background-color: #009879; color: white; border: none; border-radius: 4px; cursor: pointer;">Notification</button>    
 
         <div class="d-flex align-items-center ms-auto">
             <span class="me-3">Hi, {data.username}!</span>
