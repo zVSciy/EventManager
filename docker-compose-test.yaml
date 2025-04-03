@@ -199,7 +199,7 @@ services:
     networks:
       - eventmanager-net
     healthcheck:
-      test: 'echo "select now(); " | mysql -h ${NOTIFICATION_MYSQL_HOST} -u${NOTIFICATION_MYSQL_USER} -p${NOTIFICATION_MYSQL_PASSWORD}'
+      test: 'echo "select now(); " | mysql -h ${NOTIF_MYSQL_DATABASE_HOST} -u${NOTIF_MYSQL_USER} -p${NOTIF_MYSQL_PASSWORD}'
       interval: 1s
       retries: 10
       start_period: 10s

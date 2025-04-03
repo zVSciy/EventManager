@@ -36,18 +36,20 @@ jobs:
       - name: List Loaded Docker Images
         run: docker images
 
-
       # Save the built images as artifacts
       - name: Save Docker images
         run: |
           mkdir -p /tmp/docker-images
-          docker save $(docker images -q) -o /tmp/docker-images/images.tar
-      
+          for image_id in $(docker images -q); do
+            image_name=$(docker inspect --format='{{.RepoTags}}' $image_id | tr -d '[]' | tr ':' '_')
+            docker save $image_id -o /tmp/docker-images/${image_name}.tar
+          done
+
       - name: Upload Docker images
         uses: actions/upload-artifact@v4
         with:
           name: docker-images
-          path: /tmp/docker-images/images.tar
+          path: /tmp/docker-images/*.tar
 
   test:
     needs: build
@@ -81,7 +83,9 @@ jobs:
           
       - name: Load Docker images
         run: |
-          docker load -i /tmp/docker-images/images.tar
+          for image_tar in /tmp/docker-images/*.tar; do
+            docker load -i $image_tar
+          done
 
       - name: List Loaded Docker Images
         run: docker images
@@ -105,7 +109,9 @@ jobs:
           
       - name: Load Docker images
         run: |
-          docker load -i /tmp/docker-images/images.tar
+          for image_tar in /tmp/docker-images/*.tar; do
+            docker load -i $image_tar
+          done
 
       - name: List Loaded Docker Images
         run: docker images
