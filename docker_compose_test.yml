@@ -1,0 +1,69 @@
+version: '3'
+
+networks:
+  eventmanager-net:
+
+services:
+  # We'll only include necessary services for testing
+  events_db:
+    image: mysql:latest
+    
+    volumes:
+      - events-mysql-data:/var/lib/mysql
+    
+    env_file: .env
+    environment:
+      MYSQL_DATABASE: ${EVENTS_MYSQL_DATABASE}
+      MYSQL_USER: ${EVENTS_MYSQL_USER}
+      MYSQL_PASSWORD: ${EVENTS_MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${EVENTS_MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE_PORT: ${EVENTS_MYSQL_DATABASE_PORT}
+
+    networks:
+      - eventmanager-net
+
+    healthcheck:
+       test: 'echo "select now(); " | mysql -h ${EVENTS_MYSQL_HOST} -u${EVENTS_MYSQL_USER} -p${EVENTS_MYSQL_PASSWORD}'
+       interval: 1s
+       retries: 10
+       start_period: 10s
+       timeout: 1s
+
+  events_api:
+    image: registry.gitlab.com/kavalarj/eventmanager/events_api:latest
+    
+    depends_on:
+      events_db:
+        condition: service_healthy
+
+    env_file: .env
+    environment:
+      ALLOWED_HOSTS: '*'
+
+    working_dir: "/app"
+    
+    networks:
+      - eventmanager-net
+
+  # Include other services needed for integration tests...
+  
+  integration_test:
+    build:
+      context: ./Integration_Tests
+      dockerfile: ./docker/Dockerfile
+
+    depends_on:
+      events_api:
+        condition: service_healthy
+      # Add other dependencies as needed
+
+    working_dir: /app
+
+    command: >
+      sh -c "python test_app.py"
+
+    networks:
+      - eventmanager-net
+
+volumes:
+  events-mysql-data:

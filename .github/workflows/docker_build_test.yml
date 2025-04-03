@@ -5,7 +5,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build-and-push:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
@@ -22,17 +22,72 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
+      - name: Build
+        run: docker-compose -f docker-compose-pipeline.yaml build
+      
+      # Save the built images as artifacts
+      - name: Save Docker images
+        run: |
+          mkdir -p /tmp/docker-images
+          docker save $(docker images -q) -o /tmp/docker-images/images.tar
+      
+      - name: Upload Docker images
+        uses: actions/upload-artifact@v3
+        with:
+          name: docker-images
+          path: /tmp/docker-images/images.tar
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+        
+      - name: Copy .env file
+        run: cp .env_example .env
+        
+      - name: Install Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
+          
+      # Load the built images from the previous job
+      - name: Download Docker images
+        uses: actions/download-artifact@v3
+        with:
+          name: docker-images
+          path: /tmp/docker-images
+          
+      - name: Load Docker images
+        run: |
+          docker load -i /tmp/docker-images/images.tar
+      
+      - name: Run Integration Tests
+        run: docker-compose -f docker-compose-test.yaml up --exit-code-from integration_test integration_test
+
+  push:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+        
+      # Load the built images from the build job
+      - name: Download Docker images
+        uses: actions/download-artifact@v3
+        with:
+          name: docker-images
+          path: /tmp/docker-images
+          
+      - name: Load Docker images
+        run: |
+          docker load -i /tmp/docker-images/images.tar
+      
       - name: Debug Print GitLab Secrets
         run: |
           echo "GITLAB_USERNAME: ${{ vars.GITLAB_USERNAME }}"
-          echo "GITLAB_TOKEN: ${{ vars.GITLAB_TOKEN }}"
-
-      - name: Build
-        run: docker-compose -f docker-compose-pipeline.yaml build
-
-      - name: Test
-        run: docker-compose -f docker-compose-pipeline.yaml run events_api python test.py
-
+          echo "GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}"
 
       # Log in to GitLab registry
       - name: Log in to GitLab Registry
@@ -40,7 +95,7 @@ jobs:
         with:
           registry: registry.gitlab.com
           username: ${{ vars.GITLAB_USERNAME }}
-          password: ${{ vars.GITLAB_TOKEN }}
+          password: ${{ secrets.GITLAB_TOKEN }}
 
       - name: Push images
         run: docker-compose -f docker-compose-pipeline.yaml push
