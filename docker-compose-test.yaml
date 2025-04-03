@@ -421,28 +421,27 @@ services:
       - eventmanager-net
 
 
+  integration_test:
+      build:
+        context: ./Integration_Tests
+        dockerfile: ./docker/Dockerfile
 
-integration_test:
-    build:
-      context: ./Integration_Tests
-      dockerfile: ./docker/Dockerfile
+      depends_on:
+        auth_api:
+          condition: service_healthy
+        events_api:
+          condition: service_healthy
+        tickets_api:
+          condition: service_healthy
+        review_api:
+          condition: service_healthy
+        notification_api:
+          condition: service_healthy
 
-    depends_on:
-      auth_api:
-        condition: service_healthy
-      events_api:
-        condition: service_healthy
-      tickets_api:
-        condition: service_healthy
-      review_api:
-        condition: service_healthy
-      notification_api:
-        condition: service_healthy
+      working_dir: /app
 
-    working_dir: /app
+      command: >
+        sh -c "python test_app.py"
 
-    command: >
-      sh -c "python test_app.py"
-
-    networks:
-      - eventmanager-net
+      networks:
+        - eventmanager-net
