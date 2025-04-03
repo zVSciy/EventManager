@@ -42,7 +42,7 @@ jobs:
       - name: Debug Print GitLab Secrets
         run: |
           echo "GITLAB_USERNAME: ${{ vars.GITLAB_USERNAME }}"
-          echo "GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}"
+          echo "GITLAB_TOKEN: ${{ vars.GITLAB_TOKEN  }}"
 
       # Log in to GitLab registry
       - name: Log in to GitLab Registry
@@ -50,7 +50,7 @@ jobs:
         with:
           registry: registry.gitlab.com
           username: ${{ vars.GITLAB_USERNAME }}
-          password: ${{ secrets.GITLAB_TOKEN }}
+          password: ${{ vars.GITLAB_TOKEN }}
 
       - name: Push images
         run: docker-compose -f docker-compose-pipeline.yaml push
