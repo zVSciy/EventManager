@@ -5,7 +5,7 @@ on:
     branches: [ "CI/CD" ]
 
 jobs:
-  build:
+  integrated:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
@@ -36,94 +36,9 @@ jobs:
       - name: List Loaded Docker Images
         run: docker images
 
-      # Save the built images as artifacts
-      - name: Save Docker images
-        run: |
-          mkdir -p /tmp/docker-images
-          for image_id in $(docker images -q); do
-            image_name=$(docker inspect --format='{{.RepoTags}}' $image_id | tr -d '[]' | tr ':' '_' | sed 's/\//-/g')
-            docker save $image_id -o /tmp/docker-images/${image_name}.tar
-          done
-
-      - name: Upload Docker images
-        uses: actions/upload-artifact@v4
-        with:
-          name: docker-images
-          path: /tmp/docker-images/*.tar
-
-  test:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v3
-        
-      - name: Copy .env file
-        run: cp .env_example .env
-
-      - name: Verify .env file
-        run: |
-          if [ ! -f .env ]; then
-            echo ".env file is missing!"
-            exit 1
-          fi
-          cat .env
-          
-      - name: Install Docker Compose
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y docker-compose
-          
-      # Load the built images from the previous job
-      - name: Download Docker images
-        uses: actions/download-artifact@v4
-        with:
-          name: docker-images
-          path: /tmp/docker-images
-          
-      - name: Load Docker images
-        run: |
-          for image_tar in /tmp/docker-images/*.tar; do
-            docker load -i $image_tar
-          done
-
-      - name: List Loaded Docker Images
-        run: docker images
-      
       - name: Run Integration Tests
         run: docker-compose -f docker-compose-test.yaml up --exit-code-from integration_test integration_test
 
-  push:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v3
-        
-      # Load the built images from the build job
-      - name: Download Docker images
-        uses: actions/download-artifact@v4
-        with:
-          name: docker-images
-          path: /tmp/docker-images
-          
-      - name: Load Docker images
-        run: |
-          for image_tar in /tmp/docker-images/*.tar; do
-            docker load -i $image_tar
-          done
-
-      - name: List Loaded Docker Images
-        run: docker images
-
-      - name: Verify .env file
-        run: |
-          if [ ! -f .env ]; then
-            echo ".env file is missing!"
-            exit 1
-          fi
-          cat .env
-      
       - name: Debug Print GitLab Secrets
         run: |
           echo "GITLAB_USERNAME: ${{ vars.GITLAB_USERNAME }}"
