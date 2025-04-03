@@ -109,6 +109,7 @@ services:
     - "3306"
 
   events_api:
+    image: registry.gitlab.com/kavalarj/eventmanager/events_api:latest
     build:
       context: ./Events
       dockerfile: ./DockerFile
@@ -145,6 +146,7 @@ services:
     - eventmanager-net
 
   events_web:
+    image: registry.gitlab.com/kavalarj/eventmanager/events_web:latest
     build: ./Events/eventsSvelte
 
     ports:
@@ -162,6 +164,7 @@ services:
 # -------------------------
 
   review_api:    
+    image: registry.gitlab.com/kavalarj/eventmanager/review_api:latest
     build:
       context: ./Review/backend
       dockerfile: Dockerfile
@@ -183,6 +186,7 @@ services:
       - eventmanager-net
 
   review_web:
+    image: registry.gitlab.com/kavalarj/eventmanager/review_web:latest
     build:
       context: ./Review/frontend
       dockerfile: Dockerfile.dev
@@ -235,6 +239,7 @@ services:
       timeout: 3s
 
   tickets_api:
+    image: registry.gitlab.com/kavalarj/eventmanager/tickets_api:latest
     build:
       context: ./Tickets
       dockerfile: ./docker/fastapi/Dockerfile
@@ -268,6 +273,7 @@ services:
       - eventmanager-net
   
   tickets_web:
+    image: registry.gitlab.com/kavalarj/eventmanager/tickets_web:latest
     build:
       context: ./Tickets
       dockerfile: ./docker/sveltekit/Dockerfile
@@ -313,6 +319,7 @@ services:
     - "3306"
 
   auth_api:
+    image: registry.gitlab.com/kavalarj/eventmanager/auth_api:latest
     build:
       context: ./UserManagement
       dockerfile: ./docker/FastAPI/Dockerfile
@@ -349,6 +356,7 @@ services:
       - eventmanager-net
 
   auth_web:
+    image: registry.gitlab.com/kavalarj/eventmanager/auth_web:latest
     build:
       context: ./UserManagement
       dockerfile: ./docker/Svelte/Dockerfile
@@ -394,6 +402,7 @@ services:
 
   notification_api:
     container_name: notification_api
+    image: registry.gitlab.com/kavalarj/eventmanager/notification_api:latest
     build:
       context: ./Notifications
       dockerfile: ./docker/FastAPI/Dockerfile
@@ -427,6 +436,7 @@ services:
 
   #Service "sveltekit"
   notification_web:
+    image: registry.gitlab.com/kavalarj/eventmanager/notification_web:latest
     build:
       context: ./Notifications
       dockerfile: ./docker/sveltekit/Dockerfile

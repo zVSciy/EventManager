@@ -7,7 +7,6 @@ volumes:
   auth-api-data:
   notification_db_data:
 
-
 networks:
   eventmanager-net:
 
@@ -33,6 +32,45 @@ services:
       - events_db
       - events_api
       - events_web
+      - tickets_db
+      - tickets_api
+      - tickets_web
+      - auth_db
+      - auth_api
+      - auth_web
+      - review_api
+      - review_web
+      - notification_api
+      - notification_web
+      - notification_db
+      - integration_test
+      
+    networks:
+      - eventmanager-net
+
+# -------------------------
+#  GENERAL - INTEGRATION TEST
+# -------------------------
+
+  integration_test:
+
+    depends_on:
+      auth_api:
+        condition: service_healthy
+      events_api:
+        condition: service_healthy
+      tickets_api:
+        condition: service_healthy
+      review_api:
+        condition: service_healthy
+      notification_api:
+        condition: service_healthy
+
+    working_dir: /app
+
+    command: >
+      sh -c "python test_app.py"
+
     networks:
       - eventmanager-net
 
@@ -42,13 +80,11 @@ services:
 
   events_db:
     image: mysql:latest
-
+    
     volumes:
       - events-mysql-data:/var/lib/mysql
     
-    env_file: 
-      - .env
-      - ./default.env
+    env_file: .env
     environment:
       MYSQL_DATABASE: ${EVENTS_MYSQL_DATABASE}
       MYSQL_USER: ${EVENTS_MYSQL_USER}
@@ -60,20 +96,17 @@ services:
       - eventmanager-net
 
     healthcheck:
-       test: 'echo "select now(); " | mysql -h ${EVENTS_MYSQL_HOST} -u${EVENTS_MYSQL_USER} -p${EVENTS_MYSQL_PASSWORD}'
-       interval: 1s
-       retries: 10
-       start_period: 10s
-       timeout: 1s
+      test: 'echo "select now(); " | mysql -h ${EVENTS_MYSQL_HOST} -u${EVENTS_MYSQL_USER} -p${EVENTS_MYSQL_PASSWORD}'
+      interval: 1m
+      retries: 10
+      start_period: 20s
+      timeout: 3s
 
     ports:
     - "3306"
 
   events_api:
     image: registry.gitlab.com/kavalarj/eventmanager/events_api:latest
-    build:
-      context: ./Events
-      dockerfile: ./DockerFile
     
     volumes:
     - events-fast-data:/media
@@ -83,9 +116,7 @@ services:
       events_db:
         condition: service_healthy
 
-    env_file: 
-      - .env
-      - ./default.env
+    env_file: .env
     environment:
       ALLOWED_HOSTS: '*'
 
@@ -98,16 +129,21 @@ services:
       sh -c "python test.py && 
              exec uvicorn main:app --host 0.0.0.0 --reload"
 
+    healthcheck:
+      test: ["CMD", "curl", "http://localhost:8000/docs"]
+      interval: 1m
+      retries: 2
+      start_period: 20s
+      timeout: 3s
+
     networks:
     - eventmanager-net
 
   events_web:
     image: registry.gitlab.com/kavalarj/eventmanager/events_web:latest
 
-    build: ./Events/eventsSvelte
-
     ports:
-     - "5173:5173"
+     - "5173"
 
     volumes:
       - ./Events/eventsSvelte:/app #Hot-reload
@@ -120,30 +156,30 @@ services:
 #   CONTAINERS - REVIEW
 # -------------------------
 
-  review_api:   
+  review_api:    
     image: registry.gitlab.com/kavalarj/eventmanager/review_api:latest
- 
-    build:
-      context: ./Review/backend
-      dockerfile: Dockerfile
 
     ports:
-      - "8083:8083"
+      - "8083"
 
     command: >
       sh -c "exec uvicorn main:app --host 0.0.0.0 --port 8083 --reload"
+
+    healthcheck:
+      test: ["CMD", "curl", "http://localhost:8083/docs"]
+      interval: 1m
+      retries: 2
+      start_period: 20s
+      timeout: 3s
 
     networks:
       - eventmanager-net
 
   review_web:
     image: registry.gitlab.com/kavalarj/eventmanager/review_web:latest
-    build:
-      context: ./Review/frontend
-      dockerfile: Dockerfile.dev
 
     ports:
-      - "3000:3000"
+      - "3000"
 
     volumes:
       - ./Review/frontend:/app
@@ -164,15 +200,13 @@ services:
 #   CONTAINERS - TICKETS
 # -------------------------
 
-  tickets_db: 
+  tickets_db:
     image: mysql:latest
 
     volumes:
       - tickets-mysql-data:/var/lib/mysql
 
-    env_file: 
-      - .env
-      - ./default.env
+    env_file: .env
 
     environment:
       MYSQL_DATABASE: ${TICKETS_MYSQL_DATABASE}
@@ -186,30 +220,23 @@ services:
 
     healthcheck:
       test: 'echo "select now();" | mysql -h ${TICKETS_MYSQL_DATABASE_HOST} -u${TICKETS_MYSQL_USER} -p${TICKETS_MYSQL_PASSWORD}'
-      interval: 1s
+      interval: 1m
       retries: 10
-      start_period: 10s
-      timeout: 1s
+      start_period: 20s
+      timeout: 3s
 
   tickets_api:
     image: registry.gitlab.com/kavalarj/eventmanager/tickets_api:latest
 
-    build:
-      context: ./Tickets
-      dockerfile: ./docker/fastapi/Dockerfile
-
-    env_file: 
-      - .env
-      - ./default.env
+    env_file: .env
 
     restart: always
     
     volumes:
     - tickets-fast-data:/media
-    - ./Tickets/src_fastapi:/app
 
     ports:
-      - "8001:8000"
+      - "8000"
 
     depends_on:
       tickets_db:
@@ -217,23 +244,23 @@ services:
 
     command: >
       sh -c "python test_app.py &&
-             uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
+             uvicorn main:app --host 0.0.0.0 --port 8000 --ssl-keyfile /app/ssl/key.pem --ssl-certfile /app/ssl/cert.pem"
+
+    healthcheck:
+      test: ["CMD", "curl", "--insecure", "https://localhost:8000/docs"]
+      interval: 1m
+      retries: 2
+      start_period: 20s
+      timeout: 3s
 
     networks:
       - eventmanager-net
   
   tickets_web:
     image: registry.gitlab.com/kavalarj/eventmanager/tickets_web:latest
-    build:
-      context: ./Tickets
-      dockerfile: ./docker/sveltekit/Dockerfile
 
     ports:
       - "5173"
-
-    volumes:
-      - ./Tickets/src_svelte_frontend:/app #Hot-reload
-      - /app/node_modules
 
     depends_on:
       - tickets_api
@@ -251,9 +278,7 @@ services:
     volumes:
       - auth-db-data:/var/lib/mysql
 
-    env_file: 
-      - .env
-      - ./default.env
+    env_file: .env
     environment:
       MYSQL_DATABASE: ${AUTH_MYSQL_DATABASE}
       MYSQL_USER: ${AUTH_MYSQL_USER}
@@ -265,20 +290,17 @@ services:
       - eventmanager-net
 
     healthcheck:
-       test: 'echo "select now(); " | mysql -h ${AUTH_MYSQL_DATABASE_HOST} -u${AUTH_MYSQL_USER} -p${AUTH_MYSQL_PASSWORD}'
-       interval: 1s
-       retries: 10
-       start_period: 10s
-       timeout: 1s
+      test: 'echo "select now(); " | mysql -h ${AUTH_MYSQL_DATABASE_HOST} -u${AUTH_MYSQL_USER} -p${AUTH_MYSQL_PASSWORD}'
+      interval: 1m
+      retries: 10
+      start_period: 20s
+      timeout: 3s
 
     ports:
     - "3306"
 
   auth_api:
     image: registry.gitlab.com/kavalarj/eventmanager/auth_api:latest
-    build:
-      context: ./UserManagement
-      dockerfile: ./docker/FastAPI/Dockerfile
 
     volumes:
     - auth-api-data:/media
@@ -289,9 +311,7 @@ services:
       auth_db:
         condition: service_healthy
 
-    env_file: 
-      - .env
-      - ./default.env
+    env_file: .env
     environment:
       ALLOWED_HOSTS: ${AUTH_ALLOWED_HOSTS}
 
@@ -301,17 +321,21 @@ services:
     - "8000"
 
     command: >
-      sh -c "python test_api.py &&
-            uvicorn main:app --host 0.0.0.0 --ssl-keyfile /app/ssl/certificate.key --ssl-certfile /app/ssl/certificate.crt --workers 4"
+      sh -c "uvicorn main:app --host 0.0.0.0 --ssl-keyfile /app/ssl/certificate.key --ssl-certfile /app/ssl/certificate.crt --workers 4"
+    
+    healthcheck:
+      test: ["CMD", "curl", "--insecure", "https://localhost:8000/docs"]
+      interval: 1m
+      retries: 2
+      start_period: 20s
+      timeout: 3s
 
     networks:
       - eventmanager-net
 
   auth_web:
     image: registry.gitlab.com/kavalarj/eventmanager/auth_web:latest
-    build:
-      context: ./UserManagement
-      dockerfile: ./docker/Svelte/Dockerfile
+
     ports:
       - "5173"
     volumes:
@@ -319,7 +343,6 @@ services:
       - /app/node_modules
     networks:
       - eventmanager-net
-
 
 # --------------------------------
 #   CONTAINERS - Notification
@@ -332,9 +355,7 @@ services:
     volumes:
       - notification_db_data:/var/lib/mysql
     
-    env_file: 
-      - .env
-      - ./default.env
+    env_file: .env
     environment:
       MYSQL_DATABASE: ${NOTIF_MYSQL_DATABASE}
       MYSQL_USER: ${NOTIF_MYSQL_USER}
@@ -356,18 +377,14 @@ services:
     - "3306"
 
   notification_api:
+    container_name: notification_api
     image: registry.gitlab.com/kavalarj/eventmanager/notification_api:latest
-    build:
-      context: ./Notifications
-      dockerfile: ./docker/FastAPI/Dockerfile
 
     depends_on:
       notification_db:
         condition: service_healthy
 
-    env_file: 
-      - .env
-      - ./default.env
+    env_file: .env
     environment:
       ALLOWED_HOSTS: '*'
 
@@ -393,9 +410,6 @@ services:
   #Service "sveltekit"
   notification_web:
     image: registry.gitlab.com/kavalarj/eventmanager/notification_web:latest
-    build:
-      context: ./Notifications
-      dockerfile: ./docker/sveltekit/Dockerfile
 
     expose:
       - 5173
@@ -405,7 +419,6 @@ services:
 
     networks:
       - eventmanager-net
-
 
 
   integration_test:
