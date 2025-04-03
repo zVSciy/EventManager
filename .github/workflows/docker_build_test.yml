@@ -41,7 +41,7 @@ jobs:
         run: |
           mkdir -p /tmp/docker-images
           for image_id in $(docker images -q); do
-            image_name=$(docker inspect --format='{{.RepoTags}}' $image_id | tr -d '[]' | tr ':' '_')
+            image_name=$(docker inspect --format='{{.RepoTags}}' $image_id | tr -d '[]' | tr ':' '_' | sed 's/\//-/g')
             docker save $image_id -o /tmp/docker-images/${image_name}.tar
           done
 
