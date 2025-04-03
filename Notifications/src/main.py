@@ -47,7 +47,7 @@ def read_all_notifactions(skip: int = 0, limit: int = 10, db: Session = Depends(
     return notifications
 
 @app.get("/notifications/user/{user_id}")
-def read_all_notifactions(user_id: int, db: Session = Depends(get_db)):
+def read_all_notifactions(user_id: str, db: Session = Depends(get_db)):
     notifications = db.query(Notifications).filter(Notifications.userId == user_id).all()
     if(notifications == None or len(notifications) == 0):
         raise HTTPException(status_code=404, detail="No notifications found")

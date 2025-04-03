@@ -7,6 +7,9 @@ function jsonResponse(json, status = 200) {
   });
 }
 
+// Bypass SSL certificate validation (development only)
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
 export async function PUT({ url }) {
   const eventID = url.searchParams.get('event_id');
   const moreTickets = url.searchParams.get('delete');

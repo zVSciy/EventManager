@@ -7,14 +7,18 @@ function jsonResponse(json, status = 200) {
   });
 }
 
+// Bypass SSL certificate validation (development only)
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+const BASE_DIR = 'https://tickets_api:8000';
+
 export async function GET({ url }) {
   const eventID = url.searchParams.get('event_id');
   let apiURL = '';
 
   if (!isNaN(eventID)) {
-    apiURL = `http://tickets_api:8000/tickets?event_id=${eventID}`;
+    apiURL = `${BASE_DIR}/tickets?event_id=${eventID}`;
   } else {
-    apiURL = `http://tickets_api:8000/tickets`;
+    apiURL = `${BASE_DIR}/tickets`;
   }
   
   try {
@@ -40,7 +44,7 @@ export async function POST({ url }) {
   const userID = url.searchParams.get('user_id');
   const eventID = url.searchParams.get('event_id');
 
-  const apiURL = `http://tickets_api:8000/tickets`;
+  const apiURL = `${BASE_DIR}/tickets`;
   let response = '';
 
   if (row == 'null') {
@@ -112,7 +116,7 @@ export async function PUT({ url }) {
     return jsonResponse({status: 400, error: 'TicketID must be a number!'});
   }
 
-  const apiURL = `http://tickets_api:8000/tickets/${changedTID}`;
+  const apiURL = `${BASE_DIR}/tickets/${changedTID}`;
   
   try {
     const response = await fetch(apiURL, {
@@ -150,7 +154,7 @@ export async function DELETE({ url }) {
     return jsonResponse({status: 400, error: 'TicketID must be a number!'});
   }
 
-  const apiURL = `http://tickets_api:8000/tickets/${ticketID}`;
+  const apiURL = `${BASE_DIR}/tickets/${ticketID}`;
 
   try {
     const response = await fetch(apiURL, {
