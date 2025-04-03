@@ -54,7 +54,7 @@ jobs:
           
       # Load the built images from the previous job
       - name: Download Docker images
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: docker-images
           path: /tmp/docker-images
@@ -75,7 +75,7 @@ jobs:
         
       # Load the built images from the build job
       - name: Download Docker images
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: docker-images
           path: /tmp/docker-images
