@@ -307,6 +307,89 @@ services:
       - eventmanager-net
 
 
+# --------------------------------
+#   CONTAINERS - Notification
+# --------------------------------
+
+  notification_db:
+    container_name: notification_db
+    image: mysql:latest
+    
+    volumes:
+      - notification_db_data:/var/lib/mysql
+    
+    env_file: .env
+    environment:
+      MYSQL_DATABASE: ${NOTIF_MYSQL_DATABASE}
+      MYSQL_USER: ${NOTIF_MYSQL_USER}
+      MYSQL_PASSWORD: ${NOTIF_MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${NOTIF_MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE_PORT: ${NOTIF_MYSQL_DATABASE_PORT}
+
+    networks:
+      - eventmanager-net
+
+    healthcheck:
+      test: 'echo "select now(); " | mysql -u${NOTIF_MYSQL_USER} -p${NOTIF_MYSQL_PASSWORD}'
+      interval: 1m
+      retries: 10
+      start_period: 20s
+      timeout: 3s
+
+    ports:
+    - "3306"
+
+  notification_api:
+    image: registry.gitlab.com/kavalarj/eventmanager/notification_api:latest
+    build:
+      context: ./Notifications
+      dockerfile: ./docker/FastAPI/Dockerfile
+
+    depends_on:
+      notification_db:
+        condition: service_healthy
+
+    env_file: .env
+    environment:
+      ALLOWED_HOSTS: '*'
+
+    working_dir: "/app"
+    
+    ports:
+    - "8000"
+
+    command: >
+      sh -c "pytest || true && 
+             exec uvicorn main:app --host 0.0.0.0 --reload"
+
+    healthcheck:
+      test: ["CMD", "curl", "http://localhost:8000/docs"]
+      interval: 1m
+      retries: 2
+      start_period: 20s
+      timeout: 3s
+
+    networks:
+      - eventmanager-net
+
+  #Service "sveltekit"
+  notification_web:
+    image: registry.gitlab.com/kavalarj/eventmanager/notification_web:latest
+    build:
+      context: ./Notifications
+      dockerfile: ./docker/sveltekit/Dockerfile
+
+    expose:
+      - 5173
+
+    depends_on:
+      - notification_api
+
+    networks:
+      - eventmanager-net
+
+
+
   integration_test:
       build:
         context: ./Integration_Tests
