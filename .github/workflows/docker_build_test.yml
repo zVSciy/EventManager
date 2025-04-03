@@ -32,7 +32,11 @@ jobs:
 
       - name: Build
         run: docker-compose -f docker-compose.yaml build
-      
+
+      - name: List Loaded Docker Images
+        run: docker images
+
+
       # Save the built images as artifacts
       - name: Save Docker images
         run: |
