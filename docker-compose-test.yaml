@@ -422,24 +422,27 @@ services:
 
 
 
+integration_test:
+    build:
+      context: ./Integration_Tests
+      dockerfile: ./docker/Dockerfile
 
-
-  integration_test:
     depends_on:
-      nginx:
+      auth_api:
         condition: service_healthy
       events_api:
         condition: service_healthy
       tickets_api:
         condition: service_healthy
-      auth_api:
-        condition: service_healthy
       review_api:
         condition: service_healthy
       notification_api:
         condition: service_healthy
+
     working_dir: /app
+
     command: >
       sh -c "python test_app.py"
+
     networks:
       - eventmanager-net
