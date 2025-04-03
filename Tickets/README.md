@@ -59,7 +59,7 @@ If you are not familiar with Docker, here are some parameters that might be help
 
 ## Testing
 > [!NOTE]
-> As no integration with other services has been done so far, keep in mind that given endpoints might need some further adjustments when integrated with other services - it might be possible that endpoints are also added or completely changed, regarding how the integration is done (CRUD functions seem to be enough to start off). The same goes for the GUI - every functionality might not be practical yet.
+> Keep in mind that some changes were made in order to make the integration with other services possible - at the moment of writing, a standalone tickets service is not possible (delete the dependencies in the Svelte components for that).
 
 Currently, the FastAPI application of the Ticket service is automatically tested with the `src_fastapi/test_app.py` file which includes some unit testing. This python script is executed when provisioning the API container - the output of the unit test is shown in the CLI if the parameter `-d` is NOT in use.
 
