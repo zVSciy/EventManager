@@ -26,7 +26,7 @@ app.add_middleware(
 init_db()
 
 class ReviewCreate(BaseModel):
-    user_id: int
+    user_id: str
     content: str
     rating: int
     event_id: int
@@ -44,6 +44,7 @@ def get_db():
 
 #? Get review by ID
 @app.get("/reviews/{review_id}")
+
 def get_review(review_id: int, db: Session = Depends(get_db)):
     logger.info(f"Fetching review with ID: {review_id}")
     review = db.query(Review).filter(Review.id == review_id).first()

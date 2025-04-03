@@ -1,7 +1,8 @@
 <script>
     import { onMount } from 'svelte';
+    import { base } from '$app/paths';
 
-    const backend_url = 'http://notification_api:8082';
+    const backend_url = `${base}/api`;
 
     let notifications = [];
     let newNotification = { description: '', status: '', eventId: '', ticketId: '', timestamp: '', paymentId: '', userId: '' };
@@ -92,7 +93,7 @@
         <input type="number" placeholder="Ticket ID" bind:value={newNotification.ticketId} />
         <input type="number" placeholder="Timestamp" bind:value={newNotification.timestamp} />
         <input type="number" placeholder="Payment ID" bind:value={newNotification.paymentId} />
-        <input type="number" placeholder="User ID" bind:value={newNotification.userId} />
+        <input type="text" placeholder="User ID" bind:value={newNotification.userId} />
         <button on:click={createNotification}>Create</button>
     </div>
     <div>
@@ -104,7 +105,7 @@
         <input type="number" placeholder="Ticket ID" bind:value={updateNotificationData.ticketId} />
         <input type="number" placeholder="Timestamp" bind:value={updateNotificationData.timestamp} />
         <input type="number" placeholder="Payment ID" bind:value={updateNotificationData.paymentId} />
-        <input type="number" placeholder="User ID" bind:value={updateNotificationData.userId} />
+        <input type="text" placeholder="User ID" bind:value={updateNotificationData.userId} />
         <button on:click={updateNotification}>Update</button>
     </div>
     {#if notifications.length > 0}
