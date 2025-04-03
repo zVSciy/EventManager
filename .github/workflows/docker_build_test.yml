@@ -23,7 +23,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Build
-        run: docker-compose -f docker-compose-pipeline.yaml build
+        run: docker-compose -f docker-compose.yaml build
       
       # Save the built images as artifacts
       - name: Save Docker images
@@ -62,6 +62,10 @@ jobs:
       - name: Load Docker images
         run: |
           docker load -i /tmp/docker-images/images.tar
+      
+      # Start the Docker Compose containers
+      - name: Start Docker Compose
+        run: docker-compose -f docker-compose.yaml up -d
       
       - name: Run Integration Tests
         run: docker-compose -f docker-compose-test.yaml up --exit-code-from integration_test integration_test

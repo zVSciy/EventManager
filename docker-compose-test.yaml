@@ -4,13 +4,37 @@ networks:
   eventmanager-net:
 
 services:
-  # We'll only include necessary services for testing
+  # Include all services from docker-compose.yaml
+  nginx:
+    image: nginx:latest
+    restart: always
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/ssl
+    ports:
+      - "8080:443"
+    depends_on:
+      - events_db
+      - events_api
+      - events_web
+      - tickets_db
+      - tickets_api
+      - tickets_web
+      - auth_db
+      - auth_api
+      - auth_web
+      - review_api
+      - review_web
+      - notification_api
+      - notification_web
+      - notification_db
+    networks:
+      - eventmanager-net
+
   events_db:
     image: mysql:latest
-    
     volumes:
       - events-mysql-data:/var/lib/mysql
-    
     env_file: .env
     environment:
       MYSQL_DATABASE: ${EVENTS_MYSQL_DATABASE}
@@ -18,30 +42,24 @@ services:
       MYSQL_PASSWORD: ${EVENTS_MYSQL_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${EVENTS_MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE_PORT: ${EVENTS_MYSQL_DATABASE_PORT}
-
     networks:
       - eventmanager-net
-
     healthcheck:
-       test: 'echo "select now(); " | mysql -h ${EVENTS_MYSQL_HOST} -u${EVENTS_MYSQL_USER} -p${EVENTS_MYSQL_PASSWORD}'
-       interval: 1s
-       retries: 10
-       start_period: 10s
-       timeout: 1s
+      test: 'echo "select now(); " | mysql -h ${EVENTS_MYSQL_HOST} -u${EVENTS_MYSQL_USER} -p${EVENTS_MYSQL_PASSWORD}'
+      interval: 1s
+      retries: 10
+      start_period: 10s
+      timeout: 1s
 
   events_api:
     image: registry.gitlab.com/kavalarj/eventmanager/events_api:latest
-    
     depends_on:
       events_db:
         condition: service_healthy
-
     env_file: .env
     environment:
       ALLOWED_HOSTS: '*'
-
     working_dir: "/app"
-    
     networks:
       - eventmanager-net
 
@@ -51,19 +69,25 @@ services:
     build:
       context: ./Integration_Tests
       dockerfile: ./docker/Dockerfile
-
     depends_on:
+      nginx:
+        condition: service_healthy
       events_api:
         condition: service_healthy
-      # Add other dependencies as needed
-
+      tickets_api:
+        condition: service_healthy
+      auth_api:
+        condition: service_healthy
+      review_api:
+        condition: service_healthy
+      notification_api:
+        condition: service_healthy
     working_dir: /app
-
     command: >
       sh -c "python test_app.py"
-
     networks:
       - eventmanager-net
 
 volumes:
   events-mysql-data:
+  # ...existing volumes from docker-compose.yaml...
