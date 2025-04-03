@@ -14,6 +14,14 @@ jobs:
       - name: Copy .env file
         run: cp .env_example .env
 
+      - name: Verify .env file
+        run: |
+          if [ ! -f .env ]; then
+            echo ".env file is missing!"
+            exit 1
+          fi
+          cat .env
+
       - name: Install Docker Compose
         run: |
           sudo apt-get update
@@ -46,6 +54,14 @@ jobs:
         
       - name: Copy .env file
         run: cp .env_example .env
+
+      - name: Verify .env file
+        run: |
+          if [ ! -f .env ]; then
+            echo ".env file is missing!"
+            exit 1
+          fi
+          cat .env
         
       - name: Install Docker Compose
         run: |
@@ -62,10 +78,6 @@ jobs:
       - name: Load Docker images
         run: |
           docker load -i /tmp/docker-images/images.tar
-      
-      # Start the Docker Compose containers
-      - name: Start Docker Compose
-        run: docker-compose -f docker-compose.yaml up -d
       
       - name: Run Integration Tests
         run: docker-compose -f docker-compose-test.yaml up --exit-code-from integration_test integration_test
@@ -87,6 +99,14 @@ jobs:
       - name: Load Docker images
         run: |
           docker load -i /tmp/docker-images/images.tar
+
+      - name: Verify .env file
+        run: |
+          if [ ! -f .env ]; then
+            echo ".env file is missing!"
+            exit 1
+          fi
+          cat .env
       
       - name: Debug Print GitLab Secrets
         run: |

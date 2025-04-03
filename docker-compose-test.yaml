@@ -80,18 +80,21 @@ services:
       - tickets-mysql-data:/var/lib/mysql
     env_file: .env
     environment:
-      MYSQL_DATABASE: ${TICKETS_MYSQL_DATABASE}
-      MYSQL_USER: ${TICKETS_MYSQL_USER}
-      MYSQL_PASSWORD: ${TICKETS_MYSQL_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${TICKETS_MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${AUTH_MYSQL_DATABASE}
+      MYSQL_USER: ${AUTH_MYSQL_USER}
+      MYSQL_PASSWORD: ${AUTH_MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${AUTH_MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE_PORT: ${AUTH_MYSQL_DATABASE_PORT}
+
     networks:
       - eventmanager-net
+
     healthcheck:
-      test: 'echo "select now(); " | mysql -h ${TICKETS_MYSQL_HOST} -u${TICKETS_MYSQL_USER} -p${TICKETS_MYSQL_PASSWORD}'
-      interval: 1s
+      test: 'echo "select now(); " | mysql -h ${AUTH_MYSQL_DATABASE_HOST} -u${AUTH_MYSQL_USER} -p${AUTH_MYSQL_PASSWORD}'
+      interval: 1m
       retries: 10
-      start_period: 10s
-      timeout: 1s
+      start_period: 20s
+      timeout: 3s
 
   tickets_api:
     image: registry.gitlab.com/kavalarj/eventmanager/tickets_api:latest
@@ -122,18 +125,19 @@ services:
       - auth-mysql-data:/var/lib/mysql
     env_file: .env
     environment:
-      MYSQL_DATABASE: ${AUTH_MYSQL_DATABASE}
-      MYSQL_USER: ${AUTH_MYSQL_USER}
-      MYSQL_PASSWORD: ${AUTH_MYSQL_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${AUTH_MYSQL_ROOT_PASSWORD}
+          MYSQL_DATABASE: ${AUTH_MYSQL_DATABASE}
+          MYSQL_USER: ${AUTH_MYSQL_USER}
+          MYSQL_PASSWORD: ${AUTH_MYSQL_PASSWORD}
+          MYSQL_ROOT_PASSWORD: ${AUTH_MYSQL_ROOT_PASSWORD}
+          MYSQL_DATABASE_PORT: ${AUTH_MYSQL_DATABASE_PORT}
     networks:
       - eventmanager-net
     healthcheck:
-      test: 'echo "select now(); " | mysql -h ${AUTH_MYSQL_HOST} -u${AUTH_MYSQL_USER} -p${AUTH_MYSQL_PASSWORD}'
-      interval: 1s
+      test: 'echo "select now(); " | mysql -h ${AUTH_MYSQL_DATABASE_HOST} -u${AUTH_MYSQL_USER} -p${AUTH_MYSQL_PASSWORD}'
+      interval: 1m
       retries: 10
-      start_period: 10s
-      timeout: 1s
+      start_period: 20s
+      timeout: 3s
 
   auth_api:
     image: registry.gitlab.com/kavalarj/eventmanager/auth_api:latest
@@ -187,10 +191,11 @@ services:
       - notification-mysql-data:/var/lib/mysql
     env_file: .env
     environment:
-      MYSQL_DATABASE: ${NOTIFICATION_MYSQL_DATABASE}
-      MYSQL_USER: ${NOTIFICATION_MYSQL_USER}
-      MYSQL_PASSWORD: ${NOTIFICATION_MYSQL_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${NOTIFICATION_MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${NOTIF_MYSQL_DATABASE}
+      MYSQL_USER: ${NOTIF_MYSQL_USER}
+      MYSQL_PASSWORD: ${NOTIF_MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${NOTIF_MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE_PORT: ${NOTIF_MYSQL_DATABASE_PORT}
     networks:
       - eventmanager-net
     healthcheck:

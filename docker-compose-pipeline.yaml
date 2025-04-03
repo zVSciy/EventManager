@@ -46,7 +46,9 @@ services:
     volumes:
       - events-mysql-data:/var/lib/mysql
     
-    env_file: .env
+    env_file: 
+      - .env
+      - ./default.env
     environment:
       MYSQL_DATABASE: ${EVENTS_MYSQL_DATABASE}
       MYSQL_USER: ${EVENTS_MYSQL_USER}
@@ -81,7 +83,9 @@ services:
       events_db:
         condition: service_healthy
 
-    env_file: .env
+    env_file: 
+      - .env
+      - ./default.env
     environment:
       ALLOWED_HOSTS: '*'
 
@@ -166,7 +170,9 @@ services:
     volumes:
       - tickets-mysql-data:/var/lib/mysql
 
-    env_file: .env
+    env_file: 
+      - .env
+      - ./default.env
 
     environment:
       MYSQL_DATABASE: ${TICKETS_MYSQL_DATABASE}
@@ -192,7 +198,9 @@ services:
       context: ./Tickets
       dockerfile: ./docker/fastapi/Dockerfile
 
-    env_file: .env
+    env_file: 
+      - .env
+      - ./default.env
 
     restart: always
     
@@ -243,7 +251,9 @@ services:
     volumes:
       - auth-db-data:/var/lib/mysql
 
-    env_file: .env
+    env_file: 
+      - .env
+      - ./default.env
     environment:
       MYSQL_DATABASE: ${AUTH_MYSQL_DATABASE}
       MYSQL_USER: ${AUTH_MYSQL_USER}
@@ -279,7 +289,9 @@ services:
       auth_db:
         condition: service_healthy
 
-    env_file: .env
+    env_file: 
+      - .env
+      - ./default.env
     environment:
       ALLOWED_HOSTS: ${AUTH_ALLOWED_HOSTS}
 
@@ -320,7 +332,9 @@ services:
     volumes:
       - notification_db_data:/var/lib/mysql
     
-    env_file: .env
+    env_file: 
+      - .env
+      - ./default.env
     environment:
       MYSQL_DATABASE: ${NOTIF_MYSQL_DATABASE}
       MYSQL_USER: ${NOTIF_MYSQL_USER}
@@ -351,7 +365,9 @@ services:
       notification_db:
         condition: service_healthy
 
-    env_file: .env
+    env_file: 
+      - .env
+      - ./default.env
     environment:
       ALLOWED_HOSTS: '*'
 
