@@ -3,11 +3,11 @@ from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-user = os.environ.get("MYSQL_USER")
-database = os.environ.get("MYSQL_DATABASE")
-password = os.environ.get("MYSQL_PASSWORD")
-hostname = os.environ.get("MYSQL_DATABASE_HOST")
-port = os.environ.get("MYSQL_DATABASE_PORT")
+user = os.environ.get("AUTH_MYSQL_USER")
+database = os.environ.get("AUTH_MYSQL_DATABASE")
+password = os.environ.get("AUTH_MYSQL_PASSWORD")
+hostname = os.environ.get("AUTH_MYSQL_DATABASE_HOST")
+port = os.environ.get("AUTH_MYSQL_DATABASE_PORT")
 
 engineStr = f'mysql+pymysql://{user}:{password}@{hostname}:{port}/{database}?charset=utf8mb4'
 print(engineStr)

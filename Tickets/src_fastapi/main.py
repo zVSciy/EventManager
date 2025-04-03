@@ -22,6 +22,21 @@ def read_tickets(event_id: int = None, db: Session = Depends(get_db)):
             "msg": str(ex)
         })
 
+@app.get("/tickets/user/{user_id}")
+def read_tickets(user_id: str, event_id: int = None, db: Session = Depends(get_db)):
+    try:
+        if type(event_id) == int:
+            tickets = db.query(models.Ticket).filter(models.Ticket.user_id == user_id).filter(models.Ticket.event_id == event_id).all()
+        else:
+            tickets = db.query(models.Ticket).filter(models.Ticket.user_id == user_id).all()
+        return tickets
+
+    except Exception as ex:
+        raise HTTPException(status_code=500, detail={
+            "status": "Error 500 - Internal Server Error",
+            "msg": str(ex)
+        })
+
 @app.get("/tickets/{ticket_id}")
 def read_tickets(ticket_id: int = None, db: Session = Depends(get_db)):
     try:
@@ -131,6 +146,30 @@ def edit_ticket(ticket_id: int, updated_ticket: TicketInput, db: Session = Depen
         raise HTTPException(status_code=500, detail={
             "status": "Error 500 - Internal Server Error",
             "msg": str(ex)
+        })
+
+@app.delete("/tickets/user/{user_id}/ticket/{ticket_id}")
+def delete_ticket(user_id: str, ticket_id: int, db: Session = Depends(get_db)):
+    try:
+        ticket = db.query(models.Ticket).filter(models.Ticket.id == ticket_id).filter(models.Ticket.user_id == user_id).first()
+        if not ticket:
+            raise HTTPException(status_code=403, detail={
+                "status": "Error 403 - Blocked",
+                "msg": f"Ticket with `id`: `{ticket_id}` is not assigned to user with `id`: `{user_id}`."
+            })
+        
+        db.delete(ticket)
+        db.commit()
+
+        return {
+            "status": "200",
+            "msg": "Ticket cancelled successfully."
+        }
+        
+    except UnmappedInstanceError:
+        raise HTTPException(status_code=404, detail={
+            "status": "Error 404 - Not Found",
+            "msg": f"Ticket with `id`: `{ticket_id}` doesn't exist."
         })
 
 @app.delete("/tickets/{ticket_id}")

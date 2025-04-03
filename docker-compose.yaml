@@ -3,6 +3,9 @@ volumes:
   events-fast-data:
   tickets-fast-data:
   tickets-mysql-data:
+  auth-db-data:
+  auth-api-data:
+  notification_db_data:
 
 networks:
   eventmanager-net:
@@ -29,6 +32,48 @@ services:
       - events_db
       - events_api
       - events_web
+      - tickets_db
+      - tickets_api
+      - tickets_web
+      - auth_db
+      - auth_api
+      - auth_web
+      - review_api
+      - review_web
+      - notification_api
+      - notification_web
+      - notification_db
+      - integration_test
+      
+    networks:
+      - eventmanager-net
+
+# -------------------------
+#  GENERAL - INTEGRATION TEST
+# -------------------------
+
+  integration_test:
+    build:
+      context: ./Integration_Tests
+      dockerfile: ./docker/Dockerfile
+
+    depends_on:
+      auth_api:
+        condition: service_healthy
+      events_api:
+        condition: service_healthy
+      tickets_api:
+        condition: service_healthy
+      review_api:
+        condition: service_healthy
+      notification_api:
+        condition: service_healthy
+
+    working_dir: /app
+
+    command: >
+      sh -c "python test_app.py"
+
     networks:
       - eventmanager-net
 
@@ -54,11 +99,11 @@ services:
       - eventmanager-net
 
     healthcheck:
-       test: 'echo "select now(); " | mysql -h ${EVENTS_MYSQL_HOST} -u${EVENTS_MYSQL_USER} -p${EVENTS_MYSQL_PASSWORD}'
-       interval: 1s
-       retries: 10
-       start_period: 10s
-       timeout: 1s
+      test: 'echo "select now(); " | mysql -h ${EVENTS_MYSQL_HOST} -u${EVENTS_MYSQL_USER} -p${EVENTS_MYSQL_PASSWORD}'
+      interval: 1m
+      retries: 10
+      start_period: 20s
+      timeout: 3s
 
     ports:
     - "3306"
@@ -89,6 +134,13 @@ services:
       sh -c "python test.py && 
              exec uvicorn main:app --host 0.0.0.0 --reload"
 
+    healthcheck:
+      test: ["CMD", "curl", "http://localhost:8000/docs"]
+      interval: 1m
+      retries: 2
+      start_period: 20s
+      timeout: 3s
+
     networks:
     - eventmanager-net
 
@@ -96,7 +148,7 @@ services:
     build: ./Events/eventsSvelte
 
     ports:
-     - "5173:5173"
+     - "5173"
 
     volumes:
       - ./Events/eventsSvelte:/app #Hot-reload
@@ -115,10 +167,17 @@ services:
       dockerfile: Dockerfile
 
     ports:
-      - "8083:8083"
+      - "8083"
 
     command: >
       sh -c "exec uvicorn main:app --host 0.0.0.0 --port 8083 --reload"
+
+    healthcheck:
+      test: ["CMD", "curl", "http://localhost:8083/docs"]
+      interval: 1m
+      retries: 2
+      start_period: 20s
+      timeout: 3s
 
     networks:
       - eventmanager-net
@@ -129,7 +188,7 @@ services:
       dockerfile: Dockerfile.dev
 
     ports:
-      - "3000:3000"
+      - "3000"
 
     volumes:
       - ./Review/frontend:/app
@@ -170,10 +229,10 @@ services:
 
     healthcheck:
       test: 'echo "select now();" | mysql -h ${TICKETS_MYSQL_DATABASE_HOST} -u${TICKETS_MYSQL_USER} -p${TICKETS_MYSQL_PASSWORD}'
-      interval: 1s
+      interval: 1m
       retries: 10
-      start_period: 10s
-      timeout: 1s
+      start_period: 20s
+      timeout: 3s
 
   tickets_api:
     build:
@@ -186,10 +245,9 @@ services:
     
     volumes:
     - tickets-fast-data:/media
-    - ./Tickets/src_fastapi:/app
 
     ports:
-      - "8001:8000"
+      - "8000"
 
     depends_on:
       tickets_db:
@@ -197,7 +255,14 @@ services:
 
     command: >
       sh -c "python test_app.py &&
-             uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
+             uvicorn main:app --host 0.0.0.0 --port 8000 --ssl-keyfile /app/ssl/key.pem --ssl-certfile /app/ssl/cert.pem"
+
+    healthcheck:
+      test: ["CMD", "curl", "--insecure", "https://localhost:8000/docs"]
+      interval: 1m
+      retries: 2
+      start_period: 20s
+      timeout: 3s
 
     networks:
       - eventmanager-net
@@ -210,12 +275,167 @@ services:
     ports:
       - "5173"
 
-    volumes:
-      - ./Tickets/src_svelte_frontend:/app #Hot-reload
-      - /app/node_modules
-
     depends_on:
       - tickets_api
+
+    networks:
+      - eventmanager-net
+
+# --------------------------------
+#   CONTAINERS - UserManagement
+# --------------------------------
+
+  auth_db:
+    image: mysql:latest
+
+    volumes:
+      - auth-db-data:/var/lib/mysql
+
+    env_file: .env
+    environment:
+      MYSQL_DATABASE: ${AUTH_MYSQL_DATABASE}
+      MYSQL_USER: ${AUTH_MYSQL_USER}
+      MYSQL_PASSWORD: ${AUTH_MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${AUTH_MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE_PORT: ${AUTH_MYSQL_DATABASE_PORT}
+
+    networks:
+      - eventmanager-net
+
+    healthcheck:
+      test: 'echo "select now(); " | mysql -h ${AUTH_MYSQL_DATABASE_HOST} -u${AUTH_MYSQL_USER} -p${AUTH_MYSQL_PASSWORD}'
+      interval: 1m
+      retries: 10
+      start_period: 20s
+      timeout: 3s
+
+    ports:
+    - "3306"
+
+  auth_api:
+    build:
+      context: ./UserManagement
+      dockerfile: ./docker/FastAPI/Dockerfile
+
+    volumes:
+    - auth-api-data:/media
+    - ./UserManagement/ssl:/app/ssl
+    - ./UserManagement/src:/app
+
+    depends_on:
+      auth_db:
+        condition: service_healthy
+
+    env_file: .env
+    environment:
+      ALLOWED_HOSTS: ${AUTH_ALLOWED_HOSTS}
+
+    working_dir: "/app"
+
+    ports:
+    - "8000"
+
+    command: >
+      sh -c "uvicorn main:app --host 0.0.0.0 --ssl-keyfile /app/ssl/certificate.key --ssl-certfile /app/ssl/certificate.crt --workers 4"
+    
+    healthcheck:
+      test: ["CMD", "curl", "--insecure", "https://localhost:8000/docs"]
+      interval: 1m
+      retries: 2
+      start_period: 20s
+      timeout: 3s
+
+    networks:
+      - eventmanager-net
+
+  auth_web:
+    build:
+      context: ./UserManagement
+      dockerfile: ./docker/Svelte/Dockerfile
+    ports:
+      - "5173"
+    volumes:
+      - ./UserManagement/frontend:/app
+      - /app/node_modules
+    networks:
+      - eventmanager-net
+
+# --------------------------------
+#   CONTAINERS - Notification
+# --------------------------------
+
+  notification_db:
+    container_name: notification_db
+    image: mysql:latest
+    
+    volumes:
+      - notification_db_data:/var/lib/mysql
+    
+    env_file: .env
+    environment:
+      MYSQL_DATABASE: ${NOTIF_MYSQL_DATABASE}
+      MYSQL_USER: ${NOTIF_MYSQL_USER}
+      MYSQL_PASSWORD: ${NOTIF_MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${NOTIF_MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE_PORT: ${NOTIF_MYSQL_DATABASE_PORT}
+
+    networks:
+      - eventmanager-net
+
+    healthcheck:
+      test: 'echo "select now(); " | mysql -u${NOTIF_MYSQL_USER} -p${NOTIF_MYSQL_PASSWORD}'
+      interval: 1m
+      retries: 10
+      start_period: 20s
+      timeout: 3s
+
+    ports:
+    - "3306"
+
+  notification_api:
+    container_name: notification_api
+    build:
+      context: ./Notifications
+      dockerfile: ./docker/FastAPI/Dockerfile
+
+    depends_on:
+      notification_db:
+        condition: service_healthy
+
+    env_file: .env
+    environment:
+      ALLOWED_HOSTS: '*'
+
+    working_dir: "/app"
+    
+    ports:
+    - "8000"
+
+    command: >
+      sh -c "pytest || true && 
+             exec uvicorn main:app --host 0.0.0.0 --reload"
+
+    healthcheck:
+      test: ["CMD", "curl", "http://localhost:8000/docs"]
+      interval: 1m
+      retries: 2
+      start_period: 20s
+      timeout: 3s
+
+    networks:
+      - eventmanager-net
+
+  #Service "sveltekit"
+  notification_web:
+    build:
+      context: ./Notifications
+      dockerfile: ./docker/sveltekit/Dockerfile
+
+    expose:
+      - 5173
+
+    depends_on:
+      - notification_api
 
     networks:
       - eventmanager-net

@@ -8,7 +8,7 @@ class BaseNotificationOptional(BaseModel):
     eventId: Optional[int]
     paymentId: Optional[int]
     ticketId: Optional[int]
-    userId: Optional[int]
+    userId: Optional[str]
 
 
 class BaseNotification(BaseModel):
@@ -18,4 +18,4 @@ class BaseNotification(BaseModel):
     eventId: int
     paymentId: int
     ticketId: int
-    userId: int
+    userId: str

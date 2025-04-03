@@ -11,6 +11,35 @@
     let availableVIPTickets = '';
     let error = null;
     let successMessage = '';
+    let email = '';
+    let password = '';
+
+      onMount(() => {
+    
+        email = sessionStorage.getItem('email');
+        password = sessionStorage.getItem('password')
+        console.log(email)
+      
+    });
+     async function token() {
+        try {
+            const response = await fetch("/api/token", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password }),
+            });
+            if (!response.ok) {
+                throw new Error(response.statusText);
+            }
+            const result = await response.json();
+            if (result == 200) {
+                addEvent()
+            }
+
+        } catch (error) {
+            alert("Failed to verify token: " + error.message);
+        }
+    }
     
     async function addEvent() {
       try {
@@ -47,7 +76,7 @@
 
 
 <h1>Add New Event</h1>
-<form on:submit|preventDefault={addEvent}>
+<form on:submit|preventDefault={token}>
     <label>
         Name:
         <input type="text" bind:value={name} required>

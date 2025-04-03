@@ -17,16 +17,27 @@
             }
             const result = await response.json();
             alert(result);
+            sessionStorage.setItem('email', email);
+            sessionStorage.setItem('password', password);
+            const targetUrl = `/app_event`;
+            window.location.href = targetUrl;
         } catch (error) {
             alert("Failed to register user: " + error.message);
         }
     }
 </script>
 
+<nav>
+    <a href="/">Home</a>
+    <a href="/register">Register</a>
+    <a href="/verify">Verify</a>
+</nav>
+
+<h1>Register</h1>
 <form on:submit|preventDefault={register}>
-    <input bind:value={email} placeholder="Email" />
-    <input bind:value={password} type="password" placeholder="Password" />
-    <input bind:value={first_name} placeholder="First Name" />
-    <input bind:value={last_name} placeholder="Last Name" />
+    <input bind:value={email} placeholder="Email" required />
+    <input bind:value={password} type="password" placeholder="Password" required />
+    <input bind:value={first_name} placeholder="First Name" required />
+    <input bind:value={last_name} placeholder="Last Name" required />
     <button>Register</button>
 </form>

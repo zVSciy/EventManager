@@ -5,13 +5,39 @@
     let events = [];
     let error = null;
     let editingEvent = null;
+    let email = '';
+    let password = '';
+     async function token() {
+        try {
+            const response = await fetch("/api/token", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password }),
+            });
+            if (!response.ok) {
+                throw new Error(response.statusText);
+            }
+            const result = await response.json();
+            if (result == 200) {
+                loadEvents()
+            }
+
+        } catch (error) {
+            alert("Failed to verify token: " + error.message);
+        }
+    }
 
     async function loadEvents() {
         const response = await fetch(`${base}/api/event`);
         events = await response.json();
     }
 
-    onMount(loadEvents);
+      onMount(() => {
+        email = sessionStorage.getItem('email');
+        password = sessionStorage.getItem('password')
+        console.log(email)
+        token();
+    });
 
     async function toggleCancel(event) {
         const newCanceledStatus = !event.canceled; // Toggle current canceled status

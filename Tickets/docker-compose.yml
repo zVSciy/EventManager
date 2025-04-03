@@ -6,7 +6,7 @@ networks:
 
 services:
   #Service "db"
-  db:
+  tickets_db:
     image: mysql:latest
 
     volumes:
@@ -14,24 +14,24 @@ services:
 
     env_file: .env
     environment:
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE_PORT: ${MYSQL_DATABASE_PORT}
+      MYSQL_DATABASE: ${TICKETS_MYSQL_DATABASE}
+      MYSQL_USER: ${TICKETS_MYSQL_USER}
+      MYSQL_PASSWORD: ${TICKETS_MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${TICKETS_MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE_PORT: ${TICKETS_MYSQL_DATABASE_PORT}
 
     networks:
       - event-network
 
     healthcheck:
-      test: 'echo "select now();" | mysql -h ${MYSQL_DATABASE_HOST} -u${MYSQL_USER} -p${MYSQL_PASSWORD}'
+      test: 'echo "select now();" | mysql -h ${TICKETS_MYSQL_DATABASE_HOST} -u${TICKETS_MYSQL_USER} -p${TICKETS_MYSQL_PASSWORD}'
       interval: 1s
       retries: 10
       start_period: 10s
       timeout: 1s
 
   #Service "api"
-  api:
+  tickets_api:
     build:
       context: .
       dockerfile: ./docker/fastapi/Dockerfile
@@ -46,18 +46,18 @@ services:
       - 8000:8000
 
     depends_on:
-      db:
+      tickets_db:
         condition: service_healthy
 
     command: >
       sh -c "python test_app.py &&
-             uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
+             uvicorn main:app --host 0.0.0.0 --port 8000 --ssl-keyfile /app/ssl/key.pem --ssl-certfile /app/ssl/cert.pem"
 
     networks:
       - event-network
 
   #Service "sveltekit"
-  sveltekit:
+  tickets_web:
     build:
       context: .
       dockerfile: ./docker/sveltekit/Dockerfile
@@ -66,7 +66,7 @@ services:
       - 5173
 
     depends_on:
-      - api
+      - tickets_api
 
     networks:
       - event-network
@@ -85,7 +85,7 @@ services:
       - "8080:443"
     
     depends_on:
-      - sveltekit
+      - tickets_web
 
     networks:
       - event-network
