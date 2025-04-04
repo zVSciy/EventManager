@@ -5,7 +5,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build-and-push:
+  integrated:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
@@ -13,6 +13,14 @@ jobs:
 
       - name: Copy .env file
         run: cp .env_example .env
+
+      - name: Verify .env file
+        run: |
+          if [ ! -f .env ]; then
+            echo ".env file is missing!"
+            exit 1
+          fi
+          cat .env
 
       - name: Install Docker Compose
         run: |
@@ -22,17 +30,19 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
+      - name: Build
+        run: docker-compose -f docker-compose.yaml build
+
+      - name: List Loaded Docker Images
+        run: docker images
+
+      - name: Run Integration Tests
+        run: docker-compose -f docker-compose-test.yaml up --exit-code-from integration_test integration_test
+
       - name: Debug Print GitLab Secrets
         run: |
           echo "GITLAB_USERNAME: ${{ vars.GITLAB_USERNAME }}"
-          echo "GITLAB_TOKEN: ${{ vars.GITLAB_TOKEN }}"
-
-      - name: Build
-        run: docker-compose -f docker-compose-pipeline.yaml build
-
-      - name: Test
-        run: docker-compose -f docker-compose-pipeline.yaml run events_api python test.py
-
+          echo "GITLAB_TOKEN: ${{ vars.GITLAB_TOKEN  }}"
 
       # Log in to GitLab registry
       - name: Log in to GitLab Registry
@@ -42,5 +52,10 @@ jobs:
           username: ${{ vars.GITLAB_USERNAME }}
           password: ${{ vars.GITLAB_TOKEN }}
 
-      - name: Push images
-        run: docker-compose -f docker-compose-pipeline.yaml push
+      - name: Verify Docker Image Tags
+        run: docker-compose -f docker-compose.yaml config | grep 'image:'
+
+      - name: Push images with Debug Logs
+        run: |
+          docker-compose -f docker-compose.yaml push || exit 1
+          docker-compose -f docker-compose.yaml config | grep 'image:'

@@ -6,16 +6,20 @@ function jsonResponse(json, status = 200) {
       }
   });
 }
-  
+
+// Bypass SSL certificate validation (development only)
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+const BASE_DIR = 'https://tickets_api:8000';
+
 export async function GET({ url }) {
   const userID = url.searchParams.get('user_id');
   const eventID = url.searchParams.get('event_id');
   let apiURL = '';
   
   if (!isNaN(eventID)) {
-    apiURL = `http://tickets_api:8000/tickets/user/${userID}?event_id=${eventID}`;
+    apiURL = `${BASE_DIR}/tickets/user/${userID}?event_id=${eventID}`;
   } else {
-    apiURL = `http://tickets_api:8000/tickets/user/${userID}`;
+    apiURL = `${BASE_DIR}/tickets/user/${userID}`;
   }
     
   try {
@@ -45,7 +49,7 @@ export async function DELETE({ url }) {
     return jsonResponse({status: 400, error: 'UserID must be a string!'});
   }
 
-  const apiURL = `http://tickets_api:8000/tickets/user/${userID}/ticket/${ticketID}`;
+  const apiURL = `${BASE_DIR}/tickets/user/${userID}/ticket/${ticketID}`;
 
   try {
     const response = await fetch(apiURL, {
