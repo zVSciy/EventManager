@@ -151,12 +151,13 @@ The review service uses a database with the following schema:
 | Field   | Type | Description               |
 |---------|------|---------------------------|
 | id      | INT  | Primary key               |
-| user_id | INT  | User ID who left review   |
-| content | TEXT | Review content            |
+| user_id | STR  | User ID who left review   |
+| content | STR  | Review content            |
 | rating  | INT  | Rating (typically 1-5)    |
 | event_id| INT  | Event ID being reviewed   |
 
-> Note: The review service requires data from Ticket, Event, and User services.
+> [!NOTE] 
+> The review service requires data from Ticket, Event, and User services.
 
 ## Frontend Implementation
 
