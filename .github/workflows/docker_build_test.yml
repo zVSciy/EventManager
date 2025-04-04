@@ -53,4 +53,4 @@ jobs:
           password: ${{ vars.GITLAB_TOKEN }}
 
       - name: Push images
-        run: docker-compose -f docker-compose-pipeline.yaml push
+        run: docker-compose -f docker-compose.yaml push
