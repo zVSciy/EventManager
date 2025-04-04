@@ -1,5 +1,5 @@
 # EventManager
-Am boutta readme
+The `EventManager`is a software engineering project of HTL Villach's 5AHITS (Year 2024/2025) that provides a management tool for concerts and other kinds of events. 
 
 ## Table of Contents
 - [Concepts](#concepts)
@@ -12,15 +12,85 @@ Am boutta readme
   - [Feedback](#feedback)
   - [User](#user)
 
+# Provisioning
+This section covers all important point about provisioning and testing the `EventManager`.
+
+## Requirements
+* Ubuntu 24.04 Server (recommended)
+* Docker Runtime (more security with Docker Rootless)
+* Source code of the Github repository
+
+## Start the EventManager
+1. Clone the source code from GitHub
+```bash
+git clone https://github.com/zVSciy/EventManager.git
+```
+
+2. Run the stack using `docker-compose-test.yaml`
+```bash
+docker compose -f docker-compose-test.yaml up [parameters]
+```
+
+3. Wait until every container is started and all databases as well as APIs are healthy. After the integration tests had run (exit with code 0), the `EventManager` may be used by opening the website `https://<server-ip>:8080/`
+
+If you are not familiar with Docker, here are some parameters that might be helpful.
+* **-d** &rarr; Detached mode; Output of containers is not shown in the command line which causes the CLI to be further accessible.
+* **--build** &rarr; All containers, including their environments, are rebuild.
+
+## Running Rootless Docker
+To start off, if you have not installed the Docker Runtime yet, mind Docker's installation guide: https://docs.docker.com/engine/install/ubuntu/
+
+The following commands for rootless Docker originate from Docker's official documentation, see: https://docs.docker.com/engine/security/rootless/#install. Keep in mind that the given commands should be executed with the user that is responsible for Docker later on.
+
+1. Install `uidmap`
+```bash
+sudo apt-get install -y uidmap
+``` 
+2. Shutdown Docker's system deamon
+```bash
+sudo systemctl disable --now docker.service docker.socket
+```
+
+3. Install `Dockerd-Rootless-Setup`
+```bash
+dockerd-rootless-setuptool.sh install
+```
+
+4. Define the variable `DOCKER_HOST`
+```bash
+export DOCKER_HOST=unix://$XDG_RUNTIME_DIR/docker.sock
+```
+
+The Docker engine is now placed in the current user's directory which means that the Docker runtime uses user permissions instead of `root` ones. As a result, the docker commands do not require `sudo` anymore when using a simple user.
+
+## Additional Notes
+- Each service runs its Unittest automatically when started.
+- Integration tests are defined in `./Integration_Tests`.
+- The NGINX proxy resolves the following services:
+  - User Management &rarr; `/`
+  - Event &rarr; `/app_event`
+  - Ticket &rarr; `/app_ticket`
+  - Notification &rarr; `/app_notification`
+  - Review &rarr; `/app_review` 
+- The `Payment` service has not been integrated into other components as it was submitted way too late.
+
 # Concepts
+In the following, the process and concept of this application is introduced.
 ## Process
 ![image](Process_Detailed.drawio.svg)
 
+The project consists of the following six microservices:
+- User (User management)
+- Event
+- Ticket
+- Payment
+- Notification
+- Review (Feedback)
 
-# Events
-Can be built with Docker compose up --build in the event folder. Was programmed by Pinter
+Each one fulfills crucial functionalities that are combined in order to achieve overall functionality of the `EventManager`.
 
 # API Endpoints
+A short documentation of the API endpoint of each service is stated below.
 ## Event
 **GET** /event/  
 **GET** /event/\<event-id>
