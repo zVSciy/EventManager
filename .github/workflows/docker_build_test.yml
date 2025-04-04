@@ -52,5 +52,10 @@ jobs:
           username: ${{ vars.GITLAB_USERNAME }}
           password: ${{ vars.GITLAB_TOKEN }}
 
-      - name: Push images
-        run: docker-compose -f docker-compose-pipeline.yaml push
+      - name: Verify Docker Image Tags
+        run: docker-compose -f docker-compose.yaml config | grep 'image:'
+
+      - name: Push images with Debug Logs
+        run: |
+          docker-compose -f docker-compose.yaml push || exit 1
+          docker-compose -f docker-compose.yaml config | grep 'image:'
