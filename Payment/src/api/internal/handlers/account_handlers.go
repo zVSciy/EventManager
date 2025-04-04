@@ -14,12 +14,23 @@ import (
 // @Summary Get Account Details
 // @Tags accounts
 // @Param user_id path string true "User ID"
+// @Param Authorization header string true "Authorization token"
 // @Success 200 {object} models.Account "Account details"
+// @Failure 401 {object} models.ErrorResponse "Unauthorized"
 // @Failure 404 {object} models.ErrorResponse "Account not found"
 // @Failure 500 {object} models.ErrorResponse "Internal Server Error"
 // @Router /accounts/{user_id} [get]
 func GetAccount(w http.ResponseWriter, r *http.Request) {
 	userID := r.PathValue("user_id")
+	authHeader := r.Header.Get("Authorization")
+
+	err := util.ValidateAuthHeader(userID, authHeader)
+	if err != nil {
+		util.JSONResponse(w, http.StatusUnauthorized, models.ErrorResponse{
+			Error: "Unauthorized",
+		})
+		return
+	}
 
 	account, err := services.GetAccount(userID)
 	if err == nil {
@@ -45,8 +56,11 @@ func GetAccount(w http.ResponseWriter, r *http.Request) {
 // @Summary Create Account
 // @Tags accounts
 // @Param account body models.AccountRequest true "User ID"
+// @Param Authorization header string true "Authorization token"
 // @Success 200 {object} models.CreateAccountResponse "Account created successfully"
 // @Failure 400 {object} models.ErrorResponse "Invalid request"
+// @Failure 401 {object} models.ErrorResponse "Unauthorized"
+// @Failure 500 {object} models.ErrorResponse "Internal Server Error"
 // @Router /accounts [post]
 func CreateAccount(w http.ResponseWriter, r *http.Request) {
 	var account models.Account
@@ -54,6 +68,16 @@ func CreateAccount(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewDecoder(r.Body).Decode(&account); err != nil {
 		util.JSONResponse(w, http.StatusBadRequest, models.ErrorResponse{
 			Error: "Bad Request",
+		})
+		return
+	}
+
+	authHeader := r.Header.Get("Authorization")
+
+	err := util.ValidateAuthHeader(account.ID, authHeader)
+	if err != nil {
+		util.JSONResponse(w, http.StatusUnauthorized, models.ErrorResponse{
+			Error: "Unauthorized",
 		})
 		return
 	}

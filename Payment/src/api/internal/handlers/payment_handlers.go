@@ -14,6 +14,7 @@ import (
 // @Summary Health Check
 // @Tags health
 // @Success 200 {object} models.HealthCheckResponse "Service is healthy"
+// @Failure 500 {object} models.ErrorResponse "Internal Server Error"
 // @Router /health [get]
 func HealthCheck(w http.ResponseWriter, r *http.Request) {
 	util.JSONResponse(w, http.StatusOK, models.HealthCheckResponse{
@@ -24,17 +25,38 @@ func HealthCheck(w http.ResponseWriter, r *http.Request) {
 // GetPayment godoc
 // @Summary Get Payment
 // @Tags payments
+// @Param user_id path string true "User ID"
 // @Param id path string true "Payment ID"
+// @Param Authorization header string true "Authorization token"
 // @Success 200 {object} models.Payment "Payment details"
 // @Failure 400 {object} models.ErrorResponse "Invalid payment ID"
+// @Failure 401 {object} models.ErrorResponse "Unauthorized"
 // @Failure 404 {object} models.ErrorResponse "Payment not found"
 // @Failure 500 {object} models.ErrorResponse "Internal Server Error"
-// @Router /payments/{id} [get]
+// @Router /accounts/{user_id}/payments/{id} [get]
 func GetPayment(w http.ResponseWriter, r *http.Request) {
+	userID := r.PathValue("user_id")
+	authHeader := r.Header.Get("Authorization")
+
+	err := util.ValidateAuthHeader(userID, authHeader)
+	if err != nil {
+		util.JSONResponse(w, http.StatusUnauthorized, models.ErrorResponse{
+			Error: "Unauthorized",
+		})
+		return
+	}
+
 	id := r.PathValue("id")
 
 	payment, err := services.GetPayment(id)
 	if err == nil {
+		if payment.UserID != userID {
+			util.JSONResponse(w, http.StatusUnauthorized, models.ErrorResponse{
+				Error: "Unauthorized",
+			})
+			return
+		}
+
 		payment.CreatedAt = util.ApplyLocalTZ(payment.CreatedAt)
 		if payment.ProcessedAt != nil {
 			localProcessedAt := util.ApplyLocalTZ(*payment.ProcessedAt)
@@ -68,14 +90,25 @@ func GetPayment(w http.ResponseWriter, r *http.Request) {
 // @Summary Get Payments by Account
 // @Tags payments
 // @Param user_id path string true "UserID"
+// @Param Authorization header string true "Authorization token"
 // @Success 200 {array} models.Payment "List of payments"
+// @Failure 401 {object} models.ErrorResponse "Unauthorized"
 // @Failure 404 {object} models.ErrorResponse "User not found"
 // @Failure 500 {object} models.ErrorResponse "Internal Server Error"
 // @Router /accounts/{user_id}/payments [get]
 func GetPayments(w http.ResponseWriter, r *http.Request) {
-	userId := r.PathValue("user_id")
+	userID := r.PathValue("user_id")
+	authHeader := r.Header.Get("Authorization")
 
-	payments, err := services.GetPayments(userId)
+	err := util.ValidateAuthHeader(userID, authHeader)
+	if err != nil {
+		util.JSONResponse(w, http.StatusUnauthorized, models.ErrorResponse{
+			Error: "Unauthorized",
+		})
+		return
+	}
+
+	payments, err := services.GetPayments(userID)
 	if err == nil {
 		util.JSONResponse(w, http.StatusOK, models.GetPaymentsResponse{
 			Payments: payments,
@@ -106,9 +139,12 @@ func GetPayments(w http.ResponseWriter, r *http.Request) {
 // @Tags payments
 // @Param Idempotency-Key header string true "Unique key to prevent duplicate payments"
 // @Param payment body models.PaymentRequest true "Payment details"
+// @Param Authorization header string true "Authorization token"
 // @Success 201 {object} models.CreatePaymentResponse "Payment created successfully"
 // @Failure 400 {object} models.ErrorResponse "Invalid request or missing idempotency key"
+// @Failure 401 {object} models.ErrorResponse "Unauthorized"
 // @Failure 409 {object} models.ErrorResponse "Duplicate idempotency key"
+// @Failure 500 {object} models.ErrorResponse "Internal Server Error"
 // @Router /payments [post]
 func CreatePayment(w http.ResponseWriter, r *http.Request) {
 	var payment models.Payment
@@ -128,7 +164,17 @@ func CreatePayment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// ONLY EUR TEMPORARY
+	authHeader := r.Header.Get("Authorization")
+
+	err := util.ValidateAuthHeader(payment.UserID, authHeader)
+	if err != nil {
+		util.JSONResponse(w, http.StatusUnauthorized, models.ErrorResponse{
+			Error: "Unauthorized",
+		})
+		return
+	}
+
+	// ONLY EUR (TEMPORARY)
 	if payment.Currency != "EUR" {
 		util.JSONResponse(w, http.StatusBadRequest, models.ErrorResponse{
 			Error: "BAD_CURRENCY_USE_EUR",
