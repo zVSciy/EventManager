@@ -190,6 +190,31 @@ The frontend includes support for authentication when making API requests. While
 2. Passing user information in API requests
 3. Potentially handling authorization tokens for secured endpoints
 
+### Frontend In-Depth
+
+The React frontend offers a comprehensive interface for managing reviews:
+
+#### Component Structure
+- **Main App Component**: Handles state management and API communication
+- **Navigation Header**: Shows authentication status and user information
+- **Endpoint Selector**: Dropdown to select the review action to perform
+- **Dynamic Form**: Changes fields based on the selected endpoint
+- **Response Display**: Shows formatted JSON responses from the API
+
+#### Key Features
+- **Dynamic Form Validation**: Real-time validation ensures all required fields are filled before submission
+- **Authentication Integration**: Verifies user token before any API operation
+- **Event ID Integration**: Automatically pulls event ID from URL for contextual operations
+- **Responsive Design**: Works across various device sizes with a clean, modern UI
+
+#### Interaction Flow
+1. User selects operation type (Create/Get/Update/Delete)
+2. Form dynamically updates with relevant fields
+3. User fills in required information
+4. System validates input before submission
+5. API request is sent with authentication token
+6. Response is displayed in formatted JSON view
+
 ## Getting Started
 
 ### Backend Setup
@@ -383,9 +408,9 @@ To run the Review Service as part of the complete EventManager system:
    ```
 
 4. Access the complete system through the NGINX reverse proxy:
-   - Main Entry Point: https://localhost:8080
-   - Review Service API: https://localhost:8080/api/reviews
-   - Review Service UI: https://localhost:8080/reviews
+   - Main Entry Point: http://container-host:8080/app_event
+   - Review Service API: http://container-host:8080/app_review/api
+   - Review Service UI: http://container-host:8080/app_review
 
 5. To stop all services:
    ```bash
@@ -400,4 +425,56 @@ When running as part of the complete system:
 - The API is accessible through the NGINX reverse proxy rather than directly
 - The web frontend port may differ from the standalone setup
 
-For development purposes, you can still run the Review service in isolation as described in the "Docker Setup" section above.
+### Service Interaction Visualization
+
+The Review Service operates as part of the integrated EventManager ecosystem:
+
+```
+┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│                 │     │                 │     │                 │
+│  User Service   │     │  Event Service  │     │ Notification    │
+│                 │     │                 │     │ Service         │
+└────────┬────────┘     └────────┬────────┘     └────────┬────────┘
+         │                       │                       │
+         │ ┌─────────────────────┼───────────────────────┐
+         │ │                     │                       │
+         ▼ ▼                     ▼                       ▼
+    ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+    ┃                                                         ┃
+    ┃                   Review Service                        ┃
+    ┃                                                         ┃
+    ┃  ┌───────────────┐         ┌───────────────────────┐    ┃
+    ┃  │               │         │                       │    ┃
+    ┃  │  React UI     │◄─────►  │  FastAPI Backend      │    ┃
+    ┃  │               │         │                       │    ┃
+    ┃  └───────────────┘         └───────────────────────┘    ┃
+    ┃                                       ▲                 ┃
+    ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┃━━━━━━━━━━━━━━━━━┛
+                                            │
+                                            ▼
+                                   ┌─────────────────┐
+                                   │                 │
+                                   │ Tickets Service │
+                                   │                 │
+                                   └─────────────────┘
+```
+
+**Data Flow:**
+
+1. **User Service → Review Service**:
+   - User authentication and authorization data
+   - User profile information for associating with reviews
+
+2. **Event Service → Review Service**:
+   - Event details and metadata
+   - Verification that events exist before reviews are created
+
+3. **Review Service → Notification Service**:
+   - Triggers notifications when reviews are created or updated
+   - Sends review content for notification messages
+
+4. **Tickets Service → Review Service**:
+   - Verifies users have valid tickets for the event they're reviewing
+   - Prevents reviews from users who haven't attended events
+
+All services communicate through RESTful APIs over the shared `eventmanager-net` Docker network, with NGINX handling routing between services. This architecture ensures each service maintains its own data while allowing for necessary interactions, creating a robust and scalable event management platform.
