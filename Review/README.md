@@ -309,3 +309,95 @@ The frontend container uses volumes to mount the local `frontend` directory into
 ## Testing
 
 The application includes test configurations for both frontend and backend components. Frontend tests use Jest with React Testing Library.
+
+## Integration with EventManager
+
+The Review Service is part of a larger microservices architecture that makes up the complete EventManager application. While this README describes how to run the Review Service in isolation, the service is designed to work alongside other services in the EventManager ecosystem.
+
+### Related Services
+
+The Review Service interacts with several other services:
+
+- **Events Service**: Provides event information that reviews are linked to
+- **Tickets Service**: Verifies if users have tickets for events they're reviewing
+- **User Management Service**: Handles authentication and user information
+- **Notification Service**: May send notifications when reviews are created or modified
+
+### System Architecture
+
+The complete EventManager system uses a microservices architecture with:
+
+- Separate databases for each service
+- A shared network for inter-service communication
+- NGINX as a reverse proxy for routing requests
+- Docker for containerization and orchestration
+
+## Running as Part of the Complete System
+
+The EventManager project includes a main `docker-compose.yaml` file in the root directory that orchestrates all services.
+
+### Main Docker Compose Structure
+
+The main docker-compose file includes:
+
+1. **Volume Definitions**: Persistent storage for each service's data
+   ```yaml
+   volumes:
+     events-mysql-data:
+     events-fast-data:
+     tickets-fast-data:
+     tickets-mysql-data:
+     auth-db-data:
+     auth-api-data:
+     notification_db_data:
+   ```
+
+2. **Network Definition**: A shared network for all services
+   ```yaml
+   networks:
+     eventmanager-net:
+   ```
+
+3. **Service Definitions**:
+   - **NGINX**: Reverse proxy that routes requests to appropriate services
+   - **Integration Tests**: Tests that verify all services work together
+   - **Service Groups**: Each service (Events, Review, Tickets, Auth, Notification) consists of:
+     - Database container
+     - API container (backend)
+     - Web container (frontend)
+
+### Running the Complete System
+
+To run the Review Service as part of the complete EventManager system:
+
+1. Navigate to the root directory of the EventManager project:
+   ```bash
+   cd /path/to/EventManager
+   ```
+
+2. Create or update the `.env` file with necessary environment variables for all services
+
+3. Start all services using the main docker-compose file:
+   ```bash
+   docker-compose up -d
+   ```
+
+4. Access the complete system through the NGINX reverse proxy:
+   - Main Entry Point: https://localhost:8080
+   - Review Service API: https://localhost:8080/api/reviews
+   - Review Service UI: https://localhost:8080/reviews
+
+5. To stop all services:
+   ```bash
+   docker-compose down
+   ```
+
+### Differences from Standalone Mode
+
+When running as part of the complete system:
+
+- The Review service connects to the shared `eventmanager-net` network
+- The API is accessible through the NGINX reverse proxy rather than directly
+- The web frontend port may differ from the standalone setup
+
+For development purposes, you can still run the Review service in isolation as described in the "Docker Setup" section above.
