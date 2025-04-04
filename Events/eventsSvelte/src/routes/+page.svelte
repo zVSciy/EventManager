@@ -1,21 +1,51 @@
 <script>
+    import { base } from '$app/paths';
     import { onMount } from 'svelte';
     import { goto } from '$app/navigation';
 
     let events = [];
     let error = null;
+    let email = '';
+    let password = '';
 
+ async function token() {
+        try {
+            const response = await fetch("/api/token", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password }),
+            });
+            if (!response.ok) {
+                throw new Error(response.statusText);
+            }
+            const result = await response.json();
+            if (result == 200) {
+                loadEvents()
+            }
+
+        } catch (error) {
+            alert("Failed to verify token: " + error.message);
+        }
+    }
     async function loadEvents() {
-        const response = await fetch('/api/event');
+        const response = await fetch(`${base}/api/event`);
         events = await response.json();
 
     }
 
-    onMount(loadEvents);
+
+    onMount(() => {
+
+        email = sessionStorage.getItem('email');
+        password = sessionStorage.getItem('password')
+        console.log(email)
+        token()
+        
+    });
 
     function viewDetails(event) {
     if (event && event.ID) {
-        goto(`/details/${event.ID}`); // Navigiere zur Details-Seite basierend auf der Event-ID
+        goto(`${base}/details/${event.ID}`); // Navigiere zur Details-Seite basierend auf der Event-ID
     }
 }
 export let data;
@@ -24,13 +54,14 @@ export let data;
 
 <nav class="navbar navbar-expand-lg navbar-light bg-warning">
     <div class="container-fluid">
-        <button on:click={() => window.location.href='/'} style="margin-bottom: 20px; padding: 10px; background-color: #009879; color: white; border: none; border-radius: 4px; cursor: pointer;">Event Manager</button>    
+        <button on:click={() => window.location.href=`${base}/`} style="margin-bottom: 20px; padding: 10px; background-color: #009879; color: white; border: none; border-radius: 4px; cursor: pointer;">Event Manager</button>    
 
         <div class="d-flex align-items-center ms-auto">
-            <span class="me-3">Hi, {data.username}!</span>
+            <span class="me-3">Hi, {email}!</span>
+            <button on:click={() => window.location.href=`/app_notification`} style="margin-bottom: 20px; padding: 10px; background-color: #009879; color: white; border: none; border-radius: 4px; cursor: pointer;">Notification</button>    
 
             {#if data.admin}
-            <button on:click={() => window.location.href='/admin'} style="margin-bottom: 20px; padding: 10px; background-color: #009879; color: white; border: none; border-radius: 4px; cursor: pointer;">Admin</button>    
+            <button on:click={() => window.location.href=`${base}/admin`} style="margin-bottom: 20px; padding: 10px; background-color: #009879; color: white; border: none; border-radius: 4px; cursor: pointer;">Admin</button>    
             {/if}
         </div>
     </div>

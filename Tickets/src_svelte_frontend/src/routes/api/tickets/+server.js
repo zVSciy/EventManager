@@ -7,14 +7,18 @@ function jsonResponse(json, status = 200) {
   });
 }
 
+// Bypass SSL certificate validation (development only)
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+const BASE_DIR = 'https://tickets_api:8000';
+
 export async function GET({ url }) {
   const eventID = url.searchParams.get('event_id');
   let apiURL = '';
 
   if (!isNaN(eventID)) {
-    apiURL = `http://api:8000/tickets?event_id=${eventID}`;
+    apiURL = `${BASE_DIR}/tickets?event_id=${eventID}`;
   } else {
-    apiURL = `http://api:8000/tickets`;
+    apiURL = `${BASE_DIR}/tickets`;
   }
   
   try {
@@ -24,53 +28,78 @@ export async function GET({ url }) {
       return jsonResponse(data);
     
     } else {
-      return jsonResponse({status: response.status, error: 'Failed to fetch data!'});
+      return jsonResponse({status: response.status, error: data.detail.msg});
     }
 
   } catch (error) {
-    return jsonResponse({status: 500, error: 'Internal server error'});
+    return jsonResponse({status: 500, error: error});
   }
 }
 
 export async function POST({ url }) {
   const price = url.searchParams.get('price');
-  const row = url.searchParams.get('row');
-  const seatNumber = url.searchParams.get('seat_number');
+  let row = url.searchParams.get('row');
+  let seatNumber = url.searchParams.get('seat_number');
   const vip = url.searchParams.get('vip');
   const userID = url.searchParams.get('user_id');
   const eventID = url.searchParams.get('event_id');
 
-  const apiURL = `http://api:8000/tickets`;
+  const apiURL = `${BASE_DIR}/tickets`;
+  let response = '';
+
+  if (row == 'null') {
+    row = '';
+  }
+
+  if (seatNumber == 'null') {
+    seatNumber = '';
+  }
   
   try {
-    const response = await fetch(apiURL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        price: price,
-        row: row,
-        seat_number: seatNumber,
-        vip: vip,
-        user_id: userID,
-        event_id: eventID
-      })
-    });
+    if (row == '' && seatNumber == '') {
+      response = await fetch(apiURL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          price: price,
+          vip: vip,
+          user_id: userID,
+          event_id: eventID
+        })
+      });
+
+    } else if (row == '' || seatNumber == '') {
+      return jsonResponse({status: 400, error: 'Row and seat number must be both filled or empty!'});
+    
+    } else {
+      response = await fetch(apiURL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          price: price,
+          row: row,
+          seat_number: seatNumber,
+          vip: vip,
+          user_id: userID,
+          event_id: eventID
+        })
+      });
+    }
 
     const data = await response.json();
     if (response.ok) {
       return jsonResponse([data]);
 
-    } else if (response.status == 400){
-      return jsonResponse({status: response.status, error: data.detail.msg});
-
     } else {
-      return jsonResponse({status: response.status, error: 'Failed to fetch data!'});
+      return jsonResponse({status: response.status, error: data.detail.msg});
     }
 
   } catch (error) {
-    return jsonResponse({status: 500, error: 'Internal server error'});
+    return jsonResponse({status: 500, error: error});
   }
 }
 
@@ -87,7 +116,7 @@ export async function PUT({ url }) {
     return jsonResponse({status: 400, error: 'TicketID must be a number!'});
   }
 
-  const apiURL = `http://api:8000/tickets/${changedTID}`;
+  const apiURL = `${BASE_DIR}/tickets/${changedTID}`;
   
   try {
     const response = await fetch(apiURL, {
@@ -109,18 +138,12 @@ export async function PUT({ url }) {
     if (response.ok) {
       return jsonResponse([data]);
 
-    } else if (response.status == 400){
-      return jsonResponse({status: response.status, error: data.detail.msg});
-
-    } else if (response.status == 404){
-      return jsonResponse({status: response.status, error: data.detail.msg});
-
     } else {
-      return jsonResponse({status: response.status, error: 'Failed to fetch data!'});
+      return jsonResponse({status: response.status, error: data.detail.msg});
     }
 
   } catch (error) {
-    return jsonResponse({status: 500, error: 'Internal server error'});
+    return jsonResponse({status: 500, error: error});
   }
 }
 
@@ -131,7 +154,7 @@ export async function DELETE({ url }) {
     return jsonResponse({status: 400, error: 'TicketID must be a number!'});
   }
 
-  const apiURL = `http://api:8000/tickets/${ticketID}`;
+  const apiURL = `${BASE_DIR}/tickets/${ticketID}`;
 
   try {
     const response = await fetch(apiURL, {
@@ -142,13 +165,10 @@ export async function DELETE({ url }) {
     if (response.ok) {
       return jsonResponse(data);
 
-    } else if (response.status == 404){
-      return jsonResponse({status: response.status, error: data.detail.msg});
-
     } else {
-      return jsonResponse({status: response.status, error: 'Failed to fetch data!'});
+      return jsonResponse({status: response.status, error: data.detail.msg});
     }
   } catch (error) {
-    return jsonResponse({status: 500, error: 'Internal server error'});
+    return jsonResponse({status: 500, error: error});
   }
 }

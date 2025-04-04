@@ -1,6 +1,5 @@
-
-
 <script>
+    import { base } from '$app/paths';
     import { onMount } from 'svelte';
     import { goto } from '$app/navigation';
     import { writable } from 'svelte/store';
@@ -11,11 +10,32 @@
     let available_normal_tickets = 1;
     let available_vip_tickets = 1;
     let canceled = '';
+    let email = '';
+    let password = '';
     
     let event = writable([]);
     console.log(event)
+    async function token() {
+        try {
+            const response = await fetch("/api/token", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password }),
+            });
+            if (!response.ok) {
+                throw new Error(response.statusText);
+            }
+            const result = await response.json();
+            if (result == 200) {
+                fetchEvent()
+            }
+
+        } catch (error) {
+            alert("Failed to verify token: " + error.message);
+        }
+    }
     async function fetchEvent() {
-        const response = await fetch(`/api/event/details`, {
+        const response = await fetch(`${base}/api/event/details`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json; charset=UTF-8",
@@ -33,19 +53,26 @@
         canceled = data.canceled ? 'Yes' : 'No'
     }
     function goToIndexPage() {
-        goto('/');
+        goto(`${base}`);
     }
     function goToFeedBack() {
-        goto('#', { replaceState: true });    }
-        
-
-        function goToTickets() {
-        sessionStorage.setItem('eventId', event.ID); // ID in Session Storage speichern
-        goto('/tickets'); // Navigation zur Tickets-Seite
+        const eventId = event.ID;
+        sessionStorage.setItem('eventId', eventId);
+        const targetUrl = `/app_review?eventId=${eventId}`;
+        window.location.href = targetUrl;  
+    }    
+    function goToTickets() {
+        const eventId = event.ID;
+        sessionStorage.setItem('eventId', eventId);
+        const targetUrl = `/app_ticket?eventId=${eventId}`;
+        window.location.href = targetUrl; 
     }
     onMount(() => {
-        event.ID = window.location.href.split('/').pop();
-        fetchEvent();
+        event.ID = window.location.href.split(`/`).pop();
+        email = sessionStorage.getItem('email');
+        password = sessionStorage.getItem('password')
+        console.log(email)
+        token();
     });
 </script>
 

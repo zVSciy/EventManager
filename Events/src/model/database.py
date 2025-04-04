@@ -4,10 +4,10 @@ from dotenv import load_dotenv
 import os
 
 load_dotenv()
-user = os.environ.get("MYSQL_USER")
-hostname = os.environ.get("MYSQL_HOST")
-port = os.environ.get("MYSQL_DATABASE_PORT")
-password = os.environ.get("MYSQL_ROOT_PASSWORD")
+user = os.environ.get("EVENTS_MYSQL_USER")
+hostname = os.environ.get("EVENTS_MYSQL_HOST")
+port = os.environ.get("EVENTS_MYSQL_DATABASE_PORT")
+password = os.environ.get("EVENTS_MYSQL_ROOT_PASSWORD")
 
 # Database configuration
 DATABASE_URL = f"mysql+pymysql://root:{password}@{hostname}:{port}/EventManagement"

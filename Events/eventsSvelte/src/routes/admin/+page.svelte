@@ -1,22 +1,49 @@
 <script>
+    import { base } from '$app/paths';
     import { onMount } from 'svelte';
 
     let events = [];
     let error = null;
     let editingEvent = null;
+    let email = '';
+    let password = '';
+     async function token() {
+        try {
+            const response = await fetch("/api/token", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password }),
+            });
+            if (!response.ok) {
+                throw new Error(response.statusText);
+            }
+            const result = await response.json();
+            if (result == 200) {
+                loadEvents()
+            }
+
+        } catch (error) {
+            alert("Failed to verify token: " + error.message);
+        }
+    }
 
     async function loadEvents() {
-        const response = await fetch('/api/event');
+        const response = await fetch(`${base}/api/event`);
         events = await response.json();
     }
 
-    onMount(loadEvents);
+      onMount(() => {
+        email = sessionStorage.getItem('email');
+        password = sessionStorage.getItem('password')
+        console.log(email)
+        token();
+    });
 
     async function toggleCancel(event) {
         const newCanceledStatus = !event.canceled; // Toggle current canceled status
         try {
             // Make the API call to update the event cancel status
-            const response = await fetch(`/api/event/cancel?id=${event.ID}`, {
+            const response = await fetch(`${base}/api/event/cancel?id=${event.ID}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -42,7 +69,7 @@
 
     async function updateEvent(id) {
         try {
-            const response = await fetch(`/api/event?id=${id}`, { // Pass ID in the query parameter
+            const response = await fetch(`${base}/api/event?id=${id}`, { // Pass ID in the query parameter
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
@@ -80,10 +107,11 @@
 
 <nav class="navbar navbar-expand-lg navbar-light bg-warning">
     <div class="container-fluid">
-        <button on:click={() => window.location.href='/'} style="margin-bottom: 20px; padding: 10px; background-color: #009879; color: white; border: none; border-radius: 4px; cursor: pointer;">Event Manager</button>    
+        <button on:click={() => window.location.href=`${base}`} style="margin-bottom: 20px; padding: 10px; background-color: #009879; color: white; border: none; border-radius: 4px; cursor: pointer;">Event Manager</button>    
+        <button on:click={() => window.location.href=`/app_notification`} style="margin-bottom: 20px; padding: 10px; background-color: #009879; color: white; border: none; border-radius: 4px; cursor: pointer;">Notification</button>    
 
         <div class="d-flex align-items-center ms-auto">
-            <span class="me-3">Hi, {data.username}!</span>
+            <span class="me-3">Hi, {email}!</span>
 
         </div>
     </div>
@@ -97,7 +125,7 @@
     <div>
         <h1>Event List</h1>
         {#if data.admin}
-        <button on:click={() => window.location.href='/admin/add-event'} style="margin-bottom: 20px; padding: 10px; background-color: #009879; color: white; border: none; border-radius: 4px; cursor: pointer;">Add New Event</button>    
+        <button on:click={() => window.location.href=`${base}/admin/add-event`} style="margin-bottom: 20px; padding: 10px; background-color: #009879; color: white; border: none; border-radius: 4px; cursor: pointer;">Add New Event</button>    
         {/if}    
         <table class="styled-table">
             <thead>
@@ -115,7 +143,7 @@
             <tbody>
                 {#each events as event}
                     <tr>
-                        <td><a href={`/event/${event.ID}`}>{event.ID}</a></td>
+                        <td><a href={`${base}/event/${event.ID}`}>{event.ID}</a></td>
                         <td>{event.name}</td>
                         <td>{event.location}</td>
                         <td>{new Date(event.startdate).toLocaleString()}</td>

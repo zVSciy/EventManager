@@ -4,7 +4,7 @@ import { apiFetch } from './api';
 export const user = writable(null);
 
 export async function login(username, password) {
-    const data = await apiFetch('/token', {
+    const data = await apiFetch('/api/token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({ username, password }),

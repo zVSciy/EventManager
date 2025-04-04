@@ -7,6 +7,7 @@ The Review Service allows you to create, retrieve, update, and delete reviews fo
 - Docker
 - Docker Compose
 - Postman (for manual testing)
+- Browser (for GUI testing)
 
 ## Project Structure
 
@@ -21,7 +22,9 @@ The Review Service allows you to create, retrieve, update, and delete reviews fo
    docker-compose up --build
    ```
 
-   This will build the Docker container and start the Review Service. The service will be available at `http://localhost:8083`.
+   This will build the Docker container and start the Review Service. The service will be available at `http://localhost:3000`.
+   The fontend interacts with the `http://ReviewBackend:8083` container. 
+   
 
 ## Running Tests
 
@@ -33,11 +36,9 @@ The tests will automatically run when the Docker container is started. To run th
    docker-compose run api pytest
    ```
 
-### Manual Testing with Postman
+### Manual Testing
 
-Set up Postman:
-
-Open Postman and create a new collection for the Review Service.
+Use the react.js frontend
 
 You can test every endpoint listed below:
 

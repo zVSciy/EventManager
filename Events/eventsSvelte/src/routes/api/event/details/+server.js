@@ -8,7 +8,7 @@ export async function GET({ request }) {
     }
     const id = request.headers.get("Event");
     try {
-        const response = await fetch(`http://api:8000/event/${id}`);
+        const response = await fetch(`http://events_api:8000/event/${id}`);
 
         const jsonRes = await response.json()
 

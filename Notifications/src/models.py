@@ -15,6 +15,6 @@ class Notifications(Base):
     eventId = Column(Integer, nullable=False)
     paymentId = Column(Integer, nullable=False)
     ticketId = Column(Integer, nullable=False)
-    userId = Column(Integer, nullable=False)
+    userId = Column(String(50), nullable=False)
 
 Base.metadata.create_all(bind=engine)

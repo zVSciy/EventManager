@@ -1,14 +1,15 @@
 <script>
-	import Home from "../components/Home.svelte";
+    import Home from "../components/Home.svelte";
+	export let data;
 </script>
 
 <svelte:head>
-	<title>EventManager | Tickets</title>
-	<meta name="description" content="EventManager | Tickets" />
+	<title>Tickets | Main</title>
+	<meta name="description" content="Tickets | Main" />
 </svelte:head>
 
 <section>
 	<main>
-		<Home />
+		<Home {data}/>
 	</main>
 </section>

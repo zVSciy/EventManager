@@ -1,28 +1,35 @@
-volumes:
-  mysqldata:
+version: '3.8'
 
 networks:
   my-network:
+    driver: bridge
 
 services:
-
-  api:
-    container_name: ReviewAPI
+  review_api:
     build:
-      context: .
-      dockerfile: ./src/Dockerfile
-
-    volumes:
-    - ./src:/app
-
-    working_dir: "/app"
-    
+      context: ./backend
+      dockerfile: Dockerfile
     ports:
-    - "8083:8000"
-
+      - "8083:8083"
     command: >
-      sh -c "pytest && 
-             exec uvicorn main:app --host 0.0.0.0 --reload"
-
+      sh -c "exec uvicorn main:app --host 0.0.0.0 --port 8083 --reload"
     networks:
-    - my-network
+      - my-network
+
+  review_web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - WDS_SOCKET_PORT=0
+      - NODE_ENV=development
+    networks:
+      - my-network
+    depends_on:
+      - review_api

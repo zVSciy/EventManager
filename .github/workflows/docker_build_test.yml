@@ -1,0 +1,56 @@
+﻿name: Build, Test, and Push Docker Images
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  integrated:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Copy .env file
+        run: cp .env_example .env
+
+      - name: Verify .env file
+        run: |
+          if [ ! -f .env ]; then
+            echo ".env file is missing!"
+            exit 1
+          fi
+          cat .env
+
+      - name: Install Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build
+        run: docker-compose -f docker-compose.yaml build
+
+      - name: List Loaded Docker Images
+        run: docker images
+
+      - name: Run Integration Tests
+        run: docker-compose -f docker-compose-test.yaml up --exit-code-from integration_test integration_test
+
+      - name: Debug Print GitLab Secrets
+        run: |
+          echo "GITLAB_USERNAME: ${{ vars.GITLAB_USERNAME }}"
+          echo "GITLAB_TOKEN: ${{ vars.GITLAB_TOKEN  }}"
+
+      # Log in to GitLab registry
+      - name: Log in to GitLab Registry
+        uses: docker/login-action@v2
+        with:
+          registry: registry.gitlab.com
+          username: ${{ vars.GITLAB_USERNAME }}
+          password: ${{ vars.GITLAB_TOKEN }}
+
+      - name: Push images
+        run: docker-compose -f docker-compose-pipeline.yaml push

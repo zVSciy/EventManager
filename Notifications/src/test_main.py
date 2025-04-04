@@ -29,7 +29,7 @@ def test_create_notification():
     "eventId": 72,
     "paymentId": 123,
     "ticketId": 123123,
-    "userId": 998989898
+    "userId": 'test1@gmail.com'
     }
     response = client.post("/notifications/", json=new_notification)
     assert response.status_code == 200
@@ -37,7 +37,7 @@ def test_create_notification():
     assert response.json()["status"] == new_notification["status"]
 
 def test_read_all_notifications_by_user():
-    response = client.get("/notifications/user/998989898")
+    response = client.get("/notifications/user/test1@gmail.com")
     assert response.status_code == 200
     assert type(response.json()) == list
     if(len(response.json()) > 0):
@@ -46,16 +46,20 @@ def test_read_all_notifications_by_user():
 
 
 def test_update_notification():
+    event_id = client.get("/notifications/user/test1@gmail.com").json()[0]["id"]
+    event_id = int(event_id)
     update_data = {
-    "description": "TESTNOTIFICATION",
-    "status": "active",
-    "timestamp": 1729235305,
-    "eventId": 72,
-    "paymentId": 123,
-    "ticketId": 123123,
-    "userId": 998989898
+    "description": "string",
+    "status": "string",
+    "timestamp": 5,
+    "eventId": 5,
+    "paymentId": 5,
+    "ticketId": 5,
+    "userId": 'test2@gmail.com'
     }
-    response = client.put("/notifications/1", json=update_data)
+    response = client.put(f"/notifications/{event_id}", json=update_data)
+    # print(response)
+    # print(response.json())
     assert response.status_code == 200
     assert response.json()["description"] == update_data["description"]
     assert response.json()["status"] == update_data["status"]
