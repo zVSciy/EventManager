@@ -102,6 +102,11 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/models.AccountRequest'
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       responses:
         "200":
           description: Account created successfully
@@ -109,6 +114,14 @@ paths:
             $ref: '#/definitions/models.CreateAccountResponse'
         "400":
           description: Invalid request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/models.ErrorResponse'
       summary: Create Account
@@ -122,11 +135,20 @@ paths:
         name: user_id
         required: true
         type: string
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       responses:
         "200":
           description: Account details
           schema:
             $ref: '#/definitions/models.Account'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
         "404":
           description: Account not found
           schema:
@@ -146,6 +168,11 @@ paths:
         name: user_id
         required: true
         type: string
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       responses:
         "200":
           description: List of payments
@@ -153,6 +180,10 @@ paths:
             items:
               $ref: '#/definitions/models.Payment'
             type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
         "404":
           description: User not found
           schema:
@@ -164,6 +195,48 @@ paths:
       summary: Get Payments by Account
       tags:
       - payments
+  /accounts/{user_id}/payments/{id}:
+    get:
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: string
+      - description: Payment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Payment details
+          schema:
+            $ref: '#/definitions/models.Payment'
+        "400":
+          description: Invalid payment ID
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Payment not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get Payment
+      tags:
+      - payments
   /health:
     get:
       responses:
@@ -171,6 +244,10 @@ paths:
           description: Service is healthy
           schema:
             $ref: '#/definitions/models.HealthCheckResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
       summary: Health Check
       tags:
       - health
@@ -188,6 +265,11 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/models.PaymentRequest'
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       responses:
         "201":
           description: Payment created successfully
@@ -197,39 +279,19 @@ paths:
           description: Invalid request or missing idempotency key
           schema:
             $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
         "409":
           description: Duplicate idempotency key
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-      summary: Create Payment
-      tags:
-      - payments
-  /payments/{id}:
-    get:
-      parameters:
-      - description: Payment ID
-        in: path
-        name: id
-        required: true
-        type: string
-      responses:
-        "200":
-          description: Payment details
-          schema:
-            $ref: '#/definitions/models.Payment'
-        "400":
-          description: Invalid payment ID
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-        "404":
-          description: Payment not found
           schema:
             $ref: '#/definitions/models.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
             $ref: '#/definitions/models.ErrorResponse'
-      summary: Get Payment
+      summary: Create Payment
       tags:
       - payments
 swagger: "2.0"
